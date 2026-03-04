@@ -1,9 +1,0 @@
-2026-03-02T10:47:13+00:00 run-start runner=codex parallel=False max_parallel=3 timeout=1200s heartbeat=15.0s stall_warning=0s stall_kill=120s retries=1 retry_backoff=2.0s upper_bound=20m selected=[4]
-2026-03-02T10:47:13+00:00 backlog-gate checked=True mode=force_review_rerun force_review_rerun=True
-2026-03-02T10:47:13+00:00 run-path /Users/peteromalley/Documents/desloppify/.desloppify/subagents/runs/20260302_104713_085334
-2026-03-02T10:47:13+00:00 packet /Users/peteromalley/Documents/desloppify/.desloppify/review_packets/holistic_packet_20260302_104249_273765.json
-2026-03-02T10:47:13+00:00 blind-packet /Users/peteromalley/Documents/desloppify/.desloppify/review_packets/review_packet_blind_20260302_104713_085334.json
-2026-03-02T10:47:13+00:00 batch-start batch=4 position=1/1
-2026-03-02T10:49:43+00:00 batch-done batch=4 position=1/1 code=0 elapsed=150
-2026-03-02T10:49:43+00:00 run-summary /Users/peteromalley/Documents/desloppify/.desloppify/subagents/runs/20260302_104713_085334/run_summary.json
-2026-03-02T10:49:43+00:00 run-finished import-failed code=1
