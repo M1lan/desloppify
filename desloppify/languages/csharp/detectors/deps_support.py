@@ -6,7 +6,10 @@ import argparse
 import json
 import logging
 import re
-import defusedxml.ElementTree as ET
+try:
+    import defusedxml.ElementTree as ET
+except ModuleNotFoundError:  # pragma: no cover — optional dep
+    import xml.etree.ElementTree as ET  # type: ignore[no-redef]
 from collections import defaultdict
 from pathlib import Path
 
