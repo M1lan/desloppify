@@ -23,45 +23,69 @@ from .helpers import (
 from .services import TriageServices, default_triage_services
 
 
+def _cluster_tags(cluster: dict) -> str:
+    """Build display tags for cluster metadata."""
+    desc = cluster.get("description") or ""
+    steps = cluster.get("action_steps", [])
+    auto = cluster.get("auto", False)
+    tags: list[str] = []
+    if auto:
+        tags.append("auto")
+    if desc:
+        tags.append("desc")
+    else:
+        tags.append("no desc")
+    if steps:
+        tags.append(f"{len(steps)} steps")
+    elif not auto:
+        tags.append("no steps")
+    return f" [{', '.join(tags)}]"
+
+
+def _print_active_clusters(active_clusters: dict[str, dict]) -> None:
+    """Render currently active clusters with tags and descriptions."""
+    if not active_clusters:
+        return
+    print(colorize("\n  Current clusters:", "cyan"))
+    for name, cluster in active_clusters.items():
+        count = len(cluster.get("issue_ids", []))
+        desc = cluster.get("description") or ""
+        desc_str = f" — {desc}" if desc else ""
+        print(f"    {name}: {count} items{_cluster_tags(cluster)}{desc_str}")
+
+
+def _unclustered_issue_ids(clusters: dict, open_issues: dict) -> list[str]:
+    """Return issue IDs not currently assigned to any cluster."""
+    all_clustered: set[str] = set()
+    for cluster in clusters.values():
+        all_clustered.update(cluster.get("issue_ids", []))
+    return [fid for fid in open_issues if fid not in all_clustered]
+
+
+def _print_unclustered_issues(unclustered: list[str], open_issues: dict) -> None:
+    """Render unclustered issue list with compact IDs."""
+    if not unclustered:
+        return
+    print(colorize(f"\n  {len(unclustered)} issues not yet in a cluster:", "yellow"))
+    for fid in unclustered[:10]:
+        issue = open_issues[fid]
+        detail = issue.get("detail")
+        dim = (detail or {}).get("dimension", "") if isinstance(detail, dict) else ""
+        short = short_issue_id(fid)
+        print(f"    [{short}] [{dim}] {issue.get('summary', '')}")
+    if len(unclustered) > 10:
+        print(colorize(f"    ... and {len(unclustered) - 10} more", "dim"))
+
+
 def print_progress(plan: dict, open_issues: dict) -> None:
     """Show cluster state and unclustered issues."""
     clusters = plan.get("clusters", {})
     active_clusters = {name: c for name, c in clusters.items() if c.get("issue_ids")}
-    if active_clusters:
-        print(colorize("\n  Current clusters:", "cyan"))
-        for name, cluster in active_clusters.items():
-            count = len(cluster.get("issue_ids", []))
-            desc = cluster.get("description") or ""
-            steps = cluster.get("action_steps", [])
-            auto = cluster.get("auto", False)
-            tags: list[str] = []
-            if auto:
-                tags.append("auto")
-            if desc:
-                tags.append("desc")
-            else:
-                tags.append("no desc")
-            if steps:
-                tags.append(f"{len(steps)} steps")
-            elif not auto:
-                tags.append("no steps")
-            tag_str = f" [{', '.join(tags)}]"
-            desc_str = f" — {desc}" if desc else ""
-            print(f"    {name}: {count} items{tag_str}{desc_str}")
+    _print_active_clusters(active_clusters)
 
-    all_clustered: set[str] = set()
-    for cluster in clusters.values():
-        all_clustered.update(cluster.get("issue_ids", []))
-    unclustered = [fid for fid in open_issues if fid not in all_clustered]
+    unclustered = _unclustered_issue_ids(clusters, open_issues)
     if unclustered:
-        print(colorize(f"\n  {len(unclustered)} issues not yet in a cluster:", "yellow"))
-        for fid in unclustered[:10]:
-            issue = open_issues[fid]
-            dim = (issue.get("detail", {}) or {}).get("dimension", "") if isinstance(issue.get("detail"), dict) else ""
-            short = short_issue_id(fid)
-            print(f"    [{short}] [{dim}] {issue.get('summary', '')}")
-        if len(unclustered) > 10:
-            print(colorize(f"    ... and {len(unclustered) - 10} more", "dim"))
+        _print_unclustered_issues(unclustered, open_issues)
     elif open_issues:
         organized, total, _ = triage_coverage(plan, open_review_ids=set(open_issues.keys()))
         print(colorize(f"\n  All {organized}/{total} issues are in clusters.", "green"))
@@ -158,33 +182,56 @@ def print_reflect_dashboard(
     resolved = getattr(si, "resolved_issues", {})
     open_issues = getattr(si, "open_issues", {})
 
-    if completed:
-        print(colorize("\n  Previously completed clusters:", "cyan"))
-        for cluster in completed[:10]:
-            name = cluster.get("name", "?")
-            count = len(cluster.get("issue_ids", []))
-            thesis = cluster.get("thesis", "")
-            print(f"    {name}: {count} issues")
-            if thesis:
-                print(colorize(f"      {thesis}", "dim"))
-            for step in cluster.get("action_steps", [])[:3]:
-                print(colorize(f"      - {step}", "dim"))
-        if len(completed) > 10:
-            print(colorize(f"    ... and {len(completed) - 10} more", "dim"))
+    _print_completed_clusters(completed)
+    _print_resolved_issue_deltas(resolved)
+    _print_recurring_or_first_triage(
+        recurring=resolved_services.detect_recurring_patterns(open_issues, resolved),
+        completed=completed,
+        resolved=resolved,
+    )
 
-    if resolved:
-        print(colorize(f"\n  Resolved issues since last triage: {len(resolved)}", "cyan"))
-        for fid, issue in sorted(resolved.items())[:10]:
-            status = issue.get("status", "")
-            summary = issue.get("summary", "")
-            detail = issue.get("detail", {}) if isinstance(issue.get("detail"), dict) else {}
-            dim = detail.get("dimension", "")
-            print(f"    [{status}] [{dim}] {summary}")
-            print(colorize(f"      {fid}", "dim"))
-        if len(resolved) > 10:
-            print(colorize(f"    ... and {len(resolved) - 10} more", "dim"))
 
-    recurring = resolved_services.detect_recurring_patterns(open_issues, resolved)
+def _print_completed_clusters(completed: list[dict]) -> None:
+    """Render previously completed cluster snapshots."""
+    if not completed:
+        return
+    print(colorize("\n  Previously completed clusters:", "cyan"))
+    for cluster in completed[:10]:
+        name = cluster.get("name", "?")
+        count = len(cluster.get("issue_ids", []))
+        thesis = cluster.get("thesis", "")
+        print(f"    {name}: {count} issues")
+        if thesis:
+            print(colorize(f"      {thesis}", "dim"))
+        for step in cluster.get("action_steps", [])[:3]:
+            print(colorize(f"      - {step}", "dim"))
+    if len(completed) > 10:
+        print(colorize(f"    ... and {len(completed) - 10} more", "dim"))
+
+
+def _print_resolved_issue_deltas(resolved: dict[str, dict]) -> None:
+    """Render issues resolved since the previous triage cycle."""
+    if not resolved:
+        return
+    print(colorize(f"\n  Resolved issues since last triage: {len(resolved)}", "cyan"))
+    for fid, issue in sorted(resolved.items())[:10]:
+        status = issue.get("status", "")
+        summary = issue.get("summary", "")
+        detail = issue.get("detail", {}) if isinstance(issue.get("detail"), dict) else {}
+        dim = detail.get("dimension", "")
+        print(f"    [{status}] [{dim}] {summary}")
+        print(colorize(f"      {fid}", "dim"))
+    if len(resolved) > 10:
+        print(colorize(f"    ... and {len(resolved) - 10} more", "dim"))
+
+
+def _print_recurring_or_first_triage(
+    *,
+    recurring: dict,
+    completed: list[dict],
+    resolved: dict,
+) -> None:
+    """Render recurring-pattern warnings or first-triage guidance."""
     if recurring:
         print(colorize("\n  Recurring patterns detected:", "yellow"))
         for dim, info in sorted(recurring.items()):
@@ -192,12 +239,14 @@ def print_reflect_dashboard(
             open_count = len(info["open"])
             label = "potential loop" if open_count >= resolved_count else "root cause unaddressed"
             print(colorize(f"    {dim}: {resolved_count} resolved, {open_count} still open — {label}", "yellow"))
-    elif not completed and not resolved:
-        print(colorize("\n  First triage — no prior work to compare against.", "dim"))
-        print(colorize("  Focus your reflect report on your strategy:", "yellow"))
-        print(colorize("  - How will you resolve contradictions you identified in observe?", "dim"))
-        print(colorize("  - Which issues will you cluster together vs defer?", "dim"))
-        print(colorize("  - What's the overall arc of work and why?", "dim"))
+        return
+    if completed or resolved:
+        return
+    print(colorize("\n  First triage — no prior work to compare against.", "dim"))
+    print(colorize("  Focus your reflect report on your strategy:", "yellow"))
+    print(colorize("  - How will you resolve contradictions you identified in observe?", "dim"))
+    print(colorize("  - Which issues will you cluster together vs defer?", "dim"))
+    print(colorize("  - What's the overall arc of work and why?", "dim"))
 
 
 def cmd_triage_dashboard(

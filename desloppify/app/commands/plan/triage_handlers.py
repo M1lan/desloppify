@@ -99,6 +99,105 @@ def _cmd_triage_start(
     print(colorize(f"    {TRIAGE_CMD_OBSERVE}", "dim"))
 
 
+def _maybe_run_stage_prompt(args: argparse.Namespace, services: _services_mod.TriageServices) -> bool:
+    if not getattr(args, "stage_prompt", None):
+        return False
+    from .triage.runner.stage_prompts import cmd_stage_prompt
+
+    cmd_stage_prompt(args, services=services)
+    return True
+
+
+def _maybe_run_runner_pipeline(args: argparse.Namespace, services: _services_mod.TriageServices) -> bool:
+    if not getattr(args, "run_stages", False):
+        return False
+    from .triage.runner.orchestrator_common import parse_only_stages
+
+    runner = str(getattr(args, "runner", "codex")).strip().lower()
+    try:
+        stages_to_run = parse_only_stages(getattr(args, "only_stages", None))
+    except ValueError as exc:
+        print(colorize(f"  {exc}", "red"))
+        return True
+
+    if runner == "claude":
+        from .triage.runner.orchestrator_claude import run_claude_orchestrator
+
+        run_claude_orchestrator(args, services=services)
+        return True
+    if runner == "codex":
+        from .triage.runner.orchestrator_codex_pipeline import run_codex_pipeline
+
+        run_codex_pipeline(args, stages_to_run=stages_to_run, services=services)
+        return True
+
+    print(colorize(f"  Unknown runner: {runner}. Use 'codex' or 'claude'.", "red"))
+    return True
+
+
+def _maybe_run_triage_action(
+    args: argparse.Namespace,
+    *,
+    services: _services_mod.TriageServices,
+) -> bool:
+    """Handle top-level triage actions that bypass stage-flow dispatch."""
+    if getattr(args, "start", False):
+        _cmd_triage_start(args, services=services)
+        return True
+    if getattr(args, "confirm", None):
+        _confirmations_router_mod.cmd_confirm_stage(args, services=services)
+        return True
+    if getattr(args, "complete", False):
+        _completion_mod.cmd_triage_complete(args, services=services)
+        return True
+    if getattr(args, "confirm_existing", False):
+        _completion_mod.cmd_confirm_existing(args, services=services)
+        return True
+    return False
+
+
+def _maybe_run_stage_flow(
+    args: argparse.Namespace,
+    *,
+    services: _services_mod.TriageServices,
+) -> bool:
+    """Dispatch explicit stage runs to stage_flow command handlers."""
+    stage = getattr(args, "stage", None)
+    handlers = {
+        "observe": _flow_mod.cmd_stage_observe,
+        "reflect": _flow_mod.cmd_stage_reflect,
+        "organize": _flow_mod.cmd_stage_organize,
+        "enrich": _flow_mod.cmd_stage_enrich,
+        "sense-check": _flow_mod.cmd_stage_sense_check,
+    }
+    handler = handlers.get(stage)
+    if handler is None:
+        return False
+    handler(args, services=services)
+    return True
+
+
+def _print_triage_dry_run(
+    args: argparse.Namespace,
+    *,
+    services: _services_mod.TriageServices,
+    state: dict,
+) -> None:
+    """Render dry-run prompt preview without mutating triage state."""
+    plan = services.load_plan()
+    si = services.collect_triage_input(plan, state)
+    prompt = services.build_triage_prompt(si)
+    print(colorize("  Epic triage — dry run", "bold"))
+    print(colorize("  " + "─" * 60, "dim"))
+    print(f"  Open review issues: {len(si.open_issues)}")
+    print(f"  Existing epics: {len(si.existing_epics)}")
+    print(f"  New since last: {len(si.new_since_last)}")
+    print(f"  Resolved since last: {len(si.resolved_since_last)}")
+    print(colorize("\n  Prompt that would be sent to LLM:", "dim"))
+    print()
+    print(prompt)
+
+
 def cmd_plan_triage(args: argparse.Namespace) -> None:
     """Run epic triage: staged workflow OBSERVE → REFLECT → ORGANIZE → ENRICH → COMMIT."""
     resolved_services = _build_triage_services()
@@ -107,72 +206,18 @@ def cmd_plan_triage(args: argparse.Namespace) -> None:
     if not require_completed_scan(state):
         return
 
-    if getattr(args, "stage_prompt", None):
-        from .triage.runner.stage_prompts import cmd_stage_prompt
-        cmd_stage_prompt(args, services=resolved_services)
+    if _maybe_run_stage_prompt(args, resolved_services):
         return
-    if getattr(args, "run_stages", False):
-        from desloppify.base.output.terminal import colorize
-        from .triage.runner.orchestrator_common import parse_only_stages
-        runner = str(getattr(args, "runner", "codex")).strip().lower()
-        try:
-            stages_to_run = parse_only_stages(getattr(args, "only_stages", None))
-        except ValueError as exc:
-            print(colorize(f"  {exc}", "red"))
-            return
-        if runner == "claude":
-            from .triage.runner.orchestrator_claude import run_claude_orchestrator
-            run_claude_orchestrator(args, services=resolved_services)
-        elif runner == "codex":
-            from .triage.runner.orchestrator_codex_pipeline import run_codex_pipeline
-            run_codex_pipeline(args, stages_to_run=stages_to_run, services=resolved_services)
-        else:
-            print(colorize(f"  Unknown runner: {runner}. Use 'codex' or 'claude'.", "red"))
+    if _maybe_run_runner_pipeline(args, resolved_services):
         return
 
-    if getattr(args, "start", False):
-        _cmd_triage_start(args, services=resolved_services)
+    if _maybe_run_triage_action(args, services=resolved_services):
         return
-    if getattr(args, "confirm", None):
-        _confirmations_router_mod.cmd_confirm_stage(args, services=resolved_services)
-        return
-    if getattr(args, "complete", False):
-        _completion_mod.cmd_triage_complete(args, services=resolved_services)
-        return
-    if getattr(args, "confirm_existing", False):
-        _completion_mod.cmd_confirm_existing(args, services=resolved_services)
-        return
-
-    stage = getattr(args, "stage", None)
-    if stage == "observe":
-        _flow_mod.cmd_stage_observe(args, services=resolved_services)
-        return
-    if stage == "reflect":
-        _flow_mod.cmd_stage_reflect(args, services=resolved_services)
-        return
-    if stage == "organize":
-        _flow_mod.cmd_stage_organize(args, services=resolved_services)
-        return
-    if stage == "enrich":
-        _flow_mod.cmd_stage_enrich(args, services=resolved_services)
-        return
-    if stage == "sense-check":
-        _flow_mod.cmd_stage_sense_check(args, services=resolved_services)
+    if _maybe_run_stage_flow(args, services=resolved_services):
         return
 
     if getattr(args, "dry_run", False):
-        plan = resolved_services.load_plan()
-        si = resolved_services.collect_triage_input(plan, state)
-        prompt = resolved_services.build_triage_prompt(si)
-        print(colorize("  Epic triage — dry run", "bold"))
-        print(colorize("  " + "─" * 60, "dim"))
-        print(f"  Open review issues: {len(si.open_issues)}")
-        print(f"  Existing epics: {len(si.existing_epics)}")
-        print(f"  New since last: {len(si.new_since_last)}")
-        print(f"  Resolved since last: {len(si.resolved_since_last)}")
-        print(colorize("\n  Prompt that would be sent to LLM:", "dim"))
-        print()
-        print(prompt)
+        _print_triage_dry_run(args, services=resolved_services, state=state)
         return
 
     _display_mod.cmd_triage_dashboard(args, services=resolved_services)
