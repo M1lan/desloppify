@@ -58,6 +58,67 @@ def _cmd_commit_log_status(plan: dict) -> None:
         print(colorize("  Resolve issues with `desloppify resolve` or `desloppify plan resolve` to start.", "dim"))
 
 
+def _resolve_commit_identity(
+    *,
+    sha: str | None,
+    branch: str | None,
+) -> tuple[str | None, str | None]:
+    """Resolve commit SHA/branch from args or git context."""
+    if sha and branch:
+        return sha, branch
+
+    git = detect_git_context()
+    if git.available:
+        return sha or git.head_sha, branch or git.branch
+    if sha:
+        return sha, branch
+
+    print(colorize("  Cannot detect HEAD. Use --sha to specify.", "red"))
+    return None, None
+
+
+def _select_commit_issue_ids(
+    plan: dict,
+    *,
+    only_patterns: list[str] | None,
+) -> list[str] | None:
+    """Select which uncommitted issues to record, or None for all."""
+    uncommitted = get_uncommitted_issues(plan)
+    if not uncommitted:
+        print(colorize("  No uncommitted issues to record.", "yellow"))
+        return []
+
+    if not only_patterns:
+        return None
+
+    issue_ids = filter_issue_ids_by_pattern(uncommitted, only_patterns)
+    if issue_ids:
+        return issue_ids
+    print(colorize("  No uncommitted issues match --only patterns.", "yellow"))
+    return []
+
+
+def _maybe_update_pr_body(plan: dict) -> None:
+    """Update configured PR description with commit-tracking markdown."""
+    config = load_config()
+    pr_number = config.get("commit_pr", 0)
+    if not pr_number:
+        return
+    try:
+        state = state_mod.load_state()
+        body = generate_pr_body(plan, state)
+        ok = update_pr_body(pr_number, body)
+        if ok:
+            print(colorize(f"  PR #{pr_number} description updated.", "green"))
+        else:
+            print(colorize(f"  Could not update PR #{pr_number} (gh may not be available).", "yellow"))
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(
+            colorize(f"  Warning: PR update skipped ({exc}).", "yellow"),
+            file=sys.stderr,
+        )
+
+
 def _cmd_commit_log_record(args: argparse.Namespace, plan: dict) -> None:
     """Record a commit: capture HEAD, move uncommitted → committed, update PR."""
     sha = getattr(args, "sha", None)
@@ -65,29 +126,13 @@ def _cmd_commit_log_record(args: argparse.Namespace, plan: dict) -> None:
     note = getattr(args, "note", None)
     only_patterns: list[str] | None = getattr(args, "only", None)
 
-    # Auto-detect from git if not overridden
-    if not sha or not branch:
-        git = detect_git_context()
-        if git.available:
-            sha = sha or git.head_sha
-            branch = branch or git.branch
-        elif not sha:
-            print(colorize("  Cannot detect HEAD. Use --sha to specify.", "red"))
-            return
-
-    # Determine which issues to record
-    uncommitted = get_uncommitted_issues(plan)
-    if not uncommitted:
-        print(colorize("  No uncommitted issues to record.", "yellow"))
+    sha, branch = _resolve_commit_identity(sha=sha, branch=branch)
+    if not sha:
         return
 
-    if only_patterns:
-        issue_ids = filter_issue_ids_by_pattern(uncommitted, only_patterns)
-        if not issue_ids:
-            print(colorize("  No uncommitted issues match --only patterns.", "yellow"))
-            return
-    else:
-        issue_ids = None  # record all
+    issue_ids = _select_commit_issue_ids(plan, only_patterns=only_patterns)
+    if issue_ids == []:
+        return
 
     record = record_commit(
         plan,
@@ -111,23 +156,7 @@ def _cmd_commit_log_record(args: argparse.Namespace, plan: dict) -> None:
     if note:
         print(colorize(f"  Note: {note}", "dim"))
 
-    # Update PR if configured
-    config = load_config()
-    pr_number = config.get("commit_pr", 0)
-    if pr_number:
-        try:
-            state = state_mod.load_state()
-            body = generate_pr_body(plan, state)
-            ok = update_pr_body(pr_number, body)
-            if ok:
-                print(colorize(f"  PR #{pr_number} description updated.", "green"))
-            else:
-                print(colorize(f"  Could not update PR #{pr_number} (gh may not be available).", "yellow"))
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            print(
-                colorize(f"  Warning: PR update skipped ({exc}).", "yellow"),
-                file=sys.stderr,
-            )
+    _maybe_update_pr_body(plan)
 
 
 def _cmd_commit_log_history(args: argparse.Namespace, plan: dict) -> None:

@@ -100,31 +100,70 @@ def _cmd_plan_generate(args: argparse.Namespace) -> None:
     cmd_plan_output(args)
 
 
-def _cmd_plan_show(args: argparse.Namespace) -> None:
-    """Show plan metadata summary."""
-    plan = load_plan()
-    runtime = command_runtime(args)
-
-    # Dynamic queue count — matches what `next` and `plan queue` show.
+def _plan_queue_line(state: dict, plan: dict) -> str:
+    """Build the queue headline with a resilient fallback."""
     try:
-        breakdown = plan_aware_queue_breakdown(runtime.state, plan)
-        queue_line = format_queue_headline(breakdown)
+        breakdown = plan_aware_queue_breakdown(state, plan)
+        return format_queue_headline(breakdown)
     except PLAN_LOAD_EXCEPTIONS as exc:
         logger.debug("Plan show fell back to raw queue counts.", exc_info=exc)
-        # Fallback to raw plan data if queue build fails
         ordered = len(plan.get("queue_order", []))
-        queue_line = f"Queue: {ordered} items prioritized"
+        return f"Queue: {ordered} items prioritized"
 
+
+def _skip_kind_counts(plan: dict) -> tuple[int, int, int, int]:
+    """Return total skipped plus temporary/permanent/false-positive counts."""
     skipped = plan.get("skipped", {})
     total_skipped = len(skipped)
     kind_counts = {
         kind: sum(1 for entry in skipped.values() if entry.get("kind") == kind)
         for kind in USER_SKIP_KINDS
     }
-    temp_count = kind_counts["temporary"]
-    perm_count = kind_counts["permanent"]
-    fp_count = kind_counts["false_positive"]
+    return (
+        total_skipped,
+        kind_counts["temporary"],
+        kind_counts["permanent"],
+        kind_counts["false_positive"],
+    )
+
+
+def _print_cluster_summary(plan: dict, *, active: str | None) -> None:
+    """Print cluster counts and focused cluster details."""
     clusters = plan.get("clusters", {})
+    print(f"  Clusters:         {len(clusters)}")
+    if not clusters:
+        return
+    for name, cluster in clusters.items():
+        desc = cluster.get("description") or ""
+        member_count = len(cluster.get("issue_ids", []))
+        marker = " (focused)" if name == active else ""
+        desc_str = f" — {desc}" if desc else ""
+        print(f"    {name}: {member_count} items{desc_str}{marker}")
+
+
+def _print_commit_tracking(plan: dict) -> None:
+    """Print commit-tracking summary when enabled and populated."""
+    cfg = load_config()
+    if not cfg.get("commit_tracking_enabled", True):
+        return
+    ct = commit_tracking_summary(plan)
+    if ct["total"] <= 0:
+        return
+    pr_num = cfg.get("commit_pr", 0)
+    pr_str = f"  PR: #{pr_num}" if pr_num else ""
+    print(
+        f"  Commit tracking:  {ct['uncommitted']} uncommitted, "
+        f"{ct['committed']} committed ({ct['total']} issues){pr_str}"
+    )
+
+
+def _cmd_plan_show(args: argparse.Namespace) -> None:
+    """Show plan metadata summary."""
+    plan = load_plan()
+    runtime = command_runtime(args)
+
+    queue_line = _plan_queue_line(runtime.state, plan)
+    total_skipped, temp_count, perm_count, fp_count = _skip_kind_counts(plan)
     active = plan.get("active_cluster")
     superseded = len(plan.get("superseded", {}))
 
@@ -137,14 +176,7 @@ def _cmd_plan_show(args: argparse.Namespace) -> None:
         print(f"  Skipped:          {total_skipped} (temp: {temp_count}, wontfix: {perm_count}, fp: {fp_count})")
     else:
         print("  Skipped:          0")
-    print(f"  Clusters:         {len(clusters)}")
-    if clusters:
-        for name, cluster in clusters.items():
-            desc = cluster.get("description") or ""
-            member_count = len(cluster.get("issue_ids", []))
-            marker = " (focused)" if name == active else ""
-            desc_str = f" — {desc}" if desc else ""
-            print(f"    {name}: {member_count} items{desc_str}{marker}")
+    _print_cluster_summary(plan, active=active)
     if described or noted:
         print(f"  Annotations:      {described} described, {noted} noted")
     if active:
@@ -152,17 +184,7 @@ def _cmd_plan_show(args: argparse.Namespace) -> None:
     if superseded:
         print(f"  Disappeared:      {superseded} (resolved or removed since last scan)")
 
-    # Commit tracking summary
-    _cfg = load_config()
-    if _cfg.get("commit_tracking_enabled", True):
-        ct = commit_tracking_summary(plan)
-        if ct["total"] > 0:
-            pr_num = _cfg.get("commit_pr", 0)
-            pr_str = f"  PR: #{pr_num}" if pr_num else ""
-            print(
-                f"  Commit tracking:  {ct['uncommitted']} uncommitted, "
-                f"{ct['committed']} committed ({ct['total']} issues){pr_str}"
-            )
+    _print_commit_tracking(plan)
 
 
 def _cmd_plan_reset(args: argparse.Namespace) -> None:

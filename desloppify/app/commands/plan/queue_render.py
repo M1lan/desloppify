@@ -175,6 +175,72 @@ def _build_rows(display_items: list[dict], new_ids: set[str] | None = None) -> l
     return rows
 
 
+def _resolve_effective_cluster(plan: dict, cluster_filter: str | None) -> str | None:
+    """Resolve explicit cluster filter or fallback to active cluster focus."""
+    if cluster_filter:
+        return cluster_filter
+    active_cluster = plan.get("active_cluster")
+    if active_cluster:
+        return active_cluster
+    return None
+
+
+def _build_queue_items(
+    *,
+    state: dict,
+    plan: dict,
+    include_skipped: bool,
+    effective_cluster: str | None,
+) -> tuple[list[dict], dict]:
+    """Build queue items with focus/collapse view transforms applied."""
+    queue = build_work_queue(
+        state,
+        options=QueueBuildOptions(
+            count=None,
+            status="open",
+            include_subjective=True,
+            plan=plan,
+            include_skipped=include_skipped,
+        ),
+    )
+    items = queue.get("items", [])
+    if effective_cluster:
+        items = filter_cluster_focus(items, plan, effective_cluster)
+    if plan and not effective_cluster and not plan.get("active_cluster"):
+        items = collapse_clusters(items, plan)
+    return items, queue
+
+
+def _compute_visible_new_ids(*, queue: dict, plan: dict, state: dict, items: list[dict]) -> set[str]:
+    """Compute new IDs for the current queue view, including review-driven IDs."""
+    all_new_ids: set[str] = queue.get("new_ids", set())
+    all_new_ids |= compute_new_issue_ids(plan, state)
+    item_ids = {it.get("id") for it in items}
+    return all_new_ids & item_ids
+
+
+def _render_cluster_banners(display_items: list[dict], new_ids: set[str]) -> int:
+    """Render collapsed cluster banners and return banner count."""
+    cluster_count = 0
+    for idx, item in enumerate(display_items, 1):
+        if item.get("kind") != "cluster":
+            continue
+        _render_cluster_banner(item, idx, new_ids)
+        cluster_count += 1
+    return cluster_count
+
+
+def _render_queue_rows(display_items: list[dict], new_ids: set[str]) -> bool:
+    """Render queue rows table. Returns True when rows were printed."""
+    rows = _build_rows(display_items, new_ids=new_ids)
+    if not rows:
+        return False
+    headers = ["#", "Confidence", "Detector", "Summary", "Cluster"]
+    widths = [4, 4, 12, 50, 16]
+    print_table(headers, rows, widths=widths)
+    return True
+
+
 def cmd_plan_queue(args: argparse.Namespace) -> None:
     """Render a compact table of all upcoming queue items."""
     runtime = command_runtime(args)
@@ -189,38 +255,16 @@ def cmd_plan_queue(args: argparse.Namespace) -> None:
     plan = load_plan()
     print_triage_guardrail_info(plan=plan, state=state)
 
-    effective_cluster = cluster_filter
-    if not cluster_filter:
-        active_cluster = plan.get("active_cluster")
-        if active_cluster:
-            effective_cluster = active_cluster
-
-    queue = build_work_queue(
-        state,
-        options=QueueBuildOptions(
-            count=None,
-            status="open",
-            include_subjective=True,
-            plan=plan,
-            include_skipped=include_skipped,
-        ),
+    effective_cluster = _resolve_effective_cluster(plan, cluster_filter)
+    items, queue = _build_queue_items(
+        state=state,
+        plan=plan,
+        include_skipped=include_skipped,
+        effective_cluster=effective_cluster,
     )
-    items = queue.get("items", [])
-
-    # View-layer: apply cluster focus after canonical queue is built
-    if effective_cluster:
-        items = filter_cluster_focus(items, plan, effective_cluster)
-    # Collapse auto-clusters into display meta-items
-    if plan and not effective_cluster and not plan.get("active_cluster"):
-        items = collapse_clusters(items, plan)
 
     sort_by = getattr(args, "sort", "priority")
-    all_new_ids: set[str] = queue.get("new_ids", set())
-    # Merge review-based new issue IDs (since last triage)
-    review_new_ids = compute_new_issue_ids(plan, state)
-    all_new_ids = all_new_ids | review_new_ids
-    item_ids = {it.get("id") for it in items}
-    new_ids = all_new_ids & item_ids
+    new_ids = _compute_visible_new_ids(queue=queue, plan=plan, state=state, items=items)
 
     if sort_by == "recent":
         items = sorted(items, key=lambda it: it.get("first_seen", ""), reverse=True)
@@ -239,21 +283,11 @@ def cmd_plan_queue(args: argparse.Namespace) -> None:
     # Determine which items to show
     display_items = _queue_display_items(items, top=top)
 
-    # Render cluster banners first, then remaining items in the table
     print()
-    cluster_count = 0
-    for idx, item in enumerate(display_items, 1):
-        if item.get("kind") == "cluster":
-            _render_cluster_banner(item, idx, new_ids)
-            cluster_count += 1
+    cluster_count = _render_cluster_banners(display_items, new_ids)
+    rows_rendered = _render_queue_rows(display_items, new_ids)
 
-    rows = _build_rows(display_items, new_ids=new_ids)
-    if rows:
-        headers = ["#", "Confidence", "Detector", "Summary", "Cluster"]
-        widths = [4, 4, 12, 50, 16]
-        print_table(headers, rows, widths=widths)
-
-    if cluster_count and rows:
+    if cluster_count and rows_rendered:
         print(colorize(
             f"  ({cluster_count} cluster banner{'s' if cluster_count != 1 else ''}"
             " shown above — table shows remaining individual items)",
