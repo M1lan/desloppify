@@ -9,7 +9,8 @@ from desloppify.base.output.terminal import colorize
 from desloppify.engine.plan import collect_triage_input, detect_recurring_patterns, save_plan
 from desloppify.state import utc_now
 
-from .confirmations import _MIN_ATTESTATION_LEN, _validate_attestation
+from .confirmations_basic import MIN_ATTESTATION_LEN as _MIN_ATTESTATION_LEN
+from .confirmations_basic import validate_attestation as _validate_attestation
 from .helpers import manual_clusters_with_issues, observe_dimension_breakdown
 from .stage_helpers import unclustered_review_issues, unenriched_clusters
 from ._stage_validation_completion_policy import _completion_clusters_valid

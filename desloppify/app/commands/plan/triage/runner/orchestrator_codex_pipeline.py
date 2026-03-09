@@ -236,9 +236,9 @@ def run_codex_pipeline(
             state=getattr(args, "state", None),
         )
 
-        from ..confirmations import _cmd_confirm_stage
+        from ..confirmations_router import cmd_confirm_stage
 
-        _cmd_confirm_stage(confirm_args, services=resolved_services)
+        cmd_confirm_stage(confirm_args, services=resolved_services)
 
         plan = resolved_services.load_plan()
         meta = plan.get("epic_triage_meta", {})

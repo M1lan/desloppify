@@ -135,14 +135,14 @@ def _confirm_strategy_valid(strategy: str) -> bool:
 
 
 def _confirmed_text_or_error(*, plan: dict, state: dict, confirmed: str | None) -> str | None:
-    from .confirmations import _MIN_ATTESTATION_LEN  # noqa: PLC0415
+    from .confirmations_basic import MIN_ATTESTATION_LEN  # noqa: PLC0415
 
-    if confirmed and len(confirmed.strip()) >= _MIN_ATTESTATION_LEN:
+    if confirmed and len(confirmed.strip()) >= MIN_ATTESTATION_LEN:
         return confirmed.strip()
     print(colorize("  Current plan:", "bold"))
     show_plan_summary(plan, state)
     if confirmed:
-        print(colorize(f"\n  --confirmed text too short ({len(confirmed.strip())} chars, min {_MIN_ATTESTATION_LEN}).", "red"))
+        print(colorize(f"\n  --confirmed text too short ({len(confirmed.strip())} chars, min {MIN_ATTESTATION_LEN}).", "red"))
     print(colorize('\n  Add --confirmed "I validate this plan..." to proceed.', "dim"))
     return None
 

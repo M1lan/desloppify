@@ -6,7 +6,8 @@ import argparse
 
 from desloppify.app.commands.helpers.runtime import command_runtime
 from desloppify.app.commands.helpers.state import require_completed_scan
-from desloppify.app.commands.plan.triage import confirmations as _confirmations_mod
+from desloppify.app.commands.plan.triage import confirmations_basic as _confirmations_basic_mod
+from desloppify.app.commands.plan.triage import confirmations_router as _confirmations_router_mod
 from desloppify.app.commands.plan.triage import display as _display_mod
 from desloppify.app.commands.plan.triage import helpers as _helpers_mod
 from desloppify.app.commands.plan.triage import services as _services_mod
@@ -24,8 +25,8 @@ from desloppify.engine.plan import (
     save_plan,
 )
 
-_MIN_ATTESTATION_LEN = _confirmations_mod.MIN_ATTESTATION_LEN
-_validate_attestation = _confirmations_mod.validate_attestation
+_MIN_ATTESTATION_LEN = _confirmations_basic_mod.MIN_ATTESTATION_LEN
+_validate_attestation = _confirmations_basic_mod.validate_attestation
 _triage_coverage = _helpers_mod.triage_coverage
 
 
@@ -136,7 +137,7 @@ def cmd_plan_triage(args: argparse.Namespace) -> None:
         _cmd_triage_start(args, services=resolved_services)
         return
     if getattr(args, "confirm", None):
-        _confirmations_mod.cmd_confirm_stage(args, services=resolved_services)
+        _confirmations_router_mod.cmd_confirm_stage(args, services=resolved_services)
         return
     if getattr(args, "complete", False):
         _completion_mod.cmd_triage_complete(args, services=resolved_services)
