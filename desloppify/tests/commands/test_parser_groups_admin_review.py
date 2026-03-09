@@ -52,3 +52,8 @@ def test_add_review_parser_invokes_each_option_group_builder_once(monkeypatch) -
 
     review_group_mod._add_review_parser(sub)
     assert calls == ["core", "external", "batch", "trust", "post"]
+    assert len(calls) == 5
+    assert calls[0] == "core"
+    assert calls[-1] == "post"
+    assert "external" in calls
+    assert "trust" in calls

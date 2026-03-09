@@ -41,3 +41,4 @@ def test_print_progress_reports_unclustered_issues(monkeypatch, capsys) -> None:
     out = capsys.readouterr().out
     assert "1 issues not yet in a cluster" in out
     assert "[bbb222] [tests] unclustered" in out
+    assert "Current clusters:" in out

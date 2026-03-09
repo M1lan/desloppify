@@ -101,6 +101,7 @@ def test_dispatch_routes_record_action(monkeypatch, capsys) -> None:
     out = capsys.readouterr().out
     assert "Recorded commit" in out
     assert saved
+    assert len(saved) == 1
 
 
 # ---------------------------------------------------------------------------

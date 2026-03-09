@@ -46,3 +46,12 @@ def test_add_plan_parser_invokes_section_builders_once(monkeypatch) -> None:
         "scan_gate",
         "commit_log",
     ]
+    assert len(calls) == 9
+    assert calls[0] == "queue"
+    assert calls[1] == "reorder"
+    assert calls[-1] == "commit_log"
+    assert "annotation" in calls
+    assert "skip" in calls
+    assert "cluster" in calls
+    assert "triage" in calls
+    assert "scan_gate" in calls
