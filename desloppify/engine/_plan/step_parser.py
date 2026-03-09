@@ -69,6 +69,26 @@ def _format_step_lines(index: int, step: str | dict) -> list[str]:
     return lines
 
 
+def _step_title_from_header(line: str) -> str | None:
+    match = _STEP_HEADER_RE.match(line)
+    if match is None:
+        return None
+    return match.group(2).strip()
+
+
+def _consume_non_header_line(
+    line: str,
+    *,
+    current: ActionStep,
+    detail_lines: list[str],
+) -> None:
+    if line and (line[0] == " " or line[0] == "\t"):
+        _consume_indented_line(line, current=current, detail_lines=detail_lines)
+        return
+    if line.strip() == "" and detail_lines:
+        detail_lines.append("")
+
+
 def parse_steps_file(text: str) -> list[ActionStep]:
     """Parse a numbered-steps text format into ActionStep dicts.
 
@@ -87,31 +107,24 @@ def parse_steps_file(text: str) -> list[ActionStep]:
     detail_lines: list[str] = []
 
     for line in text.splitlines():
-        m = _STEP_HEADER_RE.match(line)
-        if m:
+        title = _step_title_from_header(line)
+        if title is not None:
             current, detail_lines = _flush_step(
                 steps=steps,
                 current=current,
                 detail_lines=detail_lines,
             )
-            current = {"title": m.group(2).strip()}
+            current = {"title": title}
             continue
 
         if current is None:
             continue
 
-        # Indented continuation line
-        if line and (line[0] == " " or line[0] == "\t"):
-            _consume_indented_line(
-                line,
-                current=current,
-                detail_lines=detail_lines,
-            )
-        elif line.strip() == "":
-            # Blank line within detail — preserve it
-            if detail_lines:
-                detail_lines.append("")
-        # Non-indented non-blank line that isn't a step header: ignore
+        _consume_non_header_line(
+            line,
+            current=current,
+            detail_lines=detail_lines,
+        )
 
     current, detail_lines = _flush_step(
         steps=steps,
