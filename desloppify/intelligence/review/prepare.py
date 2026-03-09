@@ -45,6 +45,7 @@ from desloppify.intelligence.review.prepare_batches_builders import (
     filter_batches_to_dimensions as _filter_batches_to_dimensions,
 )
 from desloppify.intelligence.review.prepare_holistic_orchestration import (
+    HolisticPrepareDependencies,
     prepare_holistic_review_payload,
 )
 from desloppify.intelligence.review.selection import (
@@ -228,11 +229,7 @@ def prepare_holistic_review(
 ) -> dict[str, object]:
     """Prepare holistic review data for agent consumption. Returns structured dict."""
     resolved_options = options or HolisticReviewPrepareOptions()
-    return prepare_holistic_review_payload(
-        path,
-        lang,
-        state,
-        resolved_options,
+    deps = HolisticPrepareDependencies(
         is_file_cache_enabled_fn=is_file_cache_enabled,
         enable_file_cache_fn=enable_file_cache,
         disable_file_cache_fn=disable_file_cache,
@@ -248,4 +245,11 @@ def prepare_holistic_review(
         serialize_context_fn=serialize_context,
         log_best_effort_failure_fn=log_best_effort_failure,
         logger=logger,
+    )
+    return prepare_holistic_review_payload(
+        path,
+        lang,
+        state,
+        resolved_options,
+        deps=deps,
     )
