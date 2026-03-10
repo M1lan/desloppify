@@ -257,6 +257,30 @@ def test_force_visible_triage_stage_bypasses_objective_gate():
     assert "smells::src/a.py::x" in ids
 
 
+def test_planned_only_queue_hides_unplanned_state_issues():
+    """Execution queues should only surface work explicitly tracked by the plan."""
+    from desloppify.engine._plan.schema import empty_plan
+
+    state = _state(
+        [
+            _issue("smells::src/a.py::planned", detector="smells"),
+            _issue("smells::src/b.py::unplanned", detector="smells"),
+        ]
+    )
+    plan = empty_plan()
+    plan["queue_order"] = ["smells::src/a.py::planned"]
+
+    queue = build_work_queue(
+        state,
+        count=None,
+        include_subjective=False,
+        plan=plan,
+        planned_only=True,
+    )
+    ids = [item["id"] for item in queue["items"]]
+    assert ids == ["smells::src/a.py::planned"]
+
+
 # ── Lifecycle filter runs after plan_presort ───────────
 
 

@@ -34,6 +34,11 @@ from .render_support import render_queue_header as _render_queue_header
 from .render_support import show_empty_queue as _show_empty_queue
 
 
+def _use_plan_tracked_execution_queue(plan: dict) -> bool:
+    """`next` should follow the living plan once queue-shaping metadata exists."""
+    return bool(plan.get("queue_order") or plan.get("overrides") or plan.get("clusters"))
+
+
 def _build_next_payload(
     *,
     queue: dict,
@@ -253,6 +258,7 @@ def build_and_render_queue(
             subjective_threshold=target_strict,
             explain=opts.explain,
             include_skipped=opts.include_skipped,
+            planned_only=_use_plan_tracked_execution_queue(plan_for_queue),
             context=ctx,
         ),
     )

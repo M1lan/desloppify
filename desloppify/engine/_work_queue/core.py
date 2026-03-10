@@ -79,6 +79,7 @@ class QueueBuildOptions:
     # Plan integration
     plan: dict | None = None
     include_skipped: bool = False
+    planned_only: bool = False
 
     # Pre-computed context (overrides plan)
     context: QueueContext | None = None
@@ -118,6 +119,7 @@ def build_work_queue(
     )
     items += _gather_subjective_items(state, opts, threshold)
     items += _gather_workflow_items(state, plan, status)
+    items = _filter_planned_items(items, plan, planned_only=opts.planned_only)
 
     # 2. Score
     enrich_with_impact(items, state.get("dimension_scores", {}))
@@ -224,6 +226,34 @@ def _gather_workflow_items(
     if plan_item is not None:
         items.append(plan_item)
     return items
+
+
+def _planned_item_ids(plan: dict) -> set[str]:
+    """Collect IDs explicitly tracked by the living plan."""
+    tracked_ids: set[str] = set(plan.get("queue_order", []))
+    tracked_ids.update(plan.get("skipped", {}).keys())
+    tracked_ids.update(plan.get("overrides", {}).keys())
+    for cluster in plan.get("clusters", {}).values():
+        tracked_ids.update(cluster.get("issue_ids", []))
+    subjective_defer_meta = plan.get("subjective_defer_meta", {})
+    if isinstance(subjective_defer_meta, dict):
+        tracked_ids.update(subjective_defer_meta.get("force_visible_ids", []))
+    return tracked_ids
+
+
+def _filter_planned_items(
+    items: list[WorkQueueItem],
+    plan: dict | None,
+    *,
+    planned_only: bool,
+) -> list[WorkQueueItem]:
+    """Restrict queue execution to IDs explicitly tracked by the plan."""
+    if not planned_only or not plan:
+        return items
+    tracked_ids = _planned_item_ids(plan)
+    if not tracked_ids:
+        return []
+    return [item for item in items if item["id"] in tracked_ids]
 
 
 
