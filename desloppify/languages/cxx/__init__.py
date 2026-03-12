@@ -28,7 +28,7 @@ from desloppify.languages.cxx.extractors import (
     extract_all_cxx_functions,
     find_cxx_files,
 )
-from desloppify.languages.cxx.phases import phase_coupling, phase_structural
+from desloppify.languages.cxx.phases import phase_coupling, phase_cppcheck_issue, phase_structural
 from desloppify.languages.cxx.review import (
     HOLISTIC_REVIEW_DIMENSIONS,
     LOW_VALUE_PATTERN,
@@ -58,13 +58,7 @@ class CxxConfig(LangConfig):
             phases=[
                 DetectorPhase("Structural analysis", phase_structural),
                 DetectorPhase("Coupling + cycles + orphaned", phase_coupling),
-                make_tool_phase(
-                    "cppcheck",
-                    "cppcheck --template='{file}:{line}: {severity}: {message}' --enable=all --quiet .",
-                    "gnu",
-                    "cppcheck_issue",
-                    tier=2,
-                ),
+                DetectorPhase("cppcheck", phase_cppcheck_issue),
                 *all_treesitter_phases("cpp"),
                 detector_phase_signature(),
                 detector_phase_test_coverage(),
