@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import contextlib
 import errno
-import fcntl
 import json
 import logging
+import os
 import shutil
 import sys
 import time
@@ -49,6 +49,12 @@ STATE_FILE = _STATE_FILE_SENTINEL
 
 from desloppify.engine._state import _recompute_stats
 
+_LOCK_RETRY_ERRNOS = {
+    errno.EACCES,
+    errno.EAGAIN,
+    getattr(errno, "EDEADLK", errno.EACCES),
+}
+
 
 def _default_state_file() -> Path:
     """Resolve the default state path, honoring runtime context overrides.
@@ -58,6 +64,30 @@ def _default_state_file() -> Path:
     if STATE_FILE is not _STATE_FILE_SENTINEL:
         return Path(STATE_FILE)
     return get_state_file()
+
+
+def _acquire_state_lock(lock_fd: int) -> None:
+    if sys.platform == "win32":
+        import msvcrt
+
+        msvcrt.locking(lock_fd, msvcrt.LK_NBLCK, 1)
+        return
+
+    import fcntl
+
+    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _release_state_lock(lock_fd: int) -> None:
+    if sys.platform == "win32":
+        import msvcrt
+
+        msvcrt.locking(lock_fd, msvcrt.LK_UNLCK, 1)
+        return
+
+    import fcntl
+
+    fcntl.flock(lock_fd, fcntl.LOCK_UN)
 
 
 def _load_json(path: Path) -> dict[str, object]:
@@ -299,19 +329,19 @@ def state_lock(
     lock_path = state_path.with_suffix(".json.lock")
     lock_path.parent.mkdir(parents=True, exist_ok=True)
 
-    lock_fd = open(lock_path, "w")  # noqa: SIM115
+    lock_fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR)
     try:
         deadline = time.monotonic() + timeout
         while True:
             try:
-                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                _acquire_state_lock(lock_fd)
                 break
             except OSError as exc:
-                if exc.errno not in (errno.EACCES, errno.EAGAIN):
-                    lock_fd.close()
+                if exc.errno not in _LOCK_RETRY_ERRNOS:
+                    os.close(lock_fd)
                     raise
                 if time.monotonic() >= deadline:
-                    lock_fd.close()
+                    os.close(lock_fd)
                     raise TimeoutError(
                         f"Could not acquire state lock within {timeout}s. "
                         "Another desloppify command may be running."
@@ -328,7 +358,7 @@ def state_lock(
         )
     finally:
         try:
-            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            _release_state_lock(lock_fd)
         except OSError:
             pass
-        lock_fd.close()
+        os.close(lock_fd)
