@@ -54,6 +54,18 @@ full = [
 [project.scripts]
 desloppify = "desloppify.cli:main"
 
+[dependency-groups]
+dev = [
+  "pytest>=8.0.0",
+  "mypy>=1.10.0",
+  "ruff>=0.4.0",
+  "import-linter>=2.0",
+  "build>=1.0.0",
+  "twine>=4.0.0",
+  "pyyaml>=6.0",
+  "pytest-asyncio>=0.23.0",
+]
+
 [tool.setuptools.packages.find]
 include = ["desloppify*"]
 exclude = ["desloppify.tests", "desloppify.tests.*"]
