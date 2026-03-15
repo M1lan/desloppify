@@ -18,6 +18,12 @@ ci: ci-fast tests-full package-smoke
 install:
     {{ uv }} sync --all-extras --dev
 
+# Install standalone single-file executable to ~/bin/
+install-standalone:
+    @mkdir -p ~/bin
+    {{ uv }} run --with shiv --with pip shiv ".[full]" --console-script desloppify -o ~/bin/desloppify
+    @echo "Installed standalone desloppify to ~/bin/desloppify"
+
 # Run linter
 lint:
     {{ uv }} run ruff check . --select E9,F63,F7,F82
