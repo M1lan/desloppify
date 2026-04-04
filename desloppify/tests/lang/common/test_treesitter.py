@@ -141,6 +141,37 @@ void hello(const char* name) {
     return str(f)
 
 
+@pytest.fixture
+def kotlin_file(tmp_path):
+    """Create a temp Kotlin file for testing."""
+    code = """\
+package com.example
+
+import kotlin.coroutines.CoroutineContext
+
+class UserService(private val repo: UserRepo) {
+    suspend fun getUser(id: String): User {
+        return repo.findById(id)
+    }
+
+    fun String.isValidEmail(): Boolean {
+        return contains("@")
+    }
+}
+
+object Config {
+    val timeout = 30_000L
+}
+
+fun main() {
+    println("Hello")
+}
+"""
+    f = tmp_path / "UserService.kt"
+    f.write_text(code)
+    return str(f)
+
+
 # ── Function extraction tests ────────────────────────────────
 
 
@@ -277,6 +308,30 @@ class TestCExtraction:
         names = [f.name for f in functions]
         assert "add" in names
         assert "hello" in names
+
+
+class TestKotlinExtraction:
+    def test_extract_functions(self, kotlin_file, tmp_path):
+        from desloppify.languages._framework.treesitter.analysis.extractors import (
+            ts_extract_functions,
+        )
+        from desloppify.languages._framework.treesitter.specs.compiled import KOTLIN_SPEC
+
+        functions = ts_extract_functions(tmp_path, KOTLIN_SPEC, [kotlin_file])
+        names = [f.name for f in functions]
+        assert "getUser" in names
+        assert "isValidEmail" in names
+
+    def test_extract_classes(self, kotlin_file, tmp_path):
+        from desloppify.languages._framework.treesitter.analysis.extractors import (
+            ts_extract_classes,
+        )
+        from desloppify.languages._framework.treesitter.specs.compiled import KOTLIN_SPEC
+
+        classes = ts_extract_classes(tmp_path, KOTLIN_SPEC, [kotlin_file])
+        names = [c.name for c in classes]
+        assert "UserService" in names
+        assert "Config" in names
 
 
 # ── Class extraction tests ────────────────────────────────────
