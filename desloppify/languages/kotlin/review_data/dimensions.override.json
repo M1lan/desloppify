@@ -1,1 +1,38 @@
-{}
+{
+  "default_dimensions_append": [
+    "coroutine_architecture",
+    "null_safety_discipline"
+  ],
+  "dimension_prompts": {
+    "coroutine_architecture": {
+      "description": "Structured concurrency patterns and coroutine lifecycle management",
+      "look_for": [
+        "GlobalScope usage instead of structured coroutineScope/supervisorScope",
+        "runBlocking in production code paths (acceptable only in main/test entry points)",
+        "Unstructured launch/async that escapes parent scope cancellation",
+        "Missing SupervisorJob for independent child failure isolation",
+        "Flow collection without proper lifecycle awareness (e.g., missing flowWithLifecycle)"
+      ],
+      "skip": [
+        "Test code using runBlocking for coroutine test harness",
+        "CLI main() entry points that bridge to suspend world",
+        "Build scripts and Gradle plugin code"
+      ]
+    },
+    "null_safety_discipline": {
+      "description": "Kotlin null-safety features used effectively to prevent runtime NPEs",
+      "look_for": [
+        "Excessive !! (non-null assertion) instead of safe calls (?.) or null checks",
+        "Platform type propagation from Java interop without explicit nullability annotations",
+        "lateinit var on types that could use lazy or nullable initialization",
+        "Unsafe casts (as) where safe casts (as?) with fallback would be appropriate",
+        "Missing @Nullable/@NonNull annotations on Java interop boundaries"
+      ],
+      "skip": [
+        "Test code where !! on known-good values improves readability",
+        "Generated code from frameworks (Dagger, Room, etc.)",
+        "Inline assertion helpers that intentionally throw on null"
+      ]
+    }
+  }
+}

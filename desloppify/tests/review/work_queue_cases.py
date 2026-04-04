@@ -874,6 +874,9 @@ def test_registry_standalone_threshold_count():
     assert sorted(threshold_detectors) == sorted([
         "dict_keys",
         "dupes",
+        "kotlin_lateinit_misuse",
+        "kotlin_mutable_data_class",
+        "kotlin_non_null_assertion",
         "naming",
         "nextjs",
         "patterns",
