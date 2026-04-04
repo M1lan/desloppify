@@ -623,9 +623,10 @@ class TestLangsCommand:
             "gdscript",
             "go",
             "rust",
+            "kotlin",
         ]:
             assert full_lang in names, f"{full_lang} not found in {names}"
-        for generic_lang_name in ["ruby", "java", "kotlin"]:
+        for generic_lang_name in ["ruby", "java"]:
             assert generic_lang_name in names, f"{generic_lang_name} not found in {names}"
         assert len(names) > 10, f"Expected >10 languages, got {len(names)}: {names}"
 

@@ -185,6 +185,38 @@ def test_backend_import_resolvers_cover_language_specific_paths(tmp_path: Path) 
     assert backend_mod.resolve_swift_import("Core", str(tmp_path / "App.swift"), str(tmp_path)) == str(swift_file)
 
 
+def test_kotlin_import_resolver_kts_file(tmp_path: Path) -> None:
+    kts_file = tmp_path / "src" / "main" / "kotlin" / "com" / "acme" / "Build.kts"
+    kts_file.parent.mkdir(parents=True, exist_ok=True)
+    kts_file.write_text("// build script\n", encoding="utf-8")
+    assert backend_mod.resolve_kotlin_import("com.acme.Build", "", str(tmp_path)) == str(kts_file)
+
+
+def test_kotlin_import_resolver_rejects_wildcard(tmp_path: Path) -> None:
+    assert backend_mod.resolve_kotlin_import("com.acme.*", "", str(tmp_path)) is None
+
+
+def test_kotlin_import_resolver_rejects_single_part(tmp_path: Path) -> None:
+    assert backend_mod.resolve_kotlin_import("Feature", "", str(tmp_path)) is None
+
+
+def test_kotlin_import_resolver_kmp_source_sets(tmp_path: Path) -> None:
+    common_file = tmp_path / "src" / "commonMain" / "kotlin" / "com" / "acme" / "Common.kt"
+    common_file.parent.mkdir(parents=True, exist_ok=True)
+    common_file.write_text("expect class Common\n", encoding="utf-8")
+
+    jvm_file = tmp_path / "src" / "jvmMain" / "kotlin" / "com" / "acme" / "JvmImpl.kt"
+    jvm_file.parent.mkdir(parents=True, exist_ok=True)
+    jvm_file.write_text("actual class JvmImpl\n", encoding="utf-8")
+
+    assert backend_mod.resolve_kotlin_import("com.acme.Common", "", str(tmp_path)) == str(common_file)
+    assert backend_mod.resolve_kotlin_import("com.acme.JvmImpl", "", str(tmp_path)) == str(jvm_file)
+
+
+def test_kotlin_import_resolver_returns_none_for_missing_import(tmp_path: Path) -> None:
+    assert backend_mod.resolve_kotlin_import("com.acme.DoesNotExist", "", str(tmp_path)) is None
+
+
 def test_functional_import_resolvers_cover_common_conventions(tmp_path: Path) -> None:
     assert functional_mod._camel_to_snake("MyHTTPClient") == "my_http_client"
 

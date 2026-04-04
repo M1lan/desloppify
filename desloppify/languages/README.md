@@ -1,6 +1,6 @@
 # Languages
 
-Desloppify supports 29 languages through a plugin system with two tiers: **full plugins** (8) with hand-written detectors and subjective review, and **generic plugins** (21) that wrap external linters and optionally use tree-sitter for AST analysis.
+Desloppify supports 29 languages through a plugin system with two tiers: **full plugins** (9) with hand-written detectors and subjective review, and **generic plugins** (20) that wrap external linters and optionally use tree-sitter for AST analysis.
 
 ## Full Plugins
 
@@ -15,6 +15,7 @@ These have custom detectors, language-specific smell analysis, subjective review
 | **Dart** | `dart/` | Flutter-aware, pubspec integration, test coverage mapping |
 | **GDScript** | `gdscript/` | Godot scene-aware, tree-sitter phases, shared framework helpers |
 | **Go** | `go/` | golangci-lint + go vet adapters, regex function extraction, test coverage mapping |
+| **Kotlin** | `kotlin/` | Coroutine/null-safety smell detectors, ktlint adapter, KMP source root resolution, structured concurrency review |
 | **Rust** | `rust/` | Clippy/rustdoc best-practice phases, module-aware dep graph, inline + integration test coverage |
 
 For C/C++ setup requirements for a full tool-backed scan, see `cxx/README.md`.
@@ -29,7 +30,6 @@ These are single-file plugins (~20-40 lines) that call `generic_lang()` with ext
 |----------|------|-------|-------------|
 | Ruby | `ruby/` | rubocop | functions, methods, classes, imports |
 | Java | `java/` | checkstyle | functions, constructors, classes, imports |
-| Kotlin | `kotlin/` | ktlint, detekt | functions, classes, imports |
 | Swift | `swift/` | swiftlint | functions, classes |
 | PHP | `php/` | phpstan | functions, methods, classes, imports |
 | Scala | `scala/` | scalac | functions, classes, imports |
