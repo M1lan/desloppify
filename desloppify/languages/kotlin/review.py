@@ -5,13 +5,13 @@ from __future__ import annotations
 import re
 
 HOLISTIC_REVIEW_DIMENSIONS: list[str] = [
-    "coroutine_architecture",
-    "null_safety_discipline",
-    "sealed_class_modeling",
-    "extension_function_design",
+    "design_coherence",
+    "type_safety",
+    "abstraction_fitness",
     "cross_module_architecture",
     "test_strategy",
-    "error_handling_consistency",
+    "error_consistency",
+    "api_surface_coherence",
 ]
 
 REVIEW_GUIDANCE = {
