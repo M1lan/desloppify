@@ -86,7 +86,21 @@ def resolve_kotlin_import(import_text: str, source_file: str, scan_path: str) ->
 
     for ext in (".kt", ".kts"):
         rel_path = os.path.join(*parts[:-1], parts[-1] + ext)
-        for src_root in ["src/main/kotlin", "src/main/java", "src", "app/src/main/kotlin", "."]:
+        for src_root in [
+            "src/main/kotlin",
+            "src/main/java",
+            "src",
+            "app/src/main/kotlin",
+            "src/commonMain/kotlin",
+            "src/androidMain/kotlin",
+            "src/iosMain/kotlin",
+            "src/jvmMain/kotlin",
+            "src/jsMain/kotlin",
+            "shared/src/commonMain/kotlin",
+            "core/src/main/kotlin",
+            "buildSrc/src/main/kotlin",
+            ".",
+        ]:
             candidate = os.path.join(scan_path, src_root, rel_path)
             if os.path.isfile(candidate):
                 return candidate
