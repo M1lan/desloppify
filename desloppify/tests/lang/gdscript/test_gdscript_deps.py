@@ -15,15 +15,15 @@ def _write(path: Path, relpath: str, content: str) -> Path:
 
 
 def test_build_dep_graph_resolves_preload_load_and_extends(tmp_path):
-    _write(tmp_path, "project.godot", "[application]\nconfig/name=\"Demo\"\n")
+    _write(tmp_path, "project.godot", '[application]\nconfig/name="Demo"\n')
     main = _write(
         tmp_path,
         "src/main.gd",
         (
-            "extends \"res://src/base.gd\"\n"
-            "var helper = preload(\"res://src/helper.gd\")\n"
+            'extends "res://src/base.gd"\n'
+            'var helper = preload("res://src/helper.gd")\n'
             "func _ready():\n"
-            "    var inst = load(\"res://src/helper.gd\")\n"
+            '    var inst = load("res://src/helper.gd")\n'
         ),
     )
     base = _write(tmp_path, "src/base.gd", "extends Node\n")

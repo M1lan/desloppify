@@ -13,10 +13,7 @@ def test_strip_test_markers_for_dart():
 
 
 def test_parse_test_import_specs_extracts_imports():
-    content = (
-        "import 'package:app/service.dart';\n"
-        "import '../helpers/mock.dart';\n"
-    )
+    content = "import 'package:app/service.dart';\nimport '../helpers/mock.dart';\n"
     specs = dart_cov.parse_test_import_specs(content)
     assert specs == ["package:app/service.dart", "../helpers/mock.dart"]
 

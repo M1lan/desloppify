@@ -5,7 +5,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from desloppify.base.discovery.file_paths import rel, resolve_path
-from desloppify.languages.rust.support import find_rust_files, read_text_or_none, strip_rust_comments
+from desloppify.languages.rust.support import (
+    find_rust_files,
+    read_text_or_none,
+    strip_rust_comments,
+)
 
 from ._shared import (
     _FEATURE_REF_RE,
@@ -111,7 +115,9 @@ def missing_readme_doctest_harnesses(path: Path) -> list[str]:
     return [entry["file"] for entry in entries]
 
 
-def add_missing_features_to_manifest(manifest_path: str, missing_features: list[str]) -> str:
+def add_missing_features_to_manifest(
+    manifest_path: str, missing_features: list[str]
+) -> str:
     """Insert missing feature declarations into a Cargo.toml manifest."""
     absolute = Path(resolve_path(manifest_path))
     raw = absolute.read_text(errors="replace")
@@ -150,7 +156,7 @@ def ensure_readme_doctest_harness(lib_path: str) -> str:
         return content
     snippet = (
         "\n\n#[cfg(doctest)]\n"
-        "#[doc = include_str!(\"../README.md\")]\n"
+        '#[doc = include_str!("../README.md")]\n'
         "mod readme_doctests {}\n"
     )
     return content.rstrip() + snippet

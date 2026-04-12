@@ -34,9 +34,7 @@ RUBY_SPEC = TreeSitterLangSpec(
         (class
             name: (constant) @name) @class
     """,
-    log_patterns=(
-        r"^\s*(?:puts |p |pp |Rails\.logger)",
-    ),
+    log_patterns=(r"^\s*(?:puts |p |pp |Rails\.logger)",),
 )
 
 BASH_SPEC = TreeSitterLangSpec(
@@ -53,9 +51,7 @@ BASH_SPEC = TreeSitterLangSpec(
             argument: (word) @path) @import
     """,
     resolve_import=resolve_bash_source,
-    log_patterns=(
-        r"^\s*(?:echo |printf )",
-    ),
+    log_patterns=(r"^\s*(?:echo |printf )",),
 )
 
 LUA_SPEC = TreeSitterLangSpec(
@@ -73,9 +69,7 @@ LUA_SPEC = TreeSitterLangSpec(
                 (string) @path)) @import
     """,
     resolve_import=resolve_lua_import,
-    log_patterns=(
-        r"^\s*(?:print\(|io\.write)",
-    ),
+    log_patterns=(r"^\s*(?:print\(|io\.write)",),
 )
 
 PERL_SPEC = TreeSitterLangSpec(
@@ -90,9 +84,7 @@ PERL_SPEC = TreeSitterLangSpec(
         (use_statement (package) @path) @import
     """,
     resolve_import=resolve_perl_import,
-    log_patterns=(
-        r"^\s*(?:print |say |warn )",
-    ),
+    log_patterns=(r"^\s*(?:print |say |warn )",),
 )
 
 ZIG_SPEC = TreeSitterLangSpec(
@@ -113,9 +105,7 @@ ZIG_SPEC = TreeSitterLangSpec(
                         (STRINGLITERALSINGLE) @path)))) @import
     """,
     resolve_import=resolve_zig_import,
-    log_patterns=(
-        r"^\s*(?:std\.debug\.print|std\.log\.)",
-    ),
+    log_patterns=(r"^\s*(?:std\.debug\.print|std\.log\.)",),
 )
 
 NIM_SPEC = TreeSitterLangSpec(
@@ -126,9 +116,7 @@ NIM_SPEC = TreeSitterLangSpec(
             body: (statement_list) @body) @func
     """,
     comment_node_types=frozenset({"comment"}),
-    log_patterns=(
-        r"^\s*(?:echo |debugEcho )",
-    ),
+    log_patterns=(r"^\s*(?:echo |debugEcho )",),
 )
 
 POWERSHELL_SPEC = TreeSitterLangSpec(
@@ -139,9 +127,7 @@ POWERSHELL_SPEC = TreeSitterLangSpec(
             (script_block) @body) @func
     """,
     comment_node_types=frozenset({"comment"}),
-    log_patterns=(
-        r"^\s*(?:Write-Host|Write-Output|Write-Debug|Write-Verbose)",
-    ),
+    log_patterns=(r"^\s*(?:Write-Host|Write-Output|Write-Debug|Write-Verbose)",),
 )
 
 GDSCRIPT_SPEC = TreeSitterLangSpec(
@@ -157,9 +143,7 @@ GDSCRIPT_SPEC = TreeSitterLangSpec(
             name: (name) @name
             body: (class_body) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:print\(|push_error\(|push_warning\()",
-    ),
+    log_patterns=(r"^\s*(?:print\(|push_error\(|push_warning\()",),
 )
 
 R_SPEC = TreeSitterLangSpec(
@@ -191,9 +175,7 @@ R_SPEC = TreeSitterLangSpec(
                 (identifier) @fn)) @import
     """,
     resolve_import=resolve_r_import,
-    log_patterns=(
-        r"^\s*(?:print\(|cat\(|message\(|browser\(|debug\()",
-    ),
+    log_patterns=(r"^\s*(?:print\(|cat\(|message\(|browser\(|debug\()",),
 )
 
 JS_SPEC = TreeSitterLangSpec(

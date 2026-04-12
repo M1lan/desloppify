@@ -267,11 +267,15 @@ def resolve_roslyn_cmd_from_args(args) -> str | None:
 
 def cmd_deps(args: argparse.Namespace) -> None:
     """Show dependency info for a specific C# file or top coupled files."""
-    graph = build_dep_graph(Path(args.path), roslyn_cmd=resolve_roslyn_cmd_from_args(args))
+    graph = build_dep_graph(
+        Path(args.path), roslyn_cmd=resolve_roslyn_cmd_from_args(args)
+    )
     _render_deps_for_graph(args, graph=graph)
 
 
 def cmd_cycles(args: argparse.Namespace) -> None:
     """Show import cycles in C# source files."""
-    graph = build_dep_graph(Path(args.path), roslyn_cmd=resolve_roslyn_cmd_from_args(args))
+    graph = build_dep_graph(
+        Path(args.path), roslyn_cmd=resolve_roslyn_cmd_from_args(args)
+    )
     _render_cycles_for_graph(args, graph=graph)

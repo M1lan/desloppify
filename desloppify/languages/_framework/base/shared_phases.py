@@ -10,7 +10,10 @@ from desloppify.base.output.terminal import log
 from desloppify.engine.detectors.security.detector import (
     detect_security_issues as _detect_security_issues_default,
 )
-from desloppify.languages._framework.base.types import DetectorEntry, LangRuntimeContract
+from desloppify.languages._framework.base.types import (
+    DetectorEntry,
+    LangRuntimeContract,
+)
 from desloppify.state_io import Issue
 
 from .shared_phases_helpers import (
@@ -33,6 +36,7 @@ from .shared_phases_structural import (
     run_coupling_phase,
     run_structural_phase,
 )
+
 
 def find_external_test_files(path: Path, lang: LangRuntimeContract) -> set[str]:
     """Compatibility wrapper with patchable get_project_root dependency."""
@@ -65,7 +69,9 @@ def _filter_boilerplate_entries_by_zone(
     return _filter_boilerplate_entries_by_zone_impl(entries, zone_map)
 
 
-def _log_phase_summary(label: str, results: list[Issue], potential: int, unit: str) -> None:
+def _log_phase_summary(
+    label: str, results: list[Issue], potential: int, unit: str
+) -> None:
     """Compatibility wrapper with patchable module-level logger."""
     _log_phase_summary_impl(label, results, potential, unit, log_fn=log)
 

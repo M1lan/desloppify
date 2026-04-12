@@ -55,9 +55,7 @@ def _graph_tested_imports(
         # `from megaplan.evaluation import X`) to the package __init__.py
         # rather than the actual submodule file, causing false
         # "transitive_only" reports for modules with dedicated test files.
-        tested |= _parse_test_imports(
-            tf, production_files, prod_by_module, lang_name
-        )
+        tested |= _parse_test_imports(tf, production_files, prod_by_module, lang_name)
     return tested
 
 

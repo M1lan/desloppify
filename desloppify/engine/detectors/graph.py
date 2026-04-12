@@ -10,13 +10,9 @@ from pathlib import Path
 from typing import Any
 
 from desloppify.base.discovery.file_paths import (
-
     matches_exclusion,
-
     rel,
-
     resolve_path,
-
 )
 
 from desloppify.base.discovery.source import get_exclusions

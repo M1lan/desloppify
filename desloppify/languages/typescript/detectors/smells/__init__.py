@@ -70,7 +70,9 @@ def detect_smells(path: Path) -> tuple[list[dict], int]:
             content = p.read_text()
             lines = content.splitlines()
         except (OSError, UnicodeDecodeError) as exc:
-            log_best_effort_failure(logger, f"read TypeScript smell candidate {filepath}", exc)
+            log_best_effort_failure(
+                logger, f"read TypeScript smell candidate {filepath}", exc
+            )
             continue
 
         line_state = _build_ts_line_state(lines)

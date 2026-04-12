@@ -337,7 +337,9 @@ class TestDetectAsyncNoAwait:
 
     def test_await_in_comment_still_flagged(self):
         """'await' inside a comment should not count — function is still flagged."""
-        content = "async function fetchData() {\n  // await fetch('/');\n  return 1;\n}\n"
+        content = (
+            "async function fetchData() {\n  // await fetch('/');\n  return 1;\n}\n"
+        )
         counts = _make_counts()
         _detect_async_no_await(_ctx(content), counts)
         assert len(counts["async_no_await"]) == 1

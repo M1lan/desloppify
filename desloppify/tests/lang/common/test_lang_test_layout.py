@@ -24,7 +24,9 @@ from desloppify.languages._framework.structure_validation import validate_lang_s
 
 def _full_langs() -> list[str]:
     """Return only languages with full (non-generic) plugin structure."""
-    return [lang for lang in available_langs() if get_lang(lang).integration_depth == "full"]
+    return [
+        lang for lang in available_langs() if get_lang(lang).integration_depth == "full"
+    ]
 
 
 def _load_pyproject() -> dict:
@@ -99,7 +101,9 @@ def test_packaging_includes_lang_plugin_tests():
     excludes = find_cfg.get("exclude", [])
 
     pkgs = set(
-        setuptools.find_packages(str(get_project_root()), include=includes, exclude=excludes)
+        setuptools.find_packages(
+            str(get_project_root()), include=includes, exclude=excludes
+        )
     )
 
     missing = [

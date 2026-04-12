@@ -12,6 +12,7 @@ from desloppify.languages.csharp.deps.cli import render_cycles_cli, render_deps_
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_args(path="/fake/project", file=None, json_flag=False, top=20, **extra):
     """Build a SimpleNamespace that looks like argparse output."""
     ns = SimpleNamespace(path=path, top=top, **extra)
@@ -24,8 +25,10 @@ def _make_args(path="/fake/project", file=None, json_flag=False, top=20, **extra
 
 def _stub_graph_builder(graph):
     """Return a build_dep_graph stand-in that always returns *graph*."""
+
     def build(path, *, roslyn_cmd=None):
         return graph
+
     return build
 
 
@@ -37,6 +40,7 @@ def _stub_roslyn_resolver(value=None):
 # ---------------------------------------------------------------------------
 # render_deps_cli — single-file mode
 # ---------------------------------------------------------------------------
+
 
 def test_cmd_deps_single_file_text_output(capsys, monkeypatch):
     """When --file is given, display fan-in / fan-out / instability for that file."""
@@ -95,6 +99,7 @@ def test_cmd_deps_single_file_json_output(capsys, monkeypatch):
 # ---------------------------------------------------------------------------
 # render_deps_cli — overview (no --file)
 # ---------------------------------------------------------------------------
+
 
 def test_cmd_deps_overview_text_output(capsys, monkeypatch):
     """Without --file, show a table of top files sorted by importer count."""
@@ -194,6 +199,7 @@ def test_cmd_deps_overview_empty_graph(capsys, monkeypatch):
 # ---------------------------------------------------------------------------
 # render_cycles_cli
 # ---------------------------------------------------------------------------
+
 
 def test_cmd_cycles_no_cycles_text(capsys, monkeypatch):
     """When there are no cycles, print a green message."""
@@ -303,8 +309,7 @@ def test_cmd_cycles_truncates_long_cycles(capsys, monkeypatch):
 def test_cmd_cycles_respects_top_limit(capsys, monkeypatch):
     """The --top flag limits how many cycles appear in text output."""
     cycles = [
-        {"length": 2, "files": [f"/fake/{i}a.cs", f"/fake/{i}b.cs"]}
-        for i in range(10)
+        {"length": 2, "files": [f"/fake/{i}a.cs", f"/fake/{i}b.cs"]} for i in range(10)
     ]
     monkeypatch.setattr(
         "desloppify.languages.csharp.deps.cli.rel",
@@ -332,6 +337,7 @@ def test_cmd_cycles_respects_top_limit(capsys, monkeypatch):
 # ---------------------------------------------------------------------------
 # render_deps_cli / render_cycles_cli — graph builder delegation
 # ---------------------------------------------------------------------------
+
 
 def test_cmd_deps_passes_path_and_roslyn_to_builder():
     """render_deps_cli delegates to build_dep_graph with the right path and roslyn_cmd."""

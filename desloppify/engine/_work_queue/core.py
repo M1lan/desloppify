@@ -16,6 +16,7 @@ from desloppify.engine._work_queue.ranking import group_queue_items
 from desloppify.engine._work_queue.selection import select_queue_items
 from desloppify.engine._state.schema import StateModel
 
+
 def build_work_queue(
     state: StateModel,
     *,
@@ -53,6 +54,7 @@ def _build_work_queue_with_visibility(
         visibility=visibility,
     )
     return finalize_queue(items, state=state, plan=plan, opts=opts)
+
 
 __all__ = [
     "ATTEST_EXAMPLE",

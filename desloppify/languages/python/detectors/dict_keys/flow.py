@@ -27,7 +27,9 @@ def detect_dict_key_flow(path: Path) -> tuple[list[dict], int]:
     for filepath in files:
         try:
             file_path = (
-                Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+                Path(filepath)
+                if Path(filepath).is_absolute()
+                else get_project_root() / filepath
             )
             source = file_path.read_text()
         except (OSError, UnicodeDecodeError) as exc:

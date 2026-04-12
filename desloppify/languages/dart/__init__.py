@@ -56,6 +56,7 @@ DART_ZONE_RULES = [
     ),
 ] + COMMON_ZONE_RULES
 
+
 class DartConfig(LangConfig):
     """Dart/Flutter language configuration."""
 

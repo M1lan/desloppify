@@ -19,4 +19,3 @@ def has_tree_sitter_language_pack() -> bool:
 
 
 __all__ = ["has_module", "has_tree_sitter_language_pack"]
-

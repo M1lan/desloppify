@@ -64,7 +64,9 @@ class TestSubmoduleImports:
     def test_no_circular_import(self):
         """Fresh import of desloppify.intelligence.review succeeds without circular import errors."""
         # Remove cached modules to force fresh import
-        to_remove = [k for k in sys.modules if k.startswith("desloppify.intelligence.review")]
+        to_remove = [
+            k for k in sys.modules if k.startswith("desloppify.intelligence.review")
+        ]
         removed = {}
         for k in to_remove:
             removed[k] = sys.modules.pop(k)

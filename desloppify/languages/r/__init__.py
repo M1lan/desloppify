@@ -20,9 +20,7 @@ generic_lang(
         },
         {
             "label": "lintr",
-            "cmd": (
-                "Rscript -e \"lintr::lint_dir('.')\""
-            ),
+            "cmd": ("Rscript -e \"lintr::lint_dir('.')\""),
             "fmt": "gnu",
             "id": "lintr_lint",
             "tier": 3,

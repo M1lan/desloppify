@@ -17,7 +17,9 @@ _INCLUDE_RE = re.compile(r'(?m)^\s*#include\s*[<"]([^>"]+)[>"]')
 _SOURCE_EXTENSIONS = (".c", ".cc", ".cpp", ".cxx")
 _HEADER_EXTENSIONS = (".h", ".hh", ".hpp")
 _CMAKE_COMMENT_RE = re.compile(r"(?m)#.*$")
-_CMAKE_COMMAND_RE = re.compile(r"\b(?:add_executable|add_library|target_sources)\s*\(", re.IGNORECASE)
+_CMAKE_COMMAND_RE = re.compile(
+    r"\b(?:add_executable|add_library|target_sources)\s*\(", re.IGNORECASE
+)
 _CMAKE_SOURCE_SPEC_RE = re.compile(
     r'"([^"\n]+\.(?:cpp|cxx|cc|c|hpp|hh|h))"|([^\s()"]+\.(?:cpp|cxx|cc|c|hpp|hh|h))',
     re.IGNORECASE,
@@ -38,14 +40,12 @@ def has_testable_logic(filepath: str, content: str) -> bool:
     return bool(_TESTABLE_LOGIC_RE.search(content))
 
 
-
 def _match_candidate(candidate: Path, production_files: set[str]) -> str | None:
     resolved = str(candidate.resolve())
     normalized = {str(Path(path).resolve()): path for path in production_files}
     if resolved in normalized:
         return normalized[resolved]
     return None
-
 
 
 def resolve_import_spec(
@@ -76,12 +76,10 @@ def resolve_import_spec(
     return None
 
 
-
 def resolve_barrel_reexports(filepath: str, production_files: set[str]) -> set[str]:
     """C/C++ has no barrel-file re-export expansion."""
     del filepath, production_files
     return set()
-
 
 
 def _unique_preserving_order(specs: list[str]) -> list[str]:
@@ -96,7 +94,6 @@ def _unique_preserving_order(specs: list[str]) -> list[str]:
     return ordered
 
 
-
 def _parse_cmake_source_specs(content: str) -> list[str]:
     if not _CMAKE_COMMAND_RE.search(content):
         return []
@@ -109,13 +106,11 @@ def _parse_cmake_source_specs(content: str) -> list[str]:
     return _unique_preserving_order(specs)
 
 
-
 def parse_test_import_specs(content: str) -> list[str]:
     """Return include-like specs from test content and test build files."""
     include_specs = [match.group(1).strip() for match in _INCLUDE_RE.finditer(content)]
     cmake_specs = _parse_cmake_source_specs(content)
     return _unique_preserving_order(include_specs + cmake_specs)
-
 
 
 def _iter_test_tree_ancestors(test_file: Path) -> list[Path]:
@@ -130,8 +125,9 @@ def _iter_test_tree_ancestors(test_file: Path) -> list[Path]:
     return ancestors[: stop_at + 1]
 
 
-
-def discover_test_mapping_files(test_files: set[str], production_files: set[str]) -> set[str]:
+def discover_test_mapping_files(
+    test_files: set[str], production_files: set[str]
+) -> set[str]:
     """Find CMake/Make build files that define test target sources within test trees."""
     del production_files
     discovered: set[str] = set()
@@ -143,7 +139,6 @@ def discover_test_mapping_files(test_files: set[str], production_files: set[str]
                 if candidate.is_file():
                     discovered.add(str(candidate.resolve()))
     return discovered
-
 
 
 def map_test_to_source(test_path: str, production_set: set[str]) -> str | None:
@@ -167,10 +162,11 @@ def map_test_to_source(test_path: str, production_set: set[str]) -> str | None:
             return matched
 
     for production in production_set:
-        if Path(production).name == src_name and not re.search(r"(?:^|[\\/])tests?(?:[\\/]|$)", production):
+        if Path(production).name == src_name and not re.search(
+            r"(?:^|[\\/])tests?(?:[\\/]|$)", production
+        ):
             return production
     return None
-
 
 
 def strip_test_markers(basename: str) -> str | None:
@@ -187,7 +183,6 @@ def strip_test_markers(basename: str) -> str | None:
     if stem.endswith("Test"):
         return f"{stem[:-4]}{ext}"
     return None
-
 
 
 def strip_comments(content: str) -> str:

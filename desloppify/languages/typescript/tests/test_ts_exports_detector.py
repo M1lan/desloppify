@@ -53,7 +53,9 @@ def test_cmd_exports_json_output(capsys):
     fake_entries = [
         {"file": "src/utils.ts", "name": "unused1", "line": 10, "kind": "export"},
     ]
-    with patch.object(exports_mod, "detect_dead_exports", return_value=(fake_entries, 1)):
+    with patch.object(
+        exports_mod, "detect_dead_exports", return_value=(fake_entries, 1)
+    ):
         exports_mod.cmd_exports(_make_args(json_output=True))
 
     out = capsys.readouterr().out
@@ -80,7 +82,9 @@ def test_cmd_exports_table_output(capsys):
         {"file": "src/api.ts", "name": "oldFetch", "line": 5, "kind": "export"},
     ]
     with (
-        patch.object(exports_mod, "detect_dead_exports", return_value=(fake_entries, 3)),
+        patch.object(
+            exports_mod, "detect_dead_exports", return_value=(fake_entries, 3)
+        ),
         patch.object(exports_mod, "rel", side_effect=lambda p: p),
         patch.object(exports_mod, "print_table") as mock_table,
     ):
@@ -107,7 +111,9 @@ def test_cmd_exports_table_respects_top_limit(capsys):
         for i in range(5)
     ]
     with (
-        patch.object(exports_mod, "detect_dead_exports", return_value=(fake_entries, 5)),
+        patch.object(
+            exports_mod, "detect_dead_exports", return_value=(fake_entries, 5)
+        ),
         patch.object(exports_mod, "rel", side_effect=lambda p: p),
         patch.object(exports_mod, "print_table") as mock_table,
     ):
@@ -125,7 +131,9 @@ def test_cmd_exports_truncates_export_names_over_five(capsys):
         for i in range(8)
     ]
     with (
-        patch.object(exports_mod, "detect_dead_exports", return_value=(fake_entries, 8)),
+        patch.object(
+            exports_mod, "detect_dead_exports", return_value=(fake_entries, 8)
+        ),
         patch.object(exports_mod, "rel", side_effect=lambda p: p),
         patch.object(exports_mod, "print_table") as mock_table,
     ):

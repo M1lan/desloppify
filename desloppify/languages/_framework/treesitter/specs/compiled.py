@@ -36,9 +36,7 @@ GO_SPEC = TreeSitterLangSpec(
                 name: (type_identifier) @name
                 type: (struct_type) @body)) @class
     """,
-    log_patterns=(
-        r"^\s*(?:fmt\.Print|fmt\.Fprint|log\.)",
-    ),
+    log_patterns=(r"^\s*(?:fmt\.Print|fmt\.Fprint|log\.)",),
 )
 
 RUST_SPEC = TreeSitterLangSpec(
@@ -59,9 +57,7 @@ RUST_SPEC = TreeSitterLangSpec(
             name: (type_identifier) @name
             body: (field_declaration_list) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:println!|eprintln!|dbg!|tracing::)",
-    ),
+    log_patterns=(r"^\s*(?:println!|eprintln!|dbg!|tracing::)",),
 )
 
 JAVA_SPEC = TreeSitterLangSpec(
@@ -91,9 +87,7 @@ JAVA_SPEC = TreeSitterLangSpec(
             name: (identifier) @name
             body: (enum_body) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:System\.out\.|System\.err\.|Logger\.|log\.)",
-    ),
+    log_patterns=(r"^\s*(?:System\.out\.|System\.err\.|Logger\.|log\.)",),
 )
 
 KOTLIN_SPEC = TreeSitterLangSpec(
@@ -117,9 +111,7 @@ KOTLIN_SPEC = TreeSitterLangSpec(
             (type_identifier) @name
             (class_body) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:println\(|print\(|Logger\.|log\.)",
-    ),
+    log_patterns=(r"^\s*(?:println\(|print\(|Logger\.|log\.)",),
 )
 
 CSHARP_SPEC = TreeSitterLangSpec(
@@ -146,9 +138,7 @@ CSHARP_SPEC = TreeSitterLangSpec(
             name: (identifier) @name
             body: (declaration_list) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:Console\.Write|Debug\.Log|Logger\.)",
-    ),
+    log_patterns=(r"^\s*(?:Console\.Write|Debug\.Log|Logger\.)",),
 )
 
 SWIFT_SPEC = TreeSitterLangSpec(
@@ -167,9 +157,7 @@ SWIFT_SPEC = TreeSitterLangSpec(
             name: (type_identifier) @name
             body: (protocol_body) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:print\(|NSLog|os_log|Logger\.)",
-    ),
+    log_patterns=(r"^\s*(?:print\(|NSLog|os_log|Logger\.)",),
 )
 
 PHP_SPEC = TreeSitterLangSpec(
@@ -212,9 +200,7 @@ PHP_SPEC = TreeSitterLangSpec(
             name: (name) @name
             body: (enum_declaration_list) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:echo |print |var_dump|error_log|Log::)",
-    ),
+    log_patterns=(r"^\s*(?:echo |print |var_dump|error_log|Log::)",),
 )
 
 DART_SPEC = TreeSitterLangSpec(
@@ -241,9 +227,7 @@ DART_SPEC = TreeSitterLangSpec(
             name: (identifier) @name
             body: (class_body) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:print\(|debugPrint|log\.)",
-    ),
+    log_patterns=(r"^\s*(?:print\(|debugPrint|log\.)",),
 )
 
 __all__ = [

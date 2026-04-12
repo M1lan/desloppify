@@ -8,7 +8,7 @@ import re
 def _normalize_binding_name(token: str) -> str:
     normalized = token.strip().rstrip(",")
     if normalized.startswith("type "):
-        normalized = normalized[len("type "):].strip()
+        normalized = normalized[len("type ") :].strip()
     return normalized
 
 
@@ -43,14 +43,14 @@ def remove_symbols_from_import_stmt(
     from_clause = f"from {module_part}{attrs};"
     if trailing:
         from_clause += f" {trailing}"
-    before_from = stmt[:from_match.start()].strip()
+    before_from = stmt[: from_match.start()].strip()
 
     type_prefix = ""
     if before_from.startswith("import type"):
         type_prefix = "type "
-        before_from = before_from[len("import type"):].strip()
+        before_from = before_from[len("import type") :].strip()
     elif before_from.startswith("import"):
-        before_from = before_from[len("import"):].strip()
+        before_from = before_from[len("import") :].strip()
     else:
         return import_stmt, set()
 
@@ -61,7 +61,7 @@ def remove_symbols_from_import_stmt(
     if brace_match:
         named_str = brace_match.group(1)
         named_imports = [name.strip() for name in named_str.split(",") if name.strip()]
-        before_brace = before_from[:brace_match.start()].strip().rstrip(",").strip()
+        before_brace = before_from[: brace_match.start()].strip().rstrip(",").strip()
         if before_brace:
             default_import = before_brace
     else:
@@ -122,7 +122,10 @@ def remove_symbols_from_import_stmt(
             indent += ch
         else:
             break
-    return f"{indent}import {type_prefix}{', '.join(parts)} {from_clause}\n", removed_symbols
+    return (
+        f"{indent}import {type_prefix}{', '.join(parts)} {from_clause}\n",
+        removed_symbols,
+    )
 
 
 def process_unused_import_lines(
@@ -179,7 +182,9 @@ def _process_import_statement(
     line_start = start + 1
     line_range = range(line_start, line_start + len(import_lines))
     if _should_remove_entire_import(unused_symbols, unused_by_line, line_range):
-        return _advance_after_removed_import(lines, import_end, prior_output), _ImportReplacement(
+        return _advance_after_removed_import(
+            lines, import_end, prior_output
+        ), _ImportReplacement(
             [],
             {"(entire import)"},
         )
@@ -188,9 +193,13 @@ def _process_import_statement(
     if not symbols_on_import:
         return import_end + 1, _ImportReplacement(import_lines)
 
-    cleaned, removed = remove_symbols_from_import_stmt("".join(import_lines), symbols_on_import)
+    cleaned, removed = remove_symbols_from_import_stmt(
+        "".join(import_lines), symbols_on_import
+    )
     if cleaned is None:
-        return _advance_after_removed_import(lines, import_end, prior_output), _ImportReplacement(
+        return _advance_after_removed_import(
+            lines, import_end, prior_output
+        ), _ImportReplacement(
             [],
             removed,
         )
@@ -217,10 +226,14 @@ def _should_remove_entire_import(
 ) -> bool:
     if "(entire import)" not in unused_symbols:
         return False
-    return any("(entire import)" in unused_by_line.get(line_no, []) for line_no in line_range)
+    return any(
+        "(entire import)" in unused_by_line.get(line_no, []) for line_no in line_range
+    )
 
 
-def _symbols_for_line_range(unused_by_line: dict[int, list[str]], line_range: range) -> set[str]:
+def _symbols_for_line_range(
+    unused_by_line: dict[int, list[str]], line_range: range
+) -> set[str]:
     symbols: set[str] = set()
     for line_no in line_range:
         for symbol in unused_by_line.get(line_no, []):
@@ -229,9 +242,16 @@ def _symbols_for_line_range(unused_by_line: dict[int, list[str]], line_range: ra
     return symbols
 
 
-def _advance_after_removed_import(lines: list[str], import_end: int, prior_output: list[str]) -> int:
+def _advance_after_removed_import(
+    lines: list[str], import_end: int, prior_output: list[str]
+) -> int:
     next_idx = import_end + 1
-    if next_idx < len(lines) and lines[next_idx].strip() == "" and prior_output and prior_output[-1].strip() == "":
+    if (
+        next_idx < len(lines)
+        and lines[next_idx].strip() == ""
+        and prior_output
+        and prior_output[-1].strip() == ""
+    ):
         next_idx += 1
     return next_idx
 

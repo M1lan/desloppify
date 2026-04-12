@@ -32,7 +32,9 @@ def make_callback_depth_compute(spec: TreeSitterLangSpec) -> ComputeFn:
     """Build a complexity compute callback for callback/closure nesting depth."""
     _cached_parser: dict[str, Any] = {}
 
-    def compute(content: str, lines: list[str], *, _filepath: str = "") -> tuple[int, str] | None:
+    def compute(
+        content: str, lines: list[str], *, _filepath: str = ""
+    ) -> tuple[int, str] | None:
         del content, lines
         if not _filepath:
             return None

@@ -57,7 +57,9 @@ pub fn add(a: i32, b: i32) -> i32 {
 }
 """,
     )
-    monkeypatch.setattr("desloppify.languages.rust.extractors.is_available", lambda: False)
+    monkeypatch.setattr(
+        "desloppify.languages.rust.extractors.is_available", lambda: False
+    )
     functions = extract_functions(tmp_path)
     assert [function.name for function in functions] == ["add"]
 

@@ -20,6 +20,7 @@ except ImportError:
     fcntl = None  # type: ignore[assignment]
 
 from desloppify.base.exception_sets import PLAN_LOAD_EXCEPTIONS
+
 __all__ = [
     "load_state",
     "save_state",
@@ -292,10 +293,10 @@ def save_state(
     state_path = path or _default_state_file()
     state_path.parent.mkdir(parents=True, exist_ok=True)
 
-    serialized_state = {
-        key: value for key, value in state.items() if key != "issues"
-    }
-    serialized_state["work_items"] = dict((state.get("work_items") or state.get("issues", {})))
+    serialized_state = {key: value for key, value in state.items() if key != "issues"}
+    serialized_state["work_items"] = dict(
+        (state.get("work_items") or state.get("issues", {}))
+    )
     content = json.dumps(serialized_state, indent=2, default=json_default) + "\n"
 
     if state_path.exists():

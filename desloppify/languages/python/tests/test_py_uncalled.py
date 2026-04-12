@@ -335,4 +335,6 @@ def test_self_scan_no_false_positives():
         "detect_star_import_no_all",
     }
     false_positives = flagged_names & known_used
-    assert not false_positives, f"False positives on known-used functions: {false_positives}"
+    assert not false_positives, (
+        f"False positives on known-used functions: {false_positives}"
+    )

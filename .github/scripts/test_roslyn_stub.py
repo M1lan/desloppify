@@ -10,7 +10,9 @@ from pathlib import Path
 
 def _load_roslyn_stub():
     module_path = Path(".github/scripts/roslyn_stub.py")
-    spec = importlib.util.spec_from_file_location("test_roslyn_stub_module", module_path)
+    spec = importlib.util.spec_from_file_location(
+        "test_roslyn_stub_module", module_path
+    )
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)

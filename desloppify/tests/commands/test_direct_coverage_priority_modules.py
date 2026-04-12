@@ -143,7 +143,9 @@ def test_app_plan_modules_avoid_old_plan_queue_facade():
     app_root = package_root / "app"
     for module_path in app_root.rglob("*.py"):
         text = module_path.read_text(encoding="utf-8")
-        assert "desloppify.engine.plan_queue" not in text, str(module_path.relative_to(package_root))
+        assert "desloppify.engine.plan_queue" not in text, str(
+            module_path.relative_to(package_root)
+        )
 
 
 def test_selected_command_modules_use_focused_plan_facades() -> None:
@@ -184,11 +186,15 @@ def test_language_packages_avoid_import_time_registry_mutation() -> None:
         for node in tree.body:
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
                 fn = node.value.func
-                fn_name = fn.id if isinstance(fn, ast.Name) else (
-                    fn.attr if isinstance(fn, ast.Attribute) else ""
+                fn_name = (
+                    fn.id
+                    if isinstance(fn, ast.Name)
+                    else (fn.attr if isinstance(fn, ast.Attribute) else "")
                 )
                 assert fn_name != "register_lang_hooks", rel_path
             if isinstance(node, ast.ClassDef):
                 for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Call) and isinstance(decorator.func, ast.Name):
+                    if isinstance(decorator, ast.Call) and isinstance(
+                        decorator.func, ast.Name
+                    ):
                         assert decorator.func.id != "register_lang", rel_path

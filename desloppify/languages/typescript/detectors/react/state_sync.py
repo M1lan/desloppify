@@ -24,14 +24,23 @@ def detect_state_sync(path: Path) -> tuple[list[dict], int]:
 
     for filepath in find_tsx_files(path):
         try:
-            p = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+            p = (
+                Path(filepath)
+                if Path(filepath).is_absolute()
+                else get_project_root() / filepath
+            )
             content = p.read_text()
             lines = content.splitlines()
         except (OSError, UnicodeDecodeError) as exc:
-            logger.debug("Skipping unreadable TSX file %s in state-sync pass: %s", filepath, exc)
+            logger.debug(
+                "Skipping unreadable TSX file %s in state-sync pass: %s", filepath, exc
+            )
             continue
 
-        setters = {m.group(1) for m in re.finditer(r"const\s+\[\w+,\s*(set\w+)\]\s*=\s*useState", content)}
+        setters = {
+            m.group(1)
+            for m in re.finditer(r"const\s+\[\w+,\s*(set\w+)\]\s*=\s*useState", content)
+        }
         if not setters:
             continue
 
@@ -91,7 +100,9 @@ def detect_state_sync(path: Path) -> tuple[list[dict], int]:
                         "file": filepath,
                         "line": line_no,
                         "setters": sorted(matched_setters),
-                        "content": lines[line_no - 1].strip()[:100] if line_no <= len(lines) else "",
+                        "content": lines[line_no - 1].strip()[:100]
+                        if line_no <= len(lines)
+                        else "",
                     }
                 )
 

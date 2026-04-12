@@ -41,6 +41,7 @@ from desloppify.languages.go._zones import GO_ZONE_RULES
 
 GO_ENTRY_PATTERNS = ["/main.go", "/cmd/"]
 
+
 class GoConfig(LangConfig):
     """Go language configuration."""
 
@@ -62,9 +63,7 @@ class GoConfig(LangConfig):
                     "golangci_lint",
                     tier=2,
                 ),
-                make_tool_phase(
-                    "go vet", "go vet ./...", "gnu", "vet_error", tier=3
-                ),
+                make_tool_phase("go vet", "go vet ./...", "gnu", "vet_error", tier=3),
                 *all_treesitter_phases("go"),
                 detector_phase_signature(),
                 detector_phase_test_coverage(),
@@ -107,6 +106,7 @@ def register() -> None:
 def register_hooks() -> None:
     """Register Go hook modules without language-config bootstrap."""
     register_lang_hooks("go", test_coverage=go_test_coverage_hooks)
+
 
 Config = GoConfig
 

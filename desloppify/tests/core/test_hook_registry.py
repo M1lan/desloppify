@@ -26,7 +26,9 @@ def test_get_lang_hook_bootstraps_after_test_clear_without_reload(monkeypatch) -
     monkeypatch.setattr(
         registry_mod.importlib,
         "reload",
-        lambda _module: (_ for _ in ()).throw(AssertionError("reload should not be used")),
+        lambda _module: (_ for _ in ()).throw(
+            AssertionError("reload should not be used")
+        ),
     )
     hook = get_lang_hook("python", "test_coverage")
 

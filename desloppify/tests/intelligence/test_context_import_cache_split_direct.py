@@ -40,8 +40,12 @@ def test_budget_abstractions_axes_compute_and_assemble_context() -> None:
         total_function_signatures=20,
         wrappers_by_file=[{"file": "src/a.py", "count": 2}],
         one_impl_interfaces=[{"interface": "IThing"}],
-        indirection_hotspots=[{"file": "src/a.py", "max_chain_depth": 4, "chain_count": 10}],
-        wide_param_bags=[{"file": "src/a.py", "wide_functions": 2, "config_bag_mentions": 12}],
+        indirection_hotspots=[
+            {"file": "src/a.py", "max_chain_depth": 4, "chain_count": 10}
+        ],
+        wide_param_bags=[
+            {"file": "src/a.py", "wide_functions": 2, "config_bag_mentions": 12}
+        ],
         delegation_classes=[{"class_name": "Facade", "delegation_ratio": 0.8}],
         facade_modules=[{"file": "src/facade.py", "re_export_ratio": 0.9}],
         typed_dict_violations=[{"file": "src/a.py", "count": 2}],
@@ -82,9 +86,7 @@ def test_budget_scan_and_wrappers_patterns_helpers() -> None:
     assert delegation[0]["delegate_target"] == "repo"
 
     facade_tree = ast.parse(
-        "from pkg.mod import A, B, C\n"
-        "from pkg.more import D\n"
-        "X = 1\n"
+        "from pkg.mod import A, B, C\nfrom pkg.more import D\nX = 1\n"
     )
     facade = wrappers_mod._find_facade_modules(facade_tree, loc=20)
     assert facade is not None

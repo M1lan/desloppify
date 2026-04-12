@@ -104,7 +104,9 @@ def _census_type_strategies(
         for node in ast.walk(tree):
             if not isinstance(node, ast.ClassDef):
                 continue
-            field_count = sum(1 for child in node.body if isinstance(child, ast.AnnAssign))
+            field_count = sum(
+                1 for child in node.body if isinstance(child, ast.AnnAssign)
+            )
             entry = {"name": node.name, "file": rpath, "field_count": field_count}
 
             if any(
@@ -128,7 +130,10 @@ def _census_type_strategies(
                 is_frozen = False
                 if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
                     is_dataclass = True
-                elif isinstance(decorator, ast.Attribute) and decorator.attr == "dataclass":
+                elif (
+                    isinstance(decorator, ast.Attribute)
+                    and decorator.attr == "dataclass"
+                ):
                     is_dataclass = True
                 elif isinstance(decorator, ast.Call):
                     func = decorator.func

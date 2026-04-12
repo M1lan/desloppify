@@ -17,7 +17,9 @@ import desloppify.languages.typescript.detectors.unused as unused_detector_mod
 from desloppify.state_io import Issue
 
 
-def phase_logs(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_logs(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     log_result = logs_detector_mod.detect_logs(path)
     log_entries = log_result.entries
     total_files = log_result.population_size
@@ -45,14 +47,18 @@ def phase_logs(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict
     return results, {"logs": adjust_potential(lang.zone_map, total_files)}
 
 
-def phase_unused(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_unused(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     entries, total_files = unused_detector_mod.detect_unused(path)
     return make_unused_issues(entries, log), {
         "unused": adjust_potential(lang.zone_map, total_files),
     }
 
 
-def phase_exports(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_exports(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     export_entries, total_exports = exports_detector_mod.detect_dead_exports(path)
     results = []
     for entry in export_entries:

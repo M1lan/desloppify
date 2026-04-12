@@ -71,9 +71,9 @@ def get_src_path(
     runtime: RuntimeContext | None = None,
 ) -> Path:
     """Return the configured source root directory."""
-    return get_project_root(project_root=project_root, runtime=runtime) / os.environ.get(
-        "DESLOPPIFY_SRC", "src"
-    )
+    return get_project_root(
+        project_root=project_root, runtime=runtime
+    ) / os.environ.get("DESLOPPIFY_SRC", "src")
 
 
 class _PathProxy(os.PathLike[str]):

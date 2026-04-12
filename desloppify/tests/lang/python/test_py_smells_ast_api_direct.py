@@ -16,7 +16,9 @@ from desloppify.languages.python.detectors.smells_ast._source_detectors import (
     detect_vestigial_parameter,
 )
 
-smells_ast_pkg = importlib.import_module("desloppify.languages.python.detectors.smells_ast")
+smells_ast_pkg = importlib.import_module(
+    "desloppify.languages.python.detectors.smells_ast"
+)
 
 
 def test_smells_ast_package_is_namespace_only():

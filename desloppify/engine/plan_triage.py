@@ -73,10 +73,7 @@ def triage_phase_banner(
     """Return a banner string describing triage status."""
     ensure_plan_defaults(plan)
     meta = plan.get("epic_triage_meta", {})
-    run_hint = (
-        f"Run: {TRIAGE_CMD_RUN_STAGES_CODEX} "
-        f"(or {TRIAGE_CMD_RUN_STAGES_CLAUDE})"
-    )
+    run_hint = f"Run: {TRIAGE_CMD_RUN_STAGES_CODEX} (or {TRIAGE_CMD_RUN_STAGES_CLAUDE})"
     resolved_state = state or {}
     resolved_snapshot = snapshot or build_triage_snapshot(plan, resolved_state)
 
@@ -124,10 +121,8 @@ def triage_phase_banner(
             f"TRIAGE MODE ({progress.completed_count}/{total_stages} stages recorded) — "
             f"complete all stages to exit. {run_hint}"
         )
-    return (
-        "TRIAGE MODE — review work items need analysis before fixing. "
-        f"{run_hint}"
-    )
+    return f"TRIAGE MODE — review work items need analysis before fixing. {run_hint}"
+
 
 __all__ = [
     "TRIAGE_CMD_CLUSTER_ADD",

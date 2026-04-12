@@ -106,7 +106,9 @@ def _is_logger_wrapper_name(raw: str | None) -> bool:
     return _normalize_wrapper_name(raw) in _LOGGER_WRAPPER_NAMES
 
 
-def _line_logger_wrapper_name(line: str, patterns: tuple[re.Pattern[str], ...]) -> str | None:
+def _line_logger_wrapper_name(
+    line: str, patterns: tuple[re.Pattern[str], ...]
+) -> str | None:
     for pattern in patterns:
         match = pattern.match(line)
         if match:

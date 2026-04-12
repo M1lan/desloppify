@@ -22,7 +22,10 @@ from desloppify.languages._framework.generic_support.core import (
     parse_json,
     parse_rubocop,
 )
-from desloppify.languages._framework.generic_parts.parsers import ToolParserError, parse_phpstan
+from desloppify.languages._framework.generic_parts.parsers import (
+    ToolParserError,
+    parse_phpstan,
+)
 from desloppify.languages._framework.generic_parts.tool_runner import (
     resolve_command_argv,
     run_tool_result,
@@ -60,8 +63,16 @@ class TestParseGnu:
         output = "src/main.go:42: undefined: foo\nsrc/util.go:10: unused variable\n"
         entries = parse_gnu(output, Path("."))
         assert len(entries) == 2
-        assert entries[0] == {"file": "src/main.go", "line": 42, "message": "undefined: foo"}
-        assert entries[1] == {"file": "src/util.go", "line": 10, "message": "unused variable"}
+        assert entries[0] == {
+            "file": "src/main.go",
+            "line": 42,
+            "message": "undefined: foo",
+        }
+        assert entries[1] == {
+            "file": "src/util.go",
+            "line": 10,
+            "message": "unused variable",
+        }
 
     def test_handles_col_number(self):
         output = "src/main.go:42:5: error: something wrong\n"
@@ -92,7 +103,11 @@ class TestParseGolangci:
         }
         entries = parse_golangci(json.dumps(data), Path("."))
         assert len(entries) == 1
-        assert entries[0] == {"file": "main.go", "line": 10, "message": "unused variable"}
+        assert entries[0] == {
+            "file": "main.go",
+            "line": 10,
+            "message": "unused variable",
+        }
 
     def test_handles_empty_issues(self):
         entries = parse_golangci(json.dumps({"Issues": []}), Path("."))
@@ -178,7 +193,11 @@ class TestParseRubocop:
         }
         entries = parse_rubocop(json.dumps(data), Path("."))
         assert len(entries) == 3
-        assert entries[0] == {"file": "app/models/user.rb", "line": 5, "message": "Line too long"}
+        assert entries[0] == {
+            "file": "app/models/user.rb",
+            "line": 5,
+            "message": "Line too long",
+        }
         assert entries[2] == {
             "file": "app/models/post.rb",
             "line": 1,
@@ -246,7 +265,10 @@ class TestParsePhpstan:
                 },
                 "/app/src/Bar.php": {
                     "messages": [
-                        {"message": "Parameter #1 expects int, string given.", "line": 5},
+                        {
+                            "message": "Parameter #1 expects int, string given.",
+                            "line": 5,
+                        },
                     ]
                 },
             },
@@ -373,7 +395,9 @@ class TestMakeToolPhase:
         assert result.entries == []
 
     def test_run_tool_result_distinguishes_empty_vs_error(self, tmp_path):
-        clean = subprocess.CompletedProcess(args="fake", returncode=0, stdout="", stderr="")
+        clean = subprocess.CompletedProcess(
+            args="fake", returncode=0, stdout="", stderr=""
+        )
         empty_result = run_tool_result(
             "fake",
             tmp_path,
@@ -383,7 +407,9 @@ class TestMakeToolPhase:
         assert empty_result.status == "empty"
         assert empty_result.error_kind is None
 
-        failed = subprocess.CompletedProcess(args="fake", returncode=2, stdout="", stderr="")
+        failed = subprocess.CompletedProcess(
+            args="fake", returncode=2, stdout="", stderr=""
+        )
         failed_result = run_tool_result(
             "fake",
             tmp_path,
@@ -474,14 +500,17 @@ class TestMakeToolPhase:
         else:
             assert argv == ["/bin/sh", "-lc", "echo ok | cat"]
 
-
     def test_resolve_command_argv_windows_backslash_path_preserved(self):
-        with patch("desloppify.languages._framework.generic_parts.tool_runner.os.name", "nt"):
+        with patch(
+            "desloppify.languages._framework.generic_parts.tool_runner.os.name", "nt"
+        ):
             argv = resolve_command_argv(r"C:\Tools\tool.exe --flag")
         assert argv == [r"C:\Tools\tool.exe", "--flag"]
 
     def test_resolve_command_argv_windows_quoted_path_unquotes_executable(self):
-        with patch("desloppify.languages._framework.generic_parts.tool_runner.os.name", "nt"):
+        with patch(
+            "desloppify.languages._framework.generic_parts.tool_runner.os.name", "nt"
+        ):
             argv = resolve_command_argv('"C:\\Program Files\\Tool\\tool.exe" --flag')
         assert argv == [r"C:\Program Files\Tool\tool.exe", "--flag"]
 
@@ -489,7 +518,15 @@ class TestMakeToolPhase:
 class TestToolSpecNormalization:
     def test_missing_fix_cmd_normalizes_to_none(self):
         normalized = normalize_tool_specs(
-            [{"label": "lint", "cmd": "echo ok", "fmt": "gnu", "id": "lint_id", "tier": 2}],
+            [
+                {
+                    "label": "lint",
+                    "cmd": "echo ok",
+                    "fmt": "gnu",
+                    "id": "lint_id",
+                    "tier": 2,
+                }
+            ],
             supported_formats={"gnu"},
         )
         assert normalized[0]["fix_cmd"] is None
@@ -508,7 +545,13 @@ class TestGenericLang:
             name="test_generic_lang_1",
             extensions=[".test1"],
             tools=[
-                {"label": "test tool", "cmd": "echo ok", "fmt": "gnu", "id": "test_tool", "tier": 2}
+                {
+                    "label": "test tool",
+                    "cmd": "echo ok",
+                    "fmt": "gnu",
+                    "id": "test_tool",
+                    "tier": 2,
+                }
             ],
         )
         assert isinstance(cfg, LangConfig)
@@ -523,7 +566,13 @@ class TestGenericLang:
             name="test_generic_lang_2",
             extensions=[".test2"],
             tools=[
-                {"label": "test tool", "cmd": "echo ok", "fmt": "gnu", "id": "test_tool_2", "tier": 2}
+                {
+                    "label": "test tool",
+                    "cmd": "echo ok",
+                    "fmt": "gnu",
+                    "id": "test_tool_2",
+                    "tier": 2,
+                }
             ],
         )
         resolved = get_lang("test_generic_lang_2")
@@ -627,7 +676,9 @@ class TestLangsCommand:
         ]:
             assert full_lang in names, f"{full_lang} not found in {names}"
         for generic_lang_name in ["ruby", "java"]:
-            assert generic_lang_name in names, f"{generic_lang_name} not found in {names}"
+            assert generic_lang_name in names, (
+                f"{generic_lang_name} not found in {names}"
+            )
         assert len(names) > 10, f"Expected >10 languages, got {len(names)}: {names}"
 
     def test_langs_hides_shared_phases_from_tool_list(self):
@@ -636,7 +687,15 @@ class TestLangsCommand:
         cfg = generic_lang(
             name="test_langs_hide_1",
             extensions=[".x"],
-            tools=[{"label": "xlint", "cmd": "echo", "fmt": "gnu", "id": "xlint_id", "tier": 2}],
+            tools=[
+                {
+                    "label": "xlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "xlint_id",
+                    "tier": 2,
+                }
+            ],
         )
         labels = _get_tool_labels(cfg)
         assert "xlint" in labels
@@ -651,10 +710,16 @@ class TestLangsCommand:
         cfg = generic_lang(
             name="test_langs_fix_1",
             extensions=[".x"],
-            tools=[{
-                "label": "xlint", "cmd": "echo", "fmt": "gnu",
-                "id": "xlint_fix_id", "tier": 2, "fix_cmd": "xlint --fix",
-            }],
+            tools=[
+                {
+                    "label": "xlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "xlint_fix_id",
+                    "tier": 2,
+                    "fix_cmd": "xlint --fix",
+                }
+            ],
         )
         labels = _get_tool_labels(cfg)
         assert "(auto-fix)" in labels
@@ -665,7 +730,15 @@ class TestLangsCommand:
         cfg = generic_lang(
             name="test_langs_nofix_1",
             extensions=[".x"],
-            tools=[{"label": "xlint", "cmd": "echo", "fmt": "gnu", "id": "xlint_nofix_id", "tier": 2}],
+            tools=[
+                {
+                    "label": "xlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "xlint_nofix_id",
+                    "tier": 2,
+                }
+            ],
         )
         labels = _get_tool_labels(cfg)
         assert "(auto-fix)" not in labels
@@ -684,10 +757,15 @@ class TestDynamicRegistration:
         )
 
         name = "_test_reg_det_1"
-        register_detector(DetectorMeta(
-            name=name, display="test", dimension="Code quality",
-            action_type="manual_fix", guidance="test guidance",
-        ))
+        register_detector(
+            DetectorMeta(
+                name=name,
+                display="test",
+                dimension="Code quality",
+                action_type="manual_fix",
+                guidance="test guidance",
+            )
+        )
         assert name in DETECTORS
         assert DETECTORS[name].display == "test"
         unregister_detector(name)
@@ -701,10 +779,15 @@ class TestDynamicRegistration:
         )
 
         name = "_test_reg_det_2"
-        register_detector(DetectorMeta(
-            name=name, display="test", dimension="Code quality",
-            action_type="manual_fix", guidance="test",
-        ))
+        register_detector(
+            DetectorMeta(
+                name=name,
+                display="test",
+                dimension="Code quality",
+                action_type="manual_fix",
+                guidance="test",
+            )
+        )
         assert name in _DISPLAY_ORDER
         unregister_detector(name)
 
@@ -716,10 +799,16 @@ class TestDynamicRegistration:
             DetectorScoringPolicy,
             register_scoring_policy,
         )
+
         name = "_test_reg_pol_1"
-        register_scoring_policy(DetectorScoringPolicy(
-            detector=name, dimension="Code quality", tier=3, file_based=True,
-        ))
+        register_scoring_policy(
+            DetectorScoringPolicy(
+                detector=name,
+                dimension="Code quality",
+                tier=3,
+                file_based=True,
+            )
+        )
         assert name in FILE_BASED_DETECTORS
         cq = next(d for d in DIMENSIONS if d.name == "Code quality")
         assert name in cq.detectors
@@ -735,10 +824,15 @@ class TestDynamicRegistration:
         from desloppify.intelligence.narrative._constants import DETECTOR_TOOLS
 
         name = "_test_auto_refresh_1"
-        register_detector(DetectorMeta(
-            name=name, display="test", dimension="Code quality",
-            action_type="manual_fix", guidance="auto refresh test",
-        ))
+        register_detector(
+            DetectorMeta(
+                name=name,
+                display="test",
+                dimension="Code quality",
+                action_type="manual_fix",
+                guidance="auto refresh test",
+            )
+        )
         # Should be in DETECTOR_TOOLS without any manual refresh call
         assert name in DETECTOR_TOOLS
         assert DETECTOR_TOOLS[name]["guidance"] == "auto refresh test"

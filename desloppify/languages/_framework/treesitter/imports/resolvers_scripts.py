@@ -6,7 +6,9 @@ import json
 import os
 
 
-def resolve_ruby_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_ruby_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Ruby require/require_relative to local files."""
     if import_text.startswith("./") or import_text.startswith("../"):
         base = os.path.dirname(source_file)
@@ -36,7 +38,8 @@ def reset_script_import_caches(scan_path: str | None = None) -> None:
 
     normalized_scan_path = os.path.normpath(scan_path)
     stale_file_keys = [
-        key for key in _PHP_FILE_CACHE
+        key
+        for key in _PHP_FILE_CACHE
         if os.path.normpath(key[1]) == normalized_scan_path
     ]
     for key in stale_file_keys:
@@ -96,7 +99,9 @@ def _read_composer_psr4(scan_path: str) -> dict[str, str]:
     return mappings
 
 
-def resolve_php_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_php_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve PHP use statements via PSR-4 mapping.
 
     1. Reads composer.json autoload psr-4 mappings (cached).
@@ -129,7 +134,7 @@ def resolve_php_import(import_text: str, source_file: str, scan_path: str) -> st
             # Normalize prefix: ensure trailing backslash
             norm_prefix = prefix.rstrip("\\") + "\\"
             if ns_lookup.startswith(norm_prefix) or ns_lookup + "\\" == norm_prefix:
-                remainder = ns_lookup[len(norm_prefix):]
+                remainder = ns_lookup[len(norm_prefix) :]
                 if not remainder:
                     continue
                 rel_path = remainder.replace("\\", os.sep) + ".php"
@@ -148,7 +153,9 @@ def resolve_php_import(import_text: str, source_file: str, scan_path: str) -> st
     return None
 
 
-def resolve_lua_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_lua_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Lua require(\"foo.bar\") to local files."""
     del source_file
     if not import_text:
@@ -180,7 +187,9 @@ def resolve_js_import(import_text: str, source_file: str, scan_path: str) -> str
     return None
 
 
-def resolve_bash_source(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_bash_source(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Bash source/. commands to local files."""
     if not import_text:
         return None
@@ -222,7 +231,9 @@ _PERL_SKIP_MODULES = frozenset(
 _PERL_SKIP_PREFIXES = ("File::", "List::", "Scalar::", "Getopt::", "IO::", "Test::")
 
 
-def resolve_perl_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_perl_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Perl use My::Module to local .pm files."""
     del source_file
     if not import_text:

@@ -179,7 +179,7 @@ def make_issue(
     return issue
 
 
-_HEX8_RE = re.compile(r'^[0-9a-f]{8}$')
+_HEX8_RE = re.compile(r"^[0-9a-f]{8}$")
 
 
 def _matches_issue_path(issue: dict[str, str], pattern: str) -> bool:

@@ -138,7 +138,8 @@ class TestZoneSet:
             config_mod, "save_config", lambda cfg, path=None: saved.append(dict(cfg))
         )
         monkeypatch.setattr(
-            "desloppify.app.commands.zone.rel", lambda p: p,
+            "desloppify.app.commands.zone.rel",
+            lambda p: p,
         )
 
         class FakeArgs:
@@ -175,7 +176,8 @@ class TestZoneClear:
             config_mod, "save_config", lambda cfg, path=None: saved.append(dict(cfg))
         )
         monkeypatch.setattr(
-            "desloppify.app.commands.zone.rel", lambda p: p,
+            "desloppify.app.commands.zone.rel",
+            lambda p: p,
         )
 
         class FakeArgs:
@@ -197,7 +199,8 @@ class TestZoneClear:
     def test_clear_nonexistent_override(self, monkeypatch, capsys):
         fake_config = {"zone_overrides": {}}
         monkeypatch.setattr(
-            "desloppify.app.commands.zone.rel", lambda p: p,
+            "desloppify.app.commands.zone.rel",
+            lambda p: p,
         )
 
         class FakeArgs:

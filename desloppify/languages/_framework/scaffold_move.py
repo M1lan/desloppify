@@ -31,4 +31,5 @@ def get_verify_hint() -> str:
     """Return the default post-move verification command."""
     return scaffold_verify_hint()
 
+
 __all__ = ["find_replacements", "find_self_replacements", "get_verify_hint"]

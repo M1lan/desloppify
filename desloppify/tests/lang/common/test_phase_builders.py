@@ -126,8 +126,8 @@ def test_shared_tail_slow_flags():
     """Last two phases (boilerplate duplication + duplicates) are slow."""
     phases = shared_subjective_duplicates_tail()
     assert phases[0].slow is False  # subjective review
-    assert phases[1].slow is True   # boilerplate duplication
-    assert phases[2].slow is True   # duplicates
+    assert phases[1].slow is True  # boilerplate duplication
+    assert phases[2].slow is True  # duplicates
 
 
 # ── Treesitter phase factories ────────────────────────────────
@@ -173,12 +173,15 @@ def test_make_ast_smells_phase_run_with_no_issues():
     mock_lang = MagicMock()
     mock_lang.file_finder.return_value = ["/tmp/test.cs"]
 
-    with patch(
-        "desloppify.languages._framework.treesitter.analysis.smells.detect_empty_catches",
-        return_value=[],
-    ), patch(
-        "desloppify.languages._framework.treesitter.analysis.smells.detect_unreachable_code",
-        return_value=[],
+    with (
+        patch(
+            "desloppify.languages._framework.treesitter.analysis.smells.detect_empty_catches",
+            return_value=[],
+        ),
+        patch(
+            "desloppify.languages._framework.treesitter.analysis.smells.detect_unreachable_code",
+            return_value=[],
+        ),
     ):
         issues, potentials = phase.run("/tmp", mock_lang)
     assert issues == []
@@ -198,12 +201,15 @@ def test_make_ast_smells_phase_run_with_catches_and_unreachable():
     catches = [{"file": "/tmp/test.cs", "line": 10, "type": "catch"}]
     unreachable = [{"file": "/tmp/test.cs", "line": 20, "after": "return"}]
 
-    with patch(
-        "desloppify.languages._framework.treesitter.analysis.smells.detect_empty_catches",
-        return_value=catches,
-    ), patch(
-        "desloppify.languages._framework.treesitter.analysis.smells.detect_unreachable_code",
-        return_value=unreachable,
+    with (
+        patch(
+            "desloppify.languages._framework.treesitter.analysis.smells.detect_empty_catches",
+            return_value=catches,
+        ),
+        patch(
+            "desloppify.languages._framework.treesitter.analysis.smells.detect_unreachable_code",
+            return_value=unreachable,
+        ),
     ):
         issues, potentials = phase.run("/tmp", mock_lang)
 
@@ -227,12 +233,14 @@ def test_make_cohesion_phase_run_with_entries():
     mock_lang = MagicMock()
     mock_lang.file_finder.return_value = ["/tmp/big_file.cs"]
 
-    entries = [{
-        "file": "/tmp/big_file.cs",
-        "families": ["network", "database", "ui", "auth"],
-        "component_count": 4,
-        "function_count": 20,
-    }]
+    entries = [
+        {
+            "file": "/tmp/big_file.cs",
+            "families": ["network", "database", "ui", "auth"],
+            "component_count": 4,
+            "function_count": 20,
+        }
+    ]
 
     with patch(
         "desloppify.languages._framework.treesitter.analysis.cohesion.detect_responsibility_cohesion",
@@ -287,22 +295,27 @@ def test_all_treesitter_phases_returns_empty_when_unavailable():
         from desloppify.languages._framework.treesitter.phases import (
             all_treesitter_phases,
         )
+
         result = all_treesitter_phases("go")
     assert result == []
 
 
 def test_all_treesitter_phases_returns_empty_for_unknown_spec():
     """When spec_name is not in TREESITTER_SPECS, return empty list."""
-    with patch(
-        "desloppify.languages._framework.treesitter.is_available",
-        return_value=True,
-    ), patch(
-        "desloppify.languages._framework.treesitter.get_spec",
-        return_value=None,
+    with (
+        patch(
+            "desloppify.languages._framework.treesitter.is_available",
+            return_value=True,
+        ),
+        patch(
+            "desloppify.languages._framework.treesitter.get_spec",
+            return_value=None,
+        ),
     ):
         from desloppify.languages._framework.treesitter.phases import (
             all_treesitter_phases,
         )
+
         result = all_treesitter_phases("nonexistent_lang")
     assert result == []
 
@@ -313,16 +326,20 @@ def test_all_treesitter_phases_includes_imports_when_import_query():
     mock_spec.function_query = "(some_query)"
     mock_spec.import_query = "(import_query)"
 
-    with patch(
-        "desloppify.languages._framework.treesitter.is_available",
-        return_value=True,
-    ), patch(
-        "desloppify.languages._framework.treesitter.get_spec",
-        return_value=mock_spec,
+    with (
+        patch(
+            "desloppify.languages._framework.treesitter.is_available",
+            return_value=True,
+        ),
+        patch(
+            "desloppify.languages._framework.treesitter.get_spec",
+            return_value=mock_spec,
+        ),
     ):
         from desloppify.languages._framework.treesitter.phases import (
             all_treesitter_phases,
         )
+
         result = all_treesitter_phases("test_lang")
 
     assert len(result) == 3
@@ -338,16 +355,20 @@ def test_all_treesitter_phases_excludes_imports_when_no_import_query():
     mock_spec.function_query = "(some_query)"
     mock_spec.import_query = ""
 
-    with patch(
-        "desloppify.languages._framework.treesitter.is_available",
-        return_value=True,
-    ), patch(
-        "desloppify.languages._framework.treesitter.get_spec",
-        return_value=mock_spec,
+    with (
+        patch(
+            "desloppify.languages._framework.treesitter.is_available",
+            return_value=True,
+        ),
+        patch(
+            "desloppify.languages._framework.treesitter.get_spec",
+            return_value=mock_spec,
+        ),
     ):
         from desloppify.languages._framework.treesitter.phases import (
             all_treesitter_phases,
         )
+
         result = all_treesitter_phases("test_lang")
 
     assert len(result) == 2

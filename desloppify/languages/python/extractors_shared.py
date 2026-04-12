@@ -9,7 +9,11 @@ from desloppify.base.discovery.paths import get_project_root
 
 def read_file(filepath: str) -> str | None:
     """Read a file, returning None on error."""
-    path = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+    path = (
+        Path(filepath)
+        if Path(filepath).is_absolute()
+        else get_project_root() / filepath
+    )
     try:
         return path.read_text()
     except (OSError, UnicodeDecodeError):

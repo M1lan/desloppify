@@ -22,11 +22,17 @@ def detect_hook_return_bloat(path: Path) -> tuple[list[dict], int]:
 
     for filepath in find_tsx_files(path):
         try:
-            p = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+            p = (
+                Path(filepath)
+                if Path(filepath).is_absolute()
+                else get_project_root() / filepath
+            )
             content = p.read_text()
             lines = content.splitlines()
         except (OSError, UnicodeDecodeError) as exc:
-            logger.debug("Skipping unreadable TSX file %s in hook-bloat pass: %s", filepath, exc)
+            logger.debug(
+                "Skipping unreadable TSX file %s in hook-bloat pass: %s", filepath, exc
+            )
             continue
 
         for match in hook_re.finditer(content):
@@ -45,7 +51,9 @@ def detect_hook_return_bloat(path: Path) -> tuple[list[dict], int]:
             depth = 0
             found_open = False
             func_end = None
-            for line_idx in range(brace_line, min(brace_line + MAX_FUNC_SCAN, len(lines))):
+            for line_idx in range(
+                brace_line, min(brace_line + MAX_FUNC_SCAN, len(lines))
+            ):
                 for _, ch, in_s in scan_code(lines[line_idx]):
                     if in_s:
                         continue
@@ -153,7 +161,11 @@ def detect_boolean_state_explosion(path: Path) -> tuple[list[dict], int]:
 
     for filepath in find_tsx_files(path):
         try:
-            p = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+            p = (
+                Path(filepath)
+                if Path(filepath).is_absolute()
+                else get_project_root() / filepath
+            )
             content = p.read_text()
         except (OSError, UnicodeDecodeError) as exc:
             logger.debug(

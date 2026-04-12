@@ -30,18 +30,32 @@ def test_map_test_to_source_matches_src_file_and_mod(tmp_path):
     source_file = _write(tmp_path, "src/http.rs", "pub struct Client;\n")
     mod_file = _write(tmp_path, "src/api/mod.rs", "pub struct Api;\n")
     with runtime_scope(RuntimeContext(project_root=tmp_path)):
-        assert rust_cov.map_test_to_source(test_file, {source_file, mod_file}) == source_file
-        assert rust_cov.map_test_to_source(
-            _write(tmp_path, "tests/api.rs", "use demo_app::api::Api;\n"),
-            {mod_file},
-        ) == mod_file
+        assert (
+            rust_cov.map_test_to_source(test_file, {source_file, mod_file})
+            == source_file
+        )
+        assert (
+            rust_cov.map_test_to_source(
+                _write(tmp_path, "tests/api.rs", "use demo_app::api::Api;\n"),
+                {mod_file},
+            )
+            == mod_file
+        )
 
 
 def test_resolve_import_spec_matches_workspace_local_crate(tmp_path):
     _write(tmp_path, "Cargo.toml", "[workspace]\nmembers = ['crates/common']\n")
-    _write(tmp_path, "app/Cargo.toml", "[package]\nname = 'demo-app'\nversion = '0.1.0'\n")
-    test_file = _write(tmp_path, "app/tests/http.rs", "use common_utils::helpers::Thing;\n")
-    target = _write(tmp_path, "crates/common/Cargo.toml", "[package]\nname = 'common-utils'\nversion = '0.1.0'\n")
+    _write(
+        tmp_path, "app/Cargo.toml", "[package]\nname = 'demo-app'\nversion = '0.1.0'\n"
+    )
+    test_file = _write(
+        tmp_path, "app/tests/http.rs", "use common_utils::helpers::Thing;\n"
+    )
+    target = _write(
+        tmp_path,
+        "crates/common/Cargo.toml",
+        "[package]\nname = 'common-utils'\nversion = '0.1.0'\n",
+    )
     del target
     helper = _write(tmp_path, "crates/common/src/helpers.rs", "pub struct Thing;\n")
 

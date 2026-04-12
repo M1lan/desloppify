@@ -42,7 +42,9 @@ DART_COMPLEXITY_SIGNALS = [
 ]
 
 
-def phase_structural(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_structural(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run structural detectors (large/complexity/flat directories)."""
     return run_structural_phase(
         path,
@@ -52,7 +54,9 @@ def phase_structural(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue]
     )
 
 
-def phase_coupling(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_coupling(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run coupling-oriented detectors against the Dart import graph."""
     return run_coupling_phase(
         path,

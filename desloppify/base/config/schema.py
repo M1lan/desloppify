@@ -38,12 +38,12 @@ CONFIG_SCHEMA: dict[str, ConfigKey] = {
     "generate_scorecard": ConfigKey(
         bool, True, "Generate scorecard image after each scan"
     ),
-    "badge_path": ConfigKey(
-        str, "scorecard.png", "Output path for scorecard image"
-    ),
+    "badge_path": ConfigKey(str, "scorecard.png", "Output path for scorecard image"),
     "exclude": ConfigKey(list, [], "Path patterns to exclude from scanning"),
     "ignore": ConfigKey(list, [], "Issue patterns to suppress"),
-    "ignore_metadata": ConfigKey(dict, {}, "Ignore metadata {pattern: {note, added_at}}"),
+    "ignore_metadata": ConfigKey(
+        dict, {}, "Ignore metadata {pattern: {note, added_at}}"
+    ),
     "zone_overrides": ConfigKey(
         dict, {}, "Manual zone overrides {rel_path: zone_name}"
     ),

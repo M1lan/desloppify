@@ -82,7 +82,9 @@ def test_command_has_no_placeholder(cfg):
 
 def test_fix_cmd_registered(cfg):
     """JavaScript supports autofix — at least one fixer must be registered."""
-    assert cfg.fixers, "expected at least one fixer (fix_cmd) to be registered for JavaScript"
+    assert cfg.fixers, (
+        "expected at least one fixer (fix_cmd) to be registered for JavaScript"
+    )
 
 
 def test_parsing_eslint_format():
@@ -102,7 +104,9 @@ def test_parsing_eslint_format():
     )
     entries = parse_eslint(output, Path("."))
 
-    assert len(entries) == 2, f"expected 2 parsed entries, got {len(entries)}: {entries}"
+    assert len(entries) == 2, (
+        f"expected 2 parsed entries, got {len(entries)}: {entries}"
+    )
 
     assert entries[0]["file"] == "/project/src/app.js"
     assert entries[0]["line"] == 5

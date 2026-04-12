@@ -106,7 +106,7 @@ def _init_template(
         f'    "{class_name}",\n'
         '    "register",\n'
         '    "register_hooks",\n'
-        ']\n'
+        "]\n"
     )
 
 

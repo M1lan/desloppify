@@ -16,8 +16,8 @@ def test_detect_cxx_security_falls_back_to_regex_with_reduced_coverage_when_tool
     source = tmp_path / "src" / "unsafe.cpp"
     source.parent.mkdir(parents=True)
     source.write_text(
-        '#include <cstring>\n'
-        '#include <cstdlib>\n'
+        "#include <cstring>\n"
+        "#include <cstdlib>\n"
         "void copy(char *dst, const char *src) {\n"
         "    std::strcpy(dst, src);\n"
         "    system(src);\n"
@@ -110,7 +110,9 @@ def test_detect_cxx_security_uses_cppcheck_when_clang_tidy_missing_without_reduc
     def _fake_run_tool_result(cmd, path, parser, **_kwargs):
         assert str(path.resolve()) == str(tmp_path.resolve())
         assert cmd.startswith("cppcheck ")
-        output = f"{source}:5:warning:dangerousFunctionSystem:Using 'system' can be unsafe\n"
+        output = (
+            f"{source}:5:warning:dangerousFunctionSystem:Using 'system' can be unsafe\n"
+        )
         return ToolRunResult(entries=parser(output, path), status="ok", returncode=1)
 
     monkeypatch.setattr(
@@ -153,7 +155,9 @@ def test_detect_cxx_security_retries_cppcheck_per_file_after_batch_timeout(
     monkeypatch.setattr(
         security_mod,
         "shutil",
-        SimpleNamespace(which=lambda cmd: "C:/tools/cppcheck.exe" if cmd == "cppcheck" else None),
+        SimpleNamespace(
+            which=lambda cmd: "C:/tools/cppcheck.exe" if cmd == "cppcheck" else None
+        ),
         raising=False,
     )
 
@@ -170,7 +174,9 @@ def test_detect_cxx_security_retries_cppcheck_per_file_after_batch_timeout(
             )
         if "unsafe_a.cpp" in cmd:
             output = f"{source_a}:8:warning:dangerousFunctionSystem:Using 'system' can be unsafe\n"
-            return ToolRunResult(entries=parser(output, path), status="ok", returncode=1)
+            return ToolRunResult(
+                entries=parser(output, path), status="ok", returncode=1
+            )
         if "unsafe_b.cpp" in cmd:
             return ToolRunResult(entries=[], status="empty", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
@@ -212,7 +218,9 @@ def test_detect_cxx_security_retries_clang_tidy_per_file_after_batch_failure(
     monkeypatch.setattr(
         security_mod,
         "shutil",
-        SimpleNamespace(which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None),
+        SimpleNamespace(
+            which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None
+        ),
         raising=False,
     )
 
@@ -228,10 +236,10 @@ def test_detect_cxx_security_retries_clang_tidy_per_file_after_batch_failure(
                 returncode=1,
             )
         if "unsafe_a.cpp" in cmd:
-            output = (
-                f"{source_a}:7:5: warning: call to 'strcpy' is insecure [clang-analyzer-security.insecureAPI.strcpy]\n"
+            output = f"{source_a}:7:5: warning: call to 'strcpy' is insecure [clang-analyzer-security.insecureAPI.strcpy]\n"
+            return ToolRunResult(
+                entries=parser(output, path), status="ok", returncode=1
             )
-            return ToolRunResult(entries=parser(output, path), status="ok", returncode=1)
         if "unsafe_b.cpp" in cmd:
             return ToolRunResult(entries=[], status="empty", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
@@ -254,7 +262,10 @@ def test_detect_cxx_security_retries_clang_tidy_per_file_after_batch_failure(
     assert result.files_scanned == 2
     assert len(result.entries) == 1
     assert result.entries[0]["detail"]["source"] == "clang-tidy"
-    assert result.entries[0]["detail"]["check_id"] == "clang-analyzer-security.insecureAPI.strcpy"
+    assert (
+        result.entries[0]["detail"]["check_id"]
+        == "clang-analyzer-security.insecureAPI.strcpy"
+    )
 
 
 def test_detect_cxx_security_keeps_reduced_coverage_when_partial_clang_tidy_retry_still_fails(
@@ -271,7 +282,9 @@ def test_detect_cxx_security_keeps_reduced_coverage_when_partial_clang_tidy_retr
     monkeypatch.setattr(
         security_mod,
         "shutil",
-        SimpleNamespace(which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None),
+        SimpleNamespace(
+            which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None
+        ),
         raising=False,
     )
 
@@ -286,10 +299,10 @@ def test_detect_cxx_security_keeps_reduced_coverage_when_partial_clang_tidy_retr
                 returncode=1,
             )
         if "unsafe_a.cpp" in cmd:
-            output = (
-                f"{source_a}:7:5: warning: call to 'strcpy' is insecure [clang-analyzer-security.insecureAPI.strcpy]\n"
+            output = f"{source_a}:7:5: warning: call to 'strcpy' is insecure [clang-analyzer-security.insecureAPI.strcpy]\n"
+            return ToolRunResult(
+                entries=parser(output, path), status="ok", returncode=1
             )
-            return ToolRunResult(entries=parser(output, path), status="ok", returncode=1)
         if "unsafe_b.cpp" in cmd:
             return ToolRunResult(
                 entries=[],
@@ -331,7 +344,9 @@ def test_detect_cxx_security_uses_unique_names_for_same_kind_same_line_findings(
     monkeypatch.setattr(
         security_mod,
         "shutil",
-        SimpleNamespace(which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None),
+        SimpleNamespace(
+            which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None
+        ),
         raising=False,
     )
 
@@ -355,7 +370,9 @@ def test_detect_cxx_security_uses_unique_names_for_same_kind_same_line_findings(
     assert result.entries[0]["name"] != result.entries[1]["name"]
 
 
-def test_detect_cxx_security_prefers_clang_tidy_for_duplicate_same_line(tmp_path, monkeypatch):
+def test_detect_cxx_security_prefers_clang_tidy_for_duplicate_same_line(
+    tmp_path, monkeypatch
+):
     source = tmp_path / "src" / "unsafe.cpp"
     source.parent.mkdir(parents=True)
     source.write_text("int main() { return 0; }\n")
@@ -368,13 +385,15 @@ def test_detect_cxx_security_prefers_clang_tidy_for_duplicate_same_line(tmp_path
 
     def _fake_run_tool_result(cmd, path, parser, **_kwargs):
         if cmd.startswith("clang-tidy "):
-            output = (
-                f"{source}:5:5: warning: calling 'system' uses a command processor [cert-env33-c]\n"
+            output = f"{source}:5:5: warning: calling 'system' uses a command processor [cert-env33-c]\n"
+            return ToolRunResult(
+                entries=parser(output, path), status="ok", returncode=1
             )
-            return ToolRunResult(entries=parser(output, path), status="ok", returncode=1)
         if cmd.startswith("cppcheck "):
             output = f"{source}:5:warning:dangerousFunctionSystem:Using 'system' can be unsafe\n"
-            return ToolRunResult(entries=parser(output, path), status="ok", returncode=1)
+            return ToolRunResult(
+                entries=parser(output, path), status="ok", returncode=1
+            )
         raise AssertionError(f"unexpected command: {cmd}")
 
     monkeypatch.setattr(
@@ -437,13 +456,17 @@ def test_detect_cxx_security_falls_back_to_regex_for_header_only_scan(
 ):
     header = tmp_path / "include" / "unsafe.hpp"
     header.parent.mkdir(parents=True)
-    header.write_text("char* copy(char* dst, const char* src) { return strcpy(dst, src); }\n")
+    header.write_text(
+        "char* copy(char* dst, const char* src) { return strcpy(dst, src); }\n"
+    )
     (tmp_path / "compile_commands.json").write_text("[]\n")
 
     monkeypatch.setattr(
         security_mod,
         "shutil",
-        SimpleNamespace(which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None),
+        SimpleNamespace(
+            which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None
+        ),
         raising=False,
     )
 
@@ -469,7 +492,9 @@ def test_detect_cxx_security_keeps_distinct_same_line_tool_findings(
     monkeypatch.setattr(
         security_mod,
         "shutil",
-        SimpleNamespace(which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None),
+        SimpleNamespace(
+            which=lambda cmd: "C:/tools/clang-tidy.exe" if cmd == "clang-tidy" else None
+        ),
         raising=False,
     )
 
@@ -573,7 +598,7 @@ def test_cxx_config_security_hook_returns_lang_result(tmp_path):
 def test_detect_cxx_security_ignores_findings_outside_scoped_files(
     tmp_path,
     monkeypatch,
- ):
+):
     source = tmp_path / "src" / "unsafe.cpp"
     source.parent.mkdir(parents=True)
     source.write_text("int main() { return 0; }\n")

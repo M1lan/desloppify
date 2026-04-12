@@ -67,7 +67,9 @@ def _is_runtime_entrypoint(filepath: str, lang_name: str) -> bool:
     lowered_path = filepath.replace("\\", "/").lower()
     lowered = content.lower()
     if lang_name == "typescript":
-        if "/supabase/functions/" in lowered_path and lowered_path.endswith("/index.ts"):
+        if "/supabase/functions/" in lowered_path and lowered_path.endswith(
+            "/index.ts"
+        ):
             return True
         if "serve((" in lowered or "serve (" in lowered:
             if (

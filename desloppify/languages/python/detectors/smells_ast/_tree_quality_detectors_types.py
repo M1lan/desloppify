@@ -9,10 +9,7 @@ from desloppify.languages.python.detectors.smells_ast._helpers import _iter_node
 
 def _is_dataclass_decorator(decorator: ast.AST) -> bool:
     """Return True when decorator is ``@dataclass`` (name or call form)."""
-    return (
-        isinstance(decorator, ast.Name)
-        and decorator.id == "dataclass"
-    ) or (
+    return (isinstance(decorator, ast.Name) and decorator.id == "dataclass") or (
         isinstance(decorator, ast.Call)
         and isinstance(decorator.func, ast.Name)
         and decorator.func.id == "dataclass"
@@ -30,7 +27,10 @@ def _dataclass_init_node_ids(
         if not any(_is_dataclass_decorator(dec) for dec in class_node.decorator_list):
             continue
         for class_item in class_node.body:
-            if isinstance(class_item, (ast.FunctionDef, ast.AsyncFunctionDef)) and class_item.name == "__init__":
+            if (
+                isinstance(class_item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and class_item.name == "__init__"
+            ):
                 init_ids.add(id(class_item))
     return init_ids
 
@@ -48,7 +48,7 @@ def _detect_optional_param_sprawl(
         if node.name.startswith("test_"):
             continue
         if node.name == "__init__" and id(node) in dataclass_inits:
-                continue
+            continue
 
         args = node.args
         n_defaults = len(args.defaults)

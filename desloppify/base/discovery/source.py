@@ -109,7 +109,9 @@ def is_file_cache_enabled(*, runtime: RuntimeContext | None = None) -> bool:
     return resolve_runtime_context(runtime).cache_enabled
 
 
-def read_file_text(filepath: str, *, runtime: RuntimeContext | None = None) -> str | None:
+def read_file_text(
+    filepath: str, *, runtime: RuntimeContext | None = None
+) -> str | None:
     """Read a file as text, with optional caching."""
     return resolve_runtime_context(runtime).file_text_cache.read(filepath)
 
@@ -199,8 +201,8 @@ def _find_source_files_cached(
     if not root.is_absolute():
         root = resolved_project_root / root
     all_exclusions = (
-        (resolved_options.exclusions or ()) + resolved_options.extra_exclusions
-    )
+        resolved_options.exclusions or ()
+    ) + resolved_options.extra_exclusions
     ext_set = set(extensions)
     files: list[str] = []
     for dirpath, dirnames, filenames in os.walk(root):
@@ -262,7 +264,9 @@ def find_source_files(
     )
 
 
-def find_ts_files(path: str | Path, *, runtime: RuntimeContext | None = None) -> list[str]:
+def find_ts_files(
+    path: str | Path, *, runtime: RuntimeContext | None = None
+) -> list[str]:
     """Find TypeScript ``.ts`` source files (excluding ``.tsx``)."""
     if runtime is None:
         return find_source_files(path, [".ts"])
@@ -280,7 +284,9 @@ def find_ts_and_tsx_files(
     return find_source_files(path, [".ts", ".tsx"], runtime=runtime)
 
 
-def find_tsx_files(path: str | Path, *, runtime: RuntimeContext | None = None) -> list[str]:
+def find_tsx_files(
+    path: str | Path, *, runtime: RuntimeContext | None = None
+) -> list[str]:
     if runtime is None:
         return find_source_files(path, [".tsx"])
     return find_source_files(path, [".tsx"], runtime=runtime)
@@ -310,7 +316,9 @@ def find_js_ts_and_tsx_files(
     return find_source_files(path, exts, runtime=runtime)
 
 
-def find_py_files(path: str | Path, *, runtime: RuntimeContext | None = None) -> list[str]:
+def find_py_files(
+    path: str | Path, *, runtime: RuntimeContext | None = None
+) -> list[str]:
     if runtime is None:
         return find_source_files(path, [".py"])
     return find_source_files(path, [".py"], runtime=runtime)

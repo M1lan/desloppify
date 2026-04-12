@@ -211,12 +211,7 @@ class TestDetectDeprecated:
         _write(
             tmp_path,
             "legacy.ts",
-            (
-                "/**\n"
-                " * @Deprecated Use newFunc\n"
-                " */\n"
-                "export function oldFunc() {}\n"
-            ),
+            ("/**\n * @Deprecated Use newFunc\n */\nexport function oldFunc() {}\n"),
         )
         entries, _ = _detect(tmp_path)
         symbols = {e["symbol"] for e in entries}

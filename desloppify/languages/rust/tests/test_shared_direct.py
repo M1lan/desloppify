@@ -82,14 +82,20 @@ async fn demo() {
 }
 """
 
-    assert rust_shared_mod._holds_lock_guard_across_await(
-        held_body,
-        rust_shared_mod._ASYNC_GUARD_ACQUIRE_RE,
-    ) is True
-    assert rust_shared_mod._holds_lock_guard_across_await(
-        dropped_body,
-        rust_shared_mod._ASYNC_GUARD_ACQUIRE_RE,
-    ) is False
+    assert (
+        rust_shared_mod._holds_lock_guard_across_await(
+            held_body,
+            rust_shared_mod._ASYNC_GUARD_ACQUIRE_RE,
+        )
+        is True
+    )
+    assert (
+        rust_shared_mod._holds_lock_guard_across_await(
+            dropped_body,
+            rust_shared_mod._ASYNC_GUARD_ACQUIRE_RE,
+        )
+        is False
+    )
 
 
 def test_should_skip_unsafe_api_match_respects_documented_local_invariants() -> None:
@@ -111,13 +117,19 @@ fn cast(value: u32) -> Wrapper {
     vec_offset = vec_rebuild.index("Vec::from_raw_parts")
     transmute_offset = transmute_wrapper.index("transmute")
 
-    assert rust_shared_mod._should_skip_unsafe_api_match(
-        "from_raw_parts",
-        vec_rebuild,
-        vec_offset,
-    ) is True
-    assert rust_shared_mod._should_skip_unsafe_api_match(
-        "transmute",
-        transmute_wrapper,
-        transmute_offset,
-    ) is True
+    assert (
+        rust_shared_mod._should_skip_unsafe_api_match(
+            "from_raw_parts",
+            vec_rebuild,
+            vec_offset,
+        )
+        is True
+    )
+    assert (
+        rust_shared_mod._should_skip_unsafe_api_match(
+            "transmute",
+            transmute_wrapper,
+            transmute_offset,
+        )
+        is True
+    )

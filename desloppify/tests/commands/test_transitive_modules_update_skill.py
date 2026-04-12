@@ -39,6 +39,7 @@ class TestReplaceSection:
 
     def test_replaces_between_markers(self):
         from desloppify.app.skill_docs import SKILL_BEGIN, SKILL_END
+
         content = f"before\n{SKILL_BEGIN}\nold content\n{SKILL_END}\nafter"
         result = _replace_section(content, "new section")
         assert "old content" not in result
@@ -48,6 +49,7 @@ class TestReplaceSection:
 
     def test_handles_empty_before(self):
         from desloppify.app.skill_docs import SKILL_BEGIN, SKILL_END
+
         content = f"{SKILL_BEGIN}\nold\n{SKILL_END}\nafter"
         result = _replace_section(content, "new")
         assert "new" in result
@@ -55,6 +57,7 @@ class TestReplaceSection:
 
     def test_handles_empty_after(self):
         from desloppify.app.skill_docs import SKILL_BEGIN, SKILL_END
+
         content = f"before\n{SKILL_BEGIN}\nold\n{SKILL_END}"
         result = _replace_section(content, "new")
         assert "new" in result
@@ -62,7 +65,9 @@ class TestReplaceSection:
 
     def test_raises_when_version_marker_but_no_begin_end(self):
         """Content with a version marker but no begin/end markers should not silently append."""
-        content = "# My Custom Setup\n<!-- desloppify-skill-version: 3 -->\nOld skill content"
+        content = (
+            "# My Custom Setup\n<!-- desloppify-skill-version: 3 -->\nOld skill content"
+        )
         with pytest.raises(CommandError, match="missing.*desloppify-begin"):
             _replace_section(content, "new section")
 
@@ -81,6 +86,7 @@ class TestResolveInterface:
 
     def test_from_install_overlay(self):
         from desloppify.app.skill_docs import SkillInstall
+
         install = SkillInstall(
             rel_path=".claude/skills/desloppify/SKILL.md",
             version=1,
@@ -92,6 +98,7 @@ class TestResolveInterface:
 
     def test_from_install_path_match(self):
         from desloppify.app.skill_docs import SkillInstall
+
         install = SkillInstall(
             rel_path=".claude/skills/desloppify/SKILL.md",
             version=1,
@@ -115,6 +122,7 @@ class TestResolveInterface:
 
     def test_from_install_no_match(self):
         from desloppify.app.skill_docs import SkillInstall
+
         install = SkillInstall(
             rel_path="unknown/path.md",
             version=1,
@@ -127,7 +135,9 @@ class TestResolveInterface:
 
 class TestCmdUpdateSkill:
     @patch("desloppify.app.commands.update_skill.update_installed_skill")
-    @patch("desloppify.app.commands.update_skill.resolve_interface", return_value="claude")
+    @patch(
+        "desloppify.app.commands.update_skill.resolve_interface", return_value="claude"
+    )
     def test_valid_interface(self, _mock_resolve, mock_update):
         args = argparse.Namespace(interface="claude")
         cmd_update_skill(args)
@@ -142,7 +152,10 @@ class TestCmdUpdateSkill:
         assert "No installed skill document found" in out
 
     @patch("desloppify.app.commands.update_skill.colorize", side_effect=lambda t, _c: t)
-    @patch("desloppify.app.commands.update_skill.resolve_interface", return_value="unknown_thing")
+    @patch(
+        "desloppify.app.commands.update_skill.resolve_interface",
+        return_value="unknown_thing",
+    )
     def test_unknown_interface(self, _mock_resolve, _mock_colorize, capsys):
         args = argparse.Namespace(interface="unknown_thing")
         cmd_update_skill(args)
@@ -155,6 +168,7 @@ class TestUpdateInstalledSkill:
     @patch("desloppify.app.commands.update_skill._download")
     def test_download_failure(self, mock_download, _mock_colorize, capsys):
         import urllib.error
+
         mock_download.side_effect = urllib.error.URLError("no network")
         result = update_installed_skill("claude")
         assert result is False
@@ -172,7 +186,9 @@ class TestUpdateInstalledSkill:
 
     @patch("desloppify.app.commands.update_skill.colorize", side_effect=lambda t, _c: t)
     @patch("desloppify.app.commands.update_skill._download")
-    def test_successful_dedicated_install(self, mock_download, _mock_colorize, capsys, tmp_path):
+    def test_successful_dedicated_install(
+        self, mock_download, _mock_colorize, capsys, tmp_path
+    ):
         skill_content = "# Skill\n<!-- desloppify-skill-version: 1 -->\nContent"
         mock_download.side_effect = lambda f: {
             "SKILL.md": skill_content,
@@ -186,14 +202,18 @@ class TestUpdateInstalledSkill:
             result = update_installed_skill("claude")
 
         assert result is True
-        written = (tmp_path / ".claude" / "skills" / "desloppify" / "SKILL.md").read_text()
+        written = (
+            tmp_path / ".claude" / "skills" / "desloppify" / "SKILL.md"
+        ).read_text()
         assert "desloppify-skill-version" in written
         out = capsys.readouterr().out
         assert "Updated" in out
 
     @patch("desloppify.app.commands.update_skill.colorize", side_effect=lambda t, _c: t)
     @patch("desloppify.app.commands.update_skill._download")
-    def test_successful_shared_install(self, mock_download, _mock_colorize, capsys, tmp_path):
+    def test_successful_shared_install(
+        self, mock_download, _mock_colorize, capsys, tmp_path
+    ):
         """Non-dedicated install (e.g. windsurf) replaces section in existing file."""
         skill_content = "# Skill\n<!-- desloppify-skill-version: 1 -->\nContent"
         mock_download.side_effect = lambda f: {

@@ -48,7 +48,9 @@ class DetectorPhase:
     """
 
     label: str
-    run: Callable[[Path, LangRuntimeContract], tuple[list[DetectorEntry], dict[str, int]]]
+    run: Callable[
+        [Path, LangRuntimeContract], tuple[list[DetectorEntry], dict[str, int]]
+    ]
     slow: bool = False
 
 
@@ -71,7 +73,9 @@ class LangRuntimeContract(Protocol):
     extract_functions: FunctionExtractor | None
     get_area: Callable[[str], str] | None
     build_dep_graph: DepGraphBuilder
-    detect_lang_security_detailed: Callable[[list[str], FileZoneMap | None], LangSecurityResult]
+    detect_lang_security_detailed: Callable[
+        [list[str], FileZoneMap | None], LangSecurityResult
+    ]
     detect_private_imports: Callable[
         [dict, FileZoneMap | None], tuple[list[DetectorEntry], int]
     ]

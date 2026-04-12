@@ -178,8 +178,14 @@ class TestFixerHasApplicableIssues:
         assert _fixer_has_applicable_issues(state, "smells", "dead-useeffect") is False
 
     def test_smells_empty_issues_not_applicable(self, empty_state):
-        assert _fixer_has_applicable_issues(empty_state, "smells", "dead-useeffect") is False
-        assert _fixer_has_applicable_issues(empty_state, "smells", "empty-if-chain") is False
+        assert (
+            _fixer_has_applicable_issues(empty_state, "smells", "dead-useeffect")
+            is False
+        )
+        assert (
+            _fixer_has_applicable_issues(empty_state, "smells", "empty-if-chain")
+            is False
+        )
 
 
 class TestSmellsActionWithNoReact:

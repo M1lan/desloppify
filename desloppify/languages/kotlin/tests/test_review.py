@@ -43,23 +43,17 @@ class TestApiSurface:
         assert "fetchUsers" in surface["public_functions"]
 
     def test_private_excluded(self):
-        files = {
-            "Service.kt": "private fun helper(): Int = 42\n"
-        }
+        files = {"Service.kt": "private fun helper(): Int = 42\n"}
         surface = api_surface(files)
         assert "helper" not in surface["public_functions"]
 
     def test_internal_excluded(self):
-        files = {
-            "Service.kt": "internal fun helper(): Int = 42\n"
-        }
+        files = {"Service.kt": "internal fun helper(): Int = 42\n"}
         surface = api_surface(files)
         assert "helper" not in surface["public_functions"]
 
     def test_public_class(self):
-        files = {
-            "Models.kt": "data class User(val id: String, val name: String)\n"
-        }
+        files = {"Models.kt": "data class User(val id: String, val name: String)\n"}
         surface = api_surface(files)
         assert "User" in surface["public_types"]
 
@@ -71,16 +65,12 @@ class TestApiSurface:
         assert "UiState" in surface["public_types"]
 
     def test_private_class_excluded(self):
-        files = {
-            "Internal.kt": "private class InternalHelper {}\n"
-        }
+        files = {"Internal.kt": "private class InternalHelper {}\n"}
         surface = api_surface(files)
         assert "InternalHelper" not in surface["public_types"]
 
     def test_suspend_function(self):
-        files = {
-            "Service.kt": "suspend fun loadData(): Data {\n    return Data()\n}\n"
-        }
+        files = {"Service.kt": "suspend fun loadData(): Data {\n    return Data()\n}\n"}
         surface = api_surface(files)
         assert "loadData" in surface["public_functions"]
 

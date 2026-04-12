@@ -38,8 +38,12 @@ def test_file_checks_cover_edge_auth_json_parse_and_rls_detection() -> None:
     )
     edge_lines = edge_content.splitlines()
 
-    assert file_checks_mod._looks_like_edge_handler("/src/functions/handler.ts", edge_content)
-    assert not file_checks_mod._looks_like_edge_handler("/src/web/handler.ts", edge_content)
+    assert file_checks_mod._looks_like_edge_handler(
+        "/src/functions/handler.ts", edge_content
+    )
+    assert not file_checks_mod._looks_like_edge_handler(
+        "/src/web/handler.ts", edge_content
+    )
     assert file_checks_mod._extract_handler_body(edge_content) is not None
     assert not file_checks_mod._handler_has_auth_check(edge_content)
     assert file_checks_mod._handler_has_auth_check("requireAuth(user)")
@@ -60,14 +64,18 @@ def test_file_checks_cover_edge_auth_json_parse_and_rls_detection() -> None:
     assert file_checks_mod._is_in_try_scope(json_lines, 7) is False
 
     json_entries: list[dict[str, object]] = []
-    file_checks_mod._check_json_parse_unguarded("src/parse.ts", json_lines, json_entries)
+    file_checks_mod._check_json_parse_unguarded(
+        "src/parse.ts", json_lines, json_entries
+    )
     assert _kinds(json_entries) == {"json_parse_unguarded"}
     assert json_entries[0]["detail"]["line"] == 7
 
     sql_content = "CREATE VIEW v AS SELECT 1;\nSELECT 1;"
     sql_lines = sql_content.splitlines()
     rls_entries: list[dict[str, object]] = []
-    file_checks_mod._check_rls_bypass("db/schema.sql", sql_content, sql_lines, rls_entries)
+    file_checks_mod._check_rls_bypass(
+        "db/schema.sql", sql_content, sql_lines, rls_entries
+    )
     assert _kinds(rls_entries) == {"rls_bypass_views"}
 
     no_rls_entries: list[dict[str, object]] = []

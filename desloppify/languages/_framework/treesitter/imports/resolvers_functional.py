@@ -12,7 +12,9 @@ def _camel_to_snake(name: str) -> str:
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-def resolve_elixir_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_elixir_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Elixir aliases to local files.
 
     Maps ``MyApp.Module.Sub`` → ``lib/my_app/module/sub.ex``.
@@ -67,7 +69,9 @@ def resolve_elixir_import(import_text: str, source_file: str, scan_path: str) ->
     return None
 
 
-def resolve_zig_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_zig_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Zig @import(\"...\") to local files."""
     del scan_path
     if not import_text:
@@ -99,7 +103,9 @@ _HASKELL_STDLIB_PREFIXES = (
 )
 
 
-def resolve_haskell_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_haskell_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Haskell imports to local modules."""
     del source_file
     if not import_text:
@@ -117,7 +123,9 @@ def resolve_haskell_import(import_text: str, source_file: str, scan_path: str) -
     return None
 
 
-def resolve_erlang_include(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_erlang_include(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Erlang -include(\"...\") to local files."""
     if not import_text:
         return None
@@ -177,7 +185,9 @@ _OCAML_STDLIB_MODULES = frozenset(
 )
 
 
-def resolve_ocaml_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_ocaml_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve OCaml open/import module paths to local files."""
     del source_file
     if not import_text:
@@ -195,7 +205,9 @@ def resolve_ocaml_import(import_text: str, source_file: str, scan_path: str) -> 
     return None
 
 
-def resolve_julia_include(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_julia_include(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Julia ``include("...")`` to local files.
 
     Resolves relative to the directory of the *including* file first,
@@ -227,7 +239,9 @@ def resolve_julia_include(import_text: str, source_file: str, scan_path: str) ->
 _FSHARP_STDLIB_PREFIXES = ("System", "Microsoft", "FSharp")
 
 
-def resolve_fsharp_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_fsharp_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve F# open/import statements to local files."""
     del source_file
     if not import_text:

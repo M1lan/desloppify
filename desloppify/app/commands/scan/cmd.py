@@ -190,7 +190,9 @@ def cmd_scan(args: argparse.Namespace) -> None:
         query_file=query_file_path(),
     )
 
-    badge_path, _badge_result = emit_scorecard_badge(args, runtime.config, runtime.state)
+    badge_path, _badge_result = emit_scorecard_badge(
+        args, runtime.config, runtime.state
+    )
     print_llm_summary(runtime.state, badge_path, narrative, merge.diff)
     auto_update_skill()
 

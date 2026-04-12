@@ -6,7 +6,9 @@ from importlib import import_module
 from types import ModuleType
 
 
-def load_compat_exports(namespace: dict[str, object], module_path: str) -> tuple[ModuleType, list[str]]:
+def load_compat_exports(
+    namespace: dict[str, object], module_path: str
+) -> tuple[ModuleType, list[str]]:
     """Populate a wrapper module namespace from its canonical implementation."""
     impl = import_module(module_path)
     exports = [name for name in dir(impl) if not name.startswith("__")]

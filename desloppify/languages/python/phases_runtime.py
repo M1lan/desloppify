@@ -69,7 +69,10 @@ def run_phase_structural(
             structural,
             entry["file"],
             f"complexity score {entry['score']}",
-            {"complexity_score": entry["score"], "complexity_signals": entry["signals"]},
+            {
+                "complexity_score": entry["score"],
+                "complexity_signals": entry["signals"],
+            },
         )
         lang.complexity_map[entry["file"]] = entry["score"]
 
@@ -139,7 +142,9 @@ def run_phase_structural(
     return results, potentials
 
 
-def run_phase_coupling(path: Path, lang: LangRun, *, log_fn) -> tuple[list[Issue], dict[str, int]]:
+def run_phase_coupling(
+    path: Path, lang: LangRun, *, log_fn
+) -> tuple[list[Issue], dict[str, int]]:
     """Run coupling-related detectors and return issues/potentials."""
     graph = deps_detector_mod.build_dep_graph(path)
     lang.dep_graph = graph

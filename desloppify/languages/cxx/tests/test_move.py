@@ -11,6 +11,6 @@ def test_cxx_move_helpers_expose_scaffold_contract():
     assert cxx_move.filter_intra_package_importer_changes(
         "a.cpp", [("a", "b")], set()
     ) == [("a", "b")]
-    assert cxx_move.filter_directory_self_changes(
-        "a.cpp", [("a", "b")], set()
-    ) == [("a", "b")]
+    assert cxx_move.filter_directory_self_changes("a.cpp", [("a", "b")], set()) == [
+        ("a", "b")
+    ]

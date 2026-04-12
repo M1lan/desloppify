@@ -9,11 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from desloppify.base.discovery.file_paths import (
-
     rel,
-
     resolve_path,
-
 )
 from desloppify.base.output.fallbacks import log_best_effort_failure
 from desloppify.engine._state.schema import StateModel
@@ -105,7 +102,9 @@ def sibling_behavior_context(
     base_path: Path | str | None = None,
 ) -> dict[str, Any]:
     root = Path(base_path).resolve() if base_path is not None else None
-    boilerplate_names = frozenset({"__init__.py", "conftest.py", "setup.py", "__main__.py"})
+    boilerplate_names = frozenset(
+        {"__init__.py", "conftest.py", "setup.py", "__main__.py"}
+    )
 
     def _bucket_for(filepath: str) -> str | None:
         if Path(filepath).name in boilerplate_names:
@@ -147,7 +146,9 @@ def sibling_behavior_context(
         if dir_name is None:
             continue
         file_rel = _display_path(filepath)
-        dir_imports.setdefault(dir_name, {})[file_rel] = _extract_imported_names(content)
+        dir_imports.setdefault(dir_name, {})[file_rel] = _extract_imported_names(
+            content
+        )
 
     sibling_behavior: dict[str, Any] = {}
     for dir_name, file_names_map in dir_imports.items():
@@ -159,7 +160,9 @@ def sibling_behavior_context(
             for name in names:
                 name_counts[name] += 1
         threshold = total * 0.6
-        shared = {name: count for name, count in name_counts.items() if count >= threshold}
+        shared = {
+            name: count for name, count in name_counts.items() if count >= threshold
+        }
         if not shared:
             continue
         outliers = []
@@ -174,7 +177,9 @@ def sibling_behavior_context(
                 name: {"count": count, "total": total}
                 for name, count in sorted(shared.items(), key=lambda item: -item[1])
             },
-            "outliers": sorted(outliers, key=lambda item: len(item["missing"]), reverse=True),
+            "outliers": sorted(
+                outliers, key=lambda item: len(item["missing"]), reverse=True
+            ),
         }
     return sibling_behavior
 
@@ -210,7 +215,7 @@ def dependencies_context(
     allowed_files: set[str] | None = None,
 ) -> dict[str, Any]:
     cycle_issues = []
-    issues = (state.get("work_items") or state.get("issues", {}))
+    issues = state.get("work_items") or state.get("issues", {})
     if not isinstance(issues, dict):
         issues = {}
     for issue in issues.values():

@@ -16,6 +16,7 @@ from desloppify.languages import get_lang
 # Shared fixture
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="module")
 def ruby_cfg():
     """Return the registered Ruby LangConfig (loaded once per test session)."""
@@ -25,6 +26,7 @@ def ruby_cfg():
 # ---------------------------------------------------------------------------
 # Basic identity
 # ---------------------------------------------------------------------------
+
 
 def test_config_name(ruby_cfg):
     assert ruby_cfg.name == "ruby"
@@ -43,12 +45,16 @@ def test_default_src_is_lib(ruby_cfg):
 # Project detection markers
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("marker", [
-    "Gemfile",       # Bundler manifest
-    "Rakefile",      # Build/task file
-    ".ruby-version", # rbenv/rvm version pin
-    "*.gemspec",     # Gem specification (glob — supported by resolution.py)
-])
+
+@pytest.mark.parametrize(
+    "marker",
+    [
+        "Gemfile",  # Bundler manifest
+        "Rakefile",  # Build/task file
+        ".ruby-version",  # rbenv/rvm version pin
+        "*.gemspec",  # Gem specification (glob — supported by resolution.py)
+    ],
+)
 def test_detect_markers_present(ruby_cfg, marker):
     assert marker in ruby_cfg.detect_markers, (
         f"Expected detect_marker {marker!r} to be registered"
@@ -59,6 +65,7 @@ def test_detect_markers_present(ruby_cfg, marker):
 # Tool wiring
 # ---------------------------------------------------------------------------
 
+
 def test_rubocop_detect_command_registered(ruby_cfg):
     """rubocop_offense must be present so the RuboCop phase can run."""
     assert "rubocop_offense" in ruby_cfg.detect_commands
@@ -68,11 +75,15 @@ def test_rubocop_detect_command_registered(ruby_cfg):
 # Phases
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("label", [
-    "Structural analysis",
-    "Coupling + cycles + orphaned",
-    "rubocop",
-])
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Structural analysis",
+        "Coupling + cycles + orphaned",
+        "rubocop",
+    ],
+)
 def test_has_required_phases(ruby_cfg, label):
     labels = {p.label for p in ruby_cfg.phases}
     assert label in labels, f"Expected phase {label!r} to be present"
@@ -105,9 +116,7 @@ def test_file_finder_skips_excluded_dirs(tmp_path, ruby_cfg):
         clear_source_file_cache_for_tests()
         files = ruby_cfg.file_finder(tmp_path)
 
-    assert files == ["lib/app.rb"], (
-        f"Expected only lib/app.rb but got: {files}"
-    )
+    assert files == ["lib/app.rb"], f"Expected only lib/app.rb but got: {files}"
 
 
 def test_external_test_dirs_includes_spec(ruby_cfg):

@@ -32,7 +32,11 @@ def test_build_dep_graph_resolves_mod_and_crate_use(tmp_path):
     with runtime_scope(RuntimeContext(project_root=tmp_path)):
         graph = build_dep_graph(tmp_path)
 
-    assert graph["src/lib.rs"]["imports"] == {"src/foo.rs", "src/bar/mod.rs", "src/bar/baz.rs"}
+    assert graph["src/lib.rs"]["imports"] == {
+        "src/foo.rs",
+        "src/bar/mod.rs",
+        "src/bar/baz.rs",
+    }
     assert "src/lib.rs" in graph["src/foo.rs"]["importers"]
     assert "src/lib.rs" in graph["src/bar/baz.rs"]["importers"]
 
@@ -110,7 +114,9 @@ support = { package = "support-utils", path = "../support" }
     assert "support/src/helpers.rs" in graph["app/src/lib.rs"]["imports"]
 
 
-def test_build_dep_graph_resolves_custom_path_modules_and_restricted_mod_visibility(tmp_path):
+def test_build_dep_graph_resolves_custom_path_modules_and_restricted_mod_visibility(
+    tmp_path,
+):
     _write(
         tmp_path,
         "Cargo.toml",

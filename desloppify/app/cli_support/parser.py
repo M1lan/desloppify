@@ -89,7 +89,9 @@ def _cli_version_string() -> str:
         return "desloppify (version unknown)"
 
 
-def create_parser(*, langs: list[str], detector_names: list[str]) -> argparse.ArgumentParser:
+def create_parser(
+    *, langs: list[str], detector_names: list[str]
+) -> argparse.ArgumentParser:
     """Build top-level CLI parser with all subcommands."""
     lang_help = ", ".join(langs) if langs else "registered languages"
 

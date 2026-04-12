@@ -47,11 +47,11 @@ LOW_VALUE_PATTERN = re.compile(
     r"(?m)^\s*(?:#!\[(?:allow|cfg_attr)|mod\s+tests\s*\{|use\s+super::\*)"
 )
 
-_PUB_TYPE_RE = re.compile(
-    r"(?m)^\s*pub\s+(?:struct|enum|trait|type)\s+([A-Za-z_]\w*)"
-)
+_PUB_TYPE_RE = re.compile(r"(?m)^\s*pub\s+(?:struct|enum|trait|type)\s+([A-Za-z_]\w*)")
 _PUB_FN_RE = re.compile(r"(?m)^\s*pub\s+(?:async\s+)?fn\s+([A-Za-z_]\w*)\s*\(")
-_IMPL_RE = re.compile(r"(?m)^\s*impl(?:<[^>]+>)?\s+([A-Za-z_]\w*)\s+for\s+([A-Za-z_]\w*)")
+_IMPL_RE = re.compile(
+    r"(?m)^\s*impl(?:<[^>]+>)?\s+([A-Za-z_]\w*)\s+for\s+([A-Za-z_]\w*)"
+)
 
 
 def module_patterns(content: str) -> list[str]:
@@ -62,7 +62,9 @@ def module_patterns(content: str) -> list[str]:
         out.append("use_declarations")
     if re.search(r"(?m)^\s*pub(?:\([^)]*\))?\s+trait\s+", stripped):
         out.append("public_traits")
-    if re.search(r"(?m)^\s*impl(?:<[^>]+>)?\s+(?:From|TryFrom|Into|Iterator)\b", stripped):
+    if re.search(
+        r"(?m)^\s*impl(?:<[^>]+>)?\s+(?:From|TryFrom|Into|Iterator)\b", stripped
+    ):
         out.append("std_trait_impls")
     if re.search(r"\b(?:unwrap|expect|panic!|todo!|unimplemented!)", stripped):
         out.append("panic_paths")

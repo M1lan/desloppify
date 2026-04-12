@@ -182,7 +182,12 @@ def _cmd_test_hermes() -> None:
     )
 
     if not _hermes_available():
-        print(colorize('Hermes not enabled. Set "hermes_enabled": true in config.json', "yellow"))
+        print(
+            colorize(
+                'Hermes not enabled. Set "hermes_enabled": true in config.json',
+                "yellow",
+            )
+        )
         return
 
     # Get current model
@@ -214,7 +219,9 @@ def _cmd_test_hermes() -> None:
     # Wait a moment, then switch back
     time.sleep(2)
     print(f"  Switching back to: {original_provider}:{original_model}")
-    result = _hermes_send_message(f"/model {original_provider}:{original_model}", mode="queue")
+    result = _hermes_send_message(
+        f"/model {original_provider}:{original_model}", mode="queue"
+    )
     if not result.get("success"):
         print(colorize(f"  Switch-back failed: {result.get('error', '?')}", "red"))
         return

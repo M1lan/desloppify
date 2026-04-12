@@ -79,7 +79,9 @@ def fix_missing_features(entries: list[dict], *, dry_run: bool = False) -> FixRe
             {
                 "file": rel(absolute),
                 "removed": [
-                    entry["name"] for entry in entries if entry.get("detail", {}).get("manifest") == manifest
+                    entry["name"]
+                    for entry in entries
+                    if entry.get("detail", {}).get("manifest") == manifest
                 ],
                 "lines_removed": len(features),
             }

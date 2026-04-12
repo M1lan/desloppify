@@ -49,6 +49,7 @@ GDSCRIPT_ZONE_RULES = [
     ZoneRule(Zone.GENERATED, ["/.import/", ".import", ".uid"]),
 ] + COMMON_ZONE_RULES
 
+
 class GdscriptConfig(LangConfig):
     """GDScript language configuration."""
 

@@ -8,7 +8,9 @@ from types import SimpleNamespace
 import pytest
 
 from desloppify.engine.planning import scan as plan_scan_mod
-from desloppify.languages._framework.frameworks.detection import detect_ecosystem_frameworks
+from desloppify.languages._framework.frameworks.detection import (
+    detect_ecosystem_frameworks,
+)
 from desloppify.languages._framework.node.frameworks.nextjs.info import (
     nextjs_info_from_evidence,
 )
@@ -45,7 +47,9 @@ class _FakeLang(SimpleNamespace):
 
 def test_detect_nextjs_present_when_next_dependency_and_app_present(tmp_path: Path):
     _write(tmp_path, "package.json", '{"dependencies": {"next": "14.0.0"}}\n')
-    _write(tmp_path, "app/page.tsx", "export default function Page() { return <div/> }\n")
+    _write(
+        tmp_path, "app/page.tsx", "export default function Page() { return <div/> }\n"
+    )
 
     detection = detect_ecosystem_frameworks(tmp_path, None, "node")
     assert detection.package_root == tmp_path.resolve()
@@ -56,7 +60,9 @@ def test_detect_nextjs_present_when_next_dependency_and_app_present(tmp_path: Pa
 
 def test_detect_nextjs_absent_when_only_app_tree_exists(tmp_path: Path):
     _write(tmp_path, "package.json", '{"dependencies": {"react": "18.3.0"}}\n')
-    _write(tmp_path, "app/page.tsx", "export default function Page() { return <div/> }\n")
+    _write(
+        tmp_path, "app/page.tsx", "export default function Page() { return <div/> }\n"
+    )
 
     detection = detect_ecosystem_frameworks(tmp_path, None, "node")
     assert "nextjs" not in detection.present
@@ -67,7 +73,9 @@ def test_detect_nextjs_package_root_for_external_scan_path(tmp_path: Path):
     external.mkdir(parents=True, exist_ok=True)
     (external / "package.json").write_text('{"dependencies": {"next": "14.0.0"}}\n')
     (external / "app").mkdir(parents=True, exist_ok=True)
-    (external / "app" / "page.tsx").write_text("export default function Page(){return <div/>}\n")
+    (external / "app" / "page.tsx").write_text(
+        "export default function Page(){return <div/>}\n"
+    )
 
     detection = detect_ecosystem_frameworks(external, None, "node")
     assert detection.package_root == external.resolve()
@@ -214,11 +222,15 @@ def test_nextjs_smells_phase_emits_issues_when_next_present(tmp_path: Path):
     )
 
     cfg = TypeScriptConfig()
-    phase = next(p for p in cfg.phases if getattr(p, "label", "") == "Next.js framework smells")
+    phase = next(
+        p for p in cfg.phases if getattr(p, "label", "") == "Next.js framework smells"
+    )
     issues, potentials = phase.run(tmp_path, _FakeLang())
     assert potentials.get("nextjs", 0) >= 1
     assert any(issue.get("detector") == "nextjs" for issue in issues)
-    assert any("next_router_in_app_router" in str(issue.get("id", "")) for issue in issues)
+    assert any(
+        "next_router_in_app_router" in str(issue.get("id", "")) for issue in issues
+    )
 
 
 def test_next_lint_phase_is_skipped_when_include_slow_false():

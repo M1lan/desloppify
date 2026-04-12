@@ -84,6 +84,7 @@ def _detect_constant_return(
     literal value (True, False, None, a number, or a string), the function
     likely has dead logic or is a stub masquerading as real code.
     """
+
     def _iter_function_scope_nodes(node: ast.FunctionDef | ast.AsyncFunctionDef):
         """Iterate nodes in this function body, skipping nested function scopes."""
         stack: list[ast.AST] = list(reversed(node.body))
@@ -183,9 +184,8 @@ def _detect_noop_function(
     for node in _iter_nodes(tree, all_nodes, (ast.FunctionDef, ast.AsyncFunctionDef)):
         if node.name in _SKIP_NAMES:
             continue
-        if (
-            "app/commands/" in filepath.replace("\\", "/")
-            and node.name.startswith(_DISPLAY_HELPER_PREFIXES)
+        if "app/commands/" in filepath.replace("\\", "/") and node.name.startswith(
+            _DISPLAY_HELPER_PREFIXES
         ):
             continue
         # Skip decorated functions (abstract methods, properties, etc.)
@@ -237,8 +237,7 @@ def _detect_del_param(
     results: list[dict] = []
     for node in _iter_nodes(tree, all_nodes, (ast.FunctionDef, ast.AsyncFunctionDef)):
         param_names = {
-            a.arg
-            for a in node.args.args + node.args.posonlyargs + node.args.kwonlyargs
+            a.arg for a in node.args.args + node.args.posonlyargs + node.args.kwonlyargs
         }
         if not param_names:
             continue

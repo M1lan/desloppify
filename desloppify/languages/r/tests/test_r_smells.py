@@ -90,7 +90,7 @@ def test_detect_one_to_n(tmp_path):
 
 
 def test_detect_strings_as_factors(tmp_path):
-    _write(tmp_path, "R/script.R", 'options(stringsAsFactors = FALSE)\n')
+    _write(tmp_path, "R/script.R", "options(stringsAsFactors = FALSE)\n")
     entries, _ = detect_smells(tmp_path)
     smell = _entry(entries, "strings_as_factors")
     assert smell["count"] == 1
@@ -119,7 +119,7 @@ def test_no_smells_in_clean_code(tmp_path):
     _write(
         tmp_path,
         "R/script.R",
-        'library(dplyr)\n\nadd <- function(a, b) {\n  a + b\n}\n',
+        "library(dplyr)\n\nadd <- function(a, b) {\n  a + b\n}\n",
     )
     entries, total_files = detect_smells(tmp_path)
     assert total_files == 1
@@ -130,11 +130,12 @@ def test_skips_excluded_dirs(tmp_path):
     """Test that exclusions work via framework's discovery system."""
     _write(tmp_path, "renv/library/script.R", "setwd('.')\n")
     _write(tmp_path, "R/clean.R", "x <- 1\n")
-    
+
     # With framework discovery, we need to set exclusions via runtime context
     from desloppify.base.discovery.source import set_exclusions
+
     set_exclusions(["renv/**"])
-    
+
     try:
         entries, total_files = detect_smells(tmp_path)
         assert total_files == 1

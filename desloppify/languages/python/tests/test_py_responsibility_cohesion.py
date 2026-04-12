@@ -55,9 +55,7 @@ def test_ignores_connected_module(tmp_path):
         "def f():\n    return g()\n\n"
         "def g():\n    return h()\n\n"
         "def h():\n    return i()\n\n"
-        "def i():\n    return 1\n\n"
-        + _padding_lines(220)
-        + "\n"
+        "def i():\n    return 1\n\n" + _padding_lines(220) + "\n"
     )
     _write(tmp_path, "focused.py", module)
     entries, _ = detect_responsibility_cohesion(tmp_path)
@@ -79,4 +77,3 @@ def test_ignores_small_files_even_if_disconnected(tmp_path):
     entries, candidates = detect_responsibility_cohesion(tmp_path)
     assert candidates == 0
     assert entries == []
-

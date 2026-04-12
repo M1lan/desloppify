@@ -18,7 +18,9 @@ def _sole_existing_lang_state_file() -> Path | None:
     state_dir = get_project_root() / ".desloppify"
     if not state_dir.exists():
         return None
-    candidates = sorted(path for path in state_dir.glob("state-*.json") if path.is_file())
+    candidates = sorted(
+        path for path in state_dir.glob("state-*.json") if path.is_file()
+    )
     if len(candidates) == 1:
         return candidates[0]
     return None

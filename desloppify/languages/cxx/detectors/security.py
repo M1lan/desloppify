@@ -28,7 +28,16 @@ logger = logging.getLogger(__name__)
 _SOURCE_SUFFIXES = frozenset({".c", ".cc", ".cpp", ".cxx"})
 _HEADER_SUFFIXES = frozenset({".h", ".hpp"})
 _CXX_SUFFIXES = _SOURCE_SUFFIXES | _HEADER_SUFFIXES
-_UNSAFE_C_STRING_APIS = ("strcpy", "strcat", "sprintf", "vsprintf", "gets", "scanf", "sscanf", "fscanf")
+_UNSAFE_C_STRING_APIS = (
+    "strcpy",
+    "strcat",
+    "sprintf",
+    "vsprintf",
+    "gets",
+    "scanf",
+    "sscanf",
+    "fscanf",
+)
 _PROJECT_MARKERS = ("compile_commands.json", "CMakeLists.txt", "Makefile")
 _TOOL_PRIORITY = {"clang-tidy": 0, "cppcheck": 1, "regex": 2}
 _CLANG_TIDY_BATCH_SIZE = 10
@@ -268,7 +277,10 @@ def _looks_security_finding(source: str, check_id: str, message: str) -> bool:
 
     text = f"{check_id} {message}".lower()
     if source == "clang-tidy":
-        return bool(check_id.startswith("cert-") or check_id.startswith("clang-analyzer-security"))
+        return bool(
+            check_id.startswith("cert-")
+            or check_id.startswith("clang-analyzer-security")
+        )
 
     return any(
         token in text
@@ -364,7 +376,10 @@ def _cxx_files_in_scope(files: list[str], zone_map: FileZoneMap | None) -> list[
         suffix = Path(filepath).suffix.lower()
         if suffix not in _CXX_SUFFIXES:
             continue
-        if zone_map is not None and zone_map.get(filepath) in (Zone.GENERATED, Zone.VENDOR):
+        if zone_map is not None and zone_map.get(filepath) in (
+            Zone.GENERATED,
+            Zone.VENDOR,
+        ):
             continue
         scoped.append(str(Path(filepath).resolve()))
     return scoped
@@ -387,7 +402,9 @@ def _scan_root_from_files(files: list[str]) -> Path | None:
 def _relative_tool_args(files: list[str], scan_root: Path) -> str:
     return " ".join(
         shlex.quote(
-            str(Path(filepath).resolve().relative_to(scan_root.resolve())).replace("\\", "/")
+            str(Path(filepath).resolve().relative_to(scan_root.resolve())).replace(
+                "\\", "/"
+            )
         )
         for filepath in files
     )
@@ -409,7 +426,7 @@ def _tool_result_state(result: ToolRunResult) -> ToolState:
 
 def _run_clang_tidy_invocation(
     scan_root: Path, source_files: list[str]
- ) -> CxxToolScanResult:
+) -> CxxToolScanResult:
     file_args = _relative_tool_args(source_files, scan_root)
     result = run_tool_result(
         f"clang-tidy -p . --quiet -checks=-*,clang-analyzer-security*,cert-* {file_args}",
@@ -426,7 +443,9 @@ def _run_clang_tidy_invocation(
     )
 
 
-def _merge_tool_scan_results(tool: str, results: list[CxxToolScanResult]) -> CxxToolScanResult:
+def _merge_tool_scan_results(
+    tool: str, results: list[CxxToolScanResult]
+) -> CxxToolScanResult:
     successful = [result for result in results if result.is_success()]
     failed = [result for result in results if not result.is_success()]
     if successful:
@@ -435,7 +454,9 @@ def _merge_tool_scan_results(tool: str, results: list[CxxToolScanResult]) -> Cxx
             filepath for result in successful for filepath in result.covered_files
         )
         if failed:
-            first_failure = next((result for result in failed if result.detail), failed[0])
+            first_failure = next(
+                (result for result in failed if result.detail), failed[0]
+            )
             return CxxToolScanResult(
                 tool=tool,
                 state=first_failure.state,
@@ -466,7 +487,9 @@ def _run_clang_tidy(scan_root: Path, files: list[str]) -> CxxToolScanResult:
         return CxxToolScanResult(tool="clang-tidy", state="missing_tool", entries=[])
 
     source_files = [
-        filepath for filepath in files if Path(filepath).suffix.lower() in _SOURCE_SUFFIXES
+        filepath
+        for filepath in files
+        if Path(filepath).suffix.lower() in _SOURCE_SUFFIXES
     ]
     if not source_files:
         return CxxToolScanResult(tool="clang-tidy", state="empty", entries=[])
@@ -555,7 +578,9 @@ def _dedupe_entries(entries: list[dict]) -> list[dict]:
     best: dict[tuple[str, str, int, str], dict] = {}
     for entry in entries:
         detail = entry.get("detail") or {}
-        kind = str(detail.get("kind") or detail.get("check_id") or entry.get("name", ""))
+        kind = str(
+            detail.get("kind") or detail.get("check_id") or entry.get("name", "")
+        )
         file_key = str(entry.get("file", ""))
         line = int(detail.get("line", 0) or 0)
         key = (kind, file_key, line, _dedupe_subject(detail))
@@ -586,7 +611,11 @@ def _regex_fallback(files: list[str]) -> list[dict]:
         try:
             content = Path(filepath).read_text(errors="replace")
         except OSError as exc:
-            logger.debug("Skipping unreadable C/C++ file %s in security detector: %s", filepath, exc)
+            logger.debug(
+                "Skipping unreadable C/C++ file %s in security detector: %s",
+                filepath,
+                exc,
+            )
             continue
         entries.extend(_iter_regex_security_entries(filepath, content))
     return entries
@@ -606,7 +635,9 @@ def _fallback_coverage(results: list[CxxToolScanResult]) -> DetectorCoverageStat
     if reason == "missing_dependency":
         summary = f"{tools} unavailable — C++ security fell back to regex heuristics."
     else:
-        summary = f"{tools} could not complete — C++ security fell back to regex heuristics."
+        summary = (
+            f"{tools} could not complete — C++ security fell back to regex heuristics."
+        )
 
     return DetectorCoverageStatus(
         detector="security",
@@ -639,7 +670,7 @@ def _scan_root_failure_coverage() -> DetectorCoverageStatus:
 def detect_cxx_security(
     files: list[str],
     zone_map: FileZoneMap | None,
- ) -> LangSecurityResult:
+) -> LangSecurityResult:
     """Detect C/C++ security issues with tool-backed normalization and regex fallback."""
     scoped_files = _cxx_files_in_scope(files, zone_map)
     if not scoped_files:
@@ -667,15 +698,17 @@ def detect_cxx_security(
         if str(Path(str(entry.get("file", ""))).resolve()) in scoped_file_set
     ]
     covered_files = {
-        filepath
-        for result in tool_results
-        for filepath in result.covered_files
+        filepath for result in tool_results for filepath in result.covered_files
     }
-    uncovered_files = [filepath for filepath in scoped_files if filepath not in covered_files]
+    uncovered_files = [
+        filepath for filepath in scoped_files if filepath not in covered_files
+    ]
     any_failure = any(not result.is_success() for result in tool_results)
 
     if uncovered_files:
-        merged_entries = _dedupe_entries(tool_entries + _regex_fallback(uncovered_files))
+        merged_entries = _dedupe_entries(
+            tool_entries + _regex_fallback(uncovered_files)
+        )
         return LangSecurityResult(
             entries=merged_entries,
             files_scanned=len(scoped_files),

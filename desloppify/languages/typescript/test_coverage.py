@@ -73,7 +73,9 @@ logger = logging.getLogger(__name__)
 def _relative_if_under_root(path_str: str) -> str:
     """Return project-relative path when possible; else return original."""
     try:
-        return str(Path(path_str).resolve().relative_to(get_project_root())).replace("\\", "/")
+        return str(Path(path_str).resolve().relative_to(get_project_root())).replace(
+            "\\", "/"
+        )
     except (OSError, ValueError):
         return path_str
 
@@ -287,9 +289,7 @@ def _normalize_tautology_token(token: str) -> str | None:
     return None
 
 
-def is_placeholder_test(
-    content: str, *, assertions: int, test_functions: int
-) -> bool:
+def is_placeholder_test(content: str, *, assertions: int, test_functions: int) -> bool:
     """Heuristic for synthetic coverage-smoke tests with tautological assertions."""
     if assertions <= 0 or test_functions <= 0:
         return False
@@ -312,7 +312,9 @@ def is_placeholder_test(
 
     has_placeholder_label = any(p.search(content) for p in PLACEHOLDER_LABEL_PATTERNS)
     if tautological > 0:
-        if tautological >= assertions and (has_placeholder_label or assertions <= test_functions):
+        if tautological >= assertions and (
+            has_placeholder_label or assertions <= test_functions
+        ):
             return True
         if has_placeholder_label and (tautological / max(assertions, 1)) >= 0.5:
             return True

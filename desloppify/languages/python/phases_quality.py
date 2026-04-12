@@ -21,7 +21,9 @@ from desloppify.languages.python.detectors.ruff_smells import detect_with_ruff_s
 from desloppify.state_io import Issue
 
 
-def phase_smells(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_smells(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run file/code smell detectors plus cross-file signature variance."""
     entries, total_files = smells_detector_mod.detect_smells(path)
     # Supplement with ruff B/E/W rules not covered by the regex smells above.
@@ -35,7 +37,9 @@ def phase_smells(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], di
     }
 
 
-def phase_mutable_state(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_mutable_state(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Find global mutable config patterns."""
     entries, total_files = mutable_state_detector_mod.detect_global_mutable_config(path)
     results = []
@@ -61,7 +65,9 @@ def phase_mutable_state(path: Path, lang: LangRuntimeContract) -> tuple[list[Iss
     }
 
 
-def phase_layer_violation(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_layer_violation(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Find package/layer boundary violations via import-linter."""
     entries = import_linter_adapter_mod.detect_with_import_linter(path)
     if entries is None:
@@ -91,7 +97,9 @@ def phase_layer_violation(path: Path, lang: LangRuntimeContract) -> tuple[list[I
     return results, {"layer_violation": total_files}
 
 
-def phase_dict_keys(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_dict_keys(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run dict-key flow and schema-drift analysis."""
     flow_entries, files_checked = dict_keys_detector_mod.detect_dict_key_flow(path)
     flow_entries = filter_entries(lang.zone_map, flow_entries, "dict_keys")

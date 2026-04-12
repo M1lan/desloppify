@@ -55,7 +55,10 @@ from desloppify.languages.typescript.phases_config import (
     TS_SKIP_DIRS,
     TS_SKIP_NAMES,
 )
-from desloppify.languages.typescript.plugin_contract import TS_BARREL_NAMES, TS_LARGE_THRESHOLD
+from desloppify.languages.typescript.plugin_contract import (
+    TS_BARREL_NAMES,
+    TS_LARGE_THRESHOLD,
+)
 
 
 cmd_large = make_cmd_large(
@@ -145,7 +148,9 @@ def cmd_orphaned(args: argparse.Namespace) -> None:
         print(colorize("\nNo orphaned files found.", "green"))
         return
     total_loc = sum(e["loc"] for e in entries)
-    print(colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold"))
+    print(
+        colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold")
+    )
     top = getattr(args, "top", 20)
     rows = [[rel(e["file"]), str(e["loc"])] for e in entries[:top]]
     print_table(["File", "LOC"], rows, [80, 6])
@@ -234,7 +239,11 @@ def cmd_coupling(args: argparse.Namespace) -> None:
         )
         return
     if violations:
-        print(colorize(f"\nCoupling violations (shared -> tools): {len(violations)}\n", "bold"))
+        print(
+            colorize(
+                f"\nCoupling violations (shared -> tools): {len(violations)}\n", "bold"
+            )
+        )
         rows = []
         for entry in violations[: getattr(args, "top", 20)]:
             rows.append([rel(entry["file"]), entry["target"], entry["tool"]])
@@ -247,7 +256,11 @@ def cmd_coupling(args: argparse.Namespace) -> None:
     )
     print()
     if cross_tool:
-        print(colorize(f"Cross-tool imports (tools -> tools): {len(cross_tool)}\n", "bold"))
+        print(
+            colorize(
+                f"Cross-tool imports (tools -> tools): {len(cross_tool)}\n", "bold"
+            )
+        )
         rows = []
         for entry in cross_tool[: getattr(args, "top", 20)]:
             rows.append(

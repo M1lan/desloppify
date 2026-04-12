@@ -45,10 +45,14 @@ TS_COMPLEXITY_SIGNALS = [
 ]
 
 TS_GOD_RULES = [
-    GodRule("context_hooks", "context hooks", lambda c: c.metrics.get("context_hooks", 0), 3),
+    GodRule(
+        "context_hooks", "context hooks", lambda c: c.metrics.get("context_hooks", 0), 3
+    ),
     GodRule("use_effects", "useEffects", lambda c: c.metrics.get("use_effects", 0), 4),
     GodRule("use_states", "useStates", lambda c: c.metrics.get("use_states", 0), 5),
-    GodRule("custom_hooks", "custom hooks", lambda c: c.metrics.get("custom_hooks", 0), 8),
+    GodRule(
+        "custom_hooks", "custom hooks", lambda c: c.metrics.get("custom_hooks", 0), 8
+    ),
     GodRule("hook_total", "total hooks", lambda c: c.metrics.get("hook_total", 0), 10),
 ]
 

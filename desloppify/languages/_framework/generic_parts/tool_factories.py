@@ -99,7 +99,9 @@ def make_tool_phase(
                 tier=tier,
                 confidence=str(entry.get("confidence") or confidence),
                 summary=str(entry.get("summary") or entry["message"]),
-                detail=entry.get("detail") if isinstance(entry.get("detail"), dict) else None,
+                detail=entry.get("detail")
+                if isinstance(entry.get("detail"), dict)
+                else None,
             )
             for entry in entries
         ]
@@ -148,7 +150,9 @@ def make_generic_fixer(
     ) -> FixResult:
         del kwargs
         if dry_run or not path:
-            return FixResult(entries=[{"file": e["file"], "line": e["line"]} for e in entries])
+            return FixResult(
+                entries=[{"file": e["file"], "line": e["line"]} for e in entries]
+            )
         runner = run_subprocess or subprocess.run
         try:
             runner(
@@ -160,7 +164,9 @@ def make_generic_fixer(
                 timeout=120,
             )
         except (FileNotFoundError, subprocess.TimeoutExpired):
-            return FixResult(entries=[], skip_reasons={"tool_unavailable": len(entries)})
+            return FixResult(
+                entries=[], skip_reasons={"tool_unavailable": len(entries)}
+            )
         remaining = detect(path)
         fixed_count = max(0, len(entries) - len(remaining))
         return FixResult(

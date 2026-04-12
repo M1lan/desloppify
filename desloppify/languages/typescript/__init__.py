@@ -22,7 +22,9 @@ from desloppify.languages.typescript import test_coverage as ts_test_coverage_ho
 from desloppify.languages.typescript._fixers import get_ts_fixers
 import desloppify.languages.typescript.commands as ts_commands_mod
 import desloppify.languages.typescript.detectors.deps as deps_detector_mod
-from desloppify.languages.typescript.detectors.security.detector import detect_ts_security
+from desloppify.languages.typescript.detectors.security.detector import (
+    detect_ts_security,
+)
 from desloppify.languages.typescript.extractors_functions import extract_ts_functions
 from desloppify.languages.typescript.phases_basic import (
     phase_deprecated,

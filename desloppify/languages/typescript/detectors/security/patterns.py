@@ -10,7 +10,9 @@ _CREATE_CLIENT_RE = re.compile(r"\bcreateClient\s*\(", re.IGNORECASE)
 _EVAL_PATTERNS = re.compile(r"\b(?:eval|new\s+Function)\s*\(")
 _DANGEROUS_HTML_RE = re.compile(r"dangerouslySetInnerHTML")
 _INNER_HTML_RE = re.compile(r"\.innerHTML\s*=")
-_DEV_CRED_RE = re.compile(r"VITE_\w*(?:PASSWORD|SECRET|TOKEN|API_KEY|APIKEY)\b", re.IGNORECASE)
+_DEV_CRED_RE = re.compile(
+    r"VITE_\w*(?:PASSWORD|SECRET|TOKEN|API_KEY|APIKEY)\b", re.IGNORECASE
+)
 _OPEN_REDIRECT_RE = re.compile(
     r"window\.location(?:\.href)?\s*=\s*(?:data\.|response\.|params\.|query\.|\w+\[)"
 )

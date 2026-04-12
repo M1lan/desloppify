@@ -24,28 +24,34 @@ _ECMASCRIPT_IMPORT_NODE_TYPE = "import_statement"
 # Identifier-ish nodes that represent a reference to a binding in JavaScript/TypeScript.
 # JSX tag names are typically represented as `identifier` in tree-sitter-javascript/tsx,
 # but we include `jsx_identifier` as well for compatibility with grammar variants.
-_ECMASCRIPT_REFERENCE_NODE_TYPES = frozenset({
-    "identifier",
-    "jsx_identifier",
-    "type_identifier",
-    "shorthand_property_identifier",
-})
+_ECMASCRIPT_REFERENCE_NODE_TYPES = frozenset(
+    {
+        "identifier",
+        "jsx_identifier",
+        "type_identifier",
+        "shorthand_property_identifier",
+    }
+)
 
-_ECMASCRIPT_ASSIGNMENT_PATTERN_NODE_TYPES = frozenset({
-    "assignment_pattern",
-    "object_assignment_pattern",
-    "array_assignment_pattern",
-})
+_ECMASCRIPT_ASSIGNMENT_PATTERN_NODE_TYPES = frozenset(
+    {
+        "assignment_pattern",
+        "object_assignment_pattern",
+        "array_assignment_pattern",
+    }
+)
 
-_ECMASCRIPT_DECLARATION_NAME_NODE_TYPES = frozenset({
-    # JS
-    "function_declaration",
-    "class_declaration",
-    # TS/TSX
-    "type_alias_declaration",
-    "interface_declaration",
-    "enum_declaration",
-})
+_ECMASCRIPT_DECLARATION_NAME_NODE_TYPES = frozenset(
+    {
+        # JS
+        "function_declaration",
+        "class_declaration",
+        # TS/TSX
+        "type_alias_declaration",
+        "interface_declaration",
+        "enum_declaration",
+    }
+)
 
 
 def detect_unused_imports(
@@ -106,15 +112,18 @@ def detect_unused_imports(
             grouped_names = _extract_grouped_import_names(raw_path)
             if grouped_names:
                 unused_names = [
-                    n for n in grouped_names
-                    if not re.search(r'\b' + re.escape(n) + r'\b', rest)
+                    n
+                    for n in grouped_names
+                    if not re.search(r"\b" + re.escape(n) + r"\b", rest)
                 ]
                 if unused_names:
-                    entries.append({
-                        "file": filepath,
-                        "line": import_node.start_point[0] + 1,
-                        "name": ", ".join(unused_names),
-                    })
+                    entries.append(
+                        {
+                            "file": filepath,
+                            "line": import_node.start_point[0] + 1,
+                            "name": ", ".join(unused_names),
+                        }
+                    )
                 continue
 
             # Check for alias (e.g. PHP ``use Foo as Bar``, Python ``import X as Y``).
@@ -127,12 +136,14 @@ def detect_unused_imports(
                 continue
 
             # Check if the name appears in the rest of the file.
-            if not re.search(r'\b' + re.escape(name) + r'\b', rest):
-                entries.append({
-                    "file": filepath,
-                    "line": import_node.start_point[0] + 1,
-                    "name": name,
-                })
+            if not re.search(r"\b" + re.escape(name) + r"\b", rest):
+                entries.append(
+                    {
+                        "file": filepath,
+                        "line": import_node.start_point[0] + 1,
+                        "name": name,
+                    }
+                )
 
     return entries
 
@@ -191,12 +202,14 @@ def _detect_unused_imports_ecmascript(
             line = import_node.start_point[0] + 1
             for symbol in bindings:
                 if symbol not in referenced:
-                    entries.append({
-                        "file": filepath,
-                        "line": line,
-                        "name": symbol,
-                        "symbol": symbol,
-                    })
+                    entries.append(
+                        {
+                            "file": filepath,
+                            "line": line,
+                            "name": symbol,
+                            "symbol": symbol,
+                        }
+                    )
 
     return entries
 
@@ -439,8 +452,10 @@ def _iter_children(node):
         if child.child_count == 0:
             yield child
         elif child.type in (
-            "namespace_use_clause", "import_clause",
-            "namespace_alias", "as_pattern",
+            "namespace_use_clause",
+            "import_clause",
+            "namespace_alias",
+            "as_pattern",
         ):
             yield from _iter_children(child)
 
@@ -495,13 +510,40 @@ def _extract_import_name(import_path: str) -> str:
             if parts:
                 candidate = parts[-1]
 
-    for ext in (".go", ".rs", ".rb", ".py", ".js", ".jsx", ".ts",
-                ".tsx", ".java", ".kt", ".cs", ".fs", ".ml",
-                ".ex", ".erl", ".hs", ".lua", ".zig", ".pm",
-                ".sh", ".pl", ".scala", ".swift", ".php",
-                ".dart", ".mjs", ".cjs", ".h", ".hh", ".hpp"):
+    for ext in (
+        ".go",
+        ".rs",
+        ".rb",
+        ".py",
+        ".js",
+        ".jsx",
+        ".ts",
+        ".tsx",
+        ".java",
+        ".kt",
+        ".cs",
+        ".fs",
+        ".ml",
+        ".ex",
+        ".erl",
+        ".hs",
+        ".lua",
+        ".zig",
+        ".pm",
+        ".sh",
+        ".pl",
+        ".scala",
+        ".swift",
+        ".php",
+        ".dart",
+        ".mjs",
+        ".cjs",
+        ".h",
+        ".hh",
+        ".hpp",
+    ):
         if candidate.endswith(ext):
-            return candidate[:-len(ext)]
+            return candidate[: -len(ext)]
 
     for sep in ("::", "."):
         if sep in candidate:

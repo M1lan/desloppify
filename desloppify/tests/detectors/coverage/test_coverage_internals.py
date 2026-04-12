@@ -164,10 +164,9 @@ def test_no_tests_issues_basic_untested_module(tmp_path):
 
     graph = {filepath: {"importer_count": 2}}
 
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=False
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=False),
     ):
         issues = discovery_mod._no_tests_issues({filepath}, graph, "python")
 
@@ -187,10 +186,9 @@ def test_no_tests_issues_critical_by_importers(tmp_path):
 
     graph = {filepath: {"importer_count": 10}}
 
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=False
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=False),
     ):
         issues = discovery_mod._no_tests_issues({filepath}, graph, "python")
 
@@ -207,10 +205,9 @@ def test_no_tests_issues_critical_by_complexity(tmp_path):
     graph = {filepath: {"importer_count": 0}}
     complexity_map = {filepath: 25.0}
 
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=False
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=False),
     ):
         issues = discovery_mod._no_tests_issues(
             {filepath}, graph, "python", complexity_map=complexity_map
@@ -229,10 +226,9 @@ def test_no_tests_issues_runtime_entrypoint(tmp_path):
 
     graph = {filepath: {"importer_count": 0}}
 
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=True
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=True),
     ):
         issues = discovery_mod._no_tests_issues({filepath}, graph, "typescript")
 
@@ -252,10 +248,9 @@ def test_no_tests_issues_sorted_by_loc_descending(tmp_path):
 
     graph = {f: {"importer_count": 0} for f in files}
 
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=False
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=False),
     ):
         issues = discovery_mod._no_tests_issues(set(files), graph, "python")
 
@@ -264,10 +259,9 @@ def test_no_tests_issues_sorted_by_loc_descending(tmp_path):
 
 
 def test_no_tests_issues_empty_scorable():
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=False
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=False),
     ):
         issues = discovery_mod._no_tests_issues(set(), {}, "python")
 
@@ -284,10 +278,9 @@ def test_no_tests_issues_capped_at_max_entries(tmp_path):
         files.add(filepath)
         graph[filepath] = {"importer_count": 0}
 
-    with patch.object(
-        discovery_mod, "_has_testable_logic", return_value=True
-    ), patch.object(
-        discovery_mod, "_is_runtime_entrypoint", return_value=False
+    with (
+        patch.object(discovery_mod, "_has_testable_logic", return_value=True),
+        patch.object(discovery_mod, "_is_runtime_entrypoint", return_value=False),
     ):
         issues = discovery_mod._no_tests_issues(files, graph, "python")
 

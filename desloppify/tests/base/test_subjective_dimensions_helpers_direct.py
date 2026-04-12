@@ -13,9 +13,7 @@ def test_constants_exports_and_helpers_normalize_values() -> None:
     assert constants_mod.LEGACY_DISPLAY_NAMES is constants_mod.DISPLAY_NAMES
     assert constants_mod.LEGACY_WEIGHT_BY_DIMENSION["high_level_elegance"] == 22.0
     assert constants_mod.LEGACY_WEIGHT_BY_DIMENSION["design_coherence"] == 10.0
-    assert (
-        "cross_module_architecture" not in constants_mod.LEGACY_WEIGHT_BY_DIMENSION
-    )
+    assert "cross_module_architecture" not in constants_mod.LEGACY_WEIGHT_BY_DIMENSION
 
     assert constants_mod.normalize_dimension_name("  Foo-Bar  Baz ") == "foo_bar_baz"
     assert constants_mod.title_display_name("high_level_elegance") == (
@@ -32,14 +30,14 @@ def test_extract_prompt_meta_filters_invalid_and_normalizes_values() -> None:
 
     meta = merge_mod.extract_prompt_meta(
         {
-                "meta": {
-                    "display_name": "  Better Name  ",
-                    "weight": -2.5,
-                    "enabled_by_default": True,
-                    "reset_on_scan": False,
-                }
+            "meta": {
+                "display_name": "  Better Name  ",
+                "weight": -2.5,
+                "enabled_by_default": True,
+                "reset_on_scan": False,
             }
-        )
+        }
+    )
 
     assert meta == {
         "display_name": "Better Name",
@@ -165,7 +163,9 @@ def test_provider_state_and_wrappers_delegate_to_configured_callables(
     monkeypatch,
 ) -> None:
     state = providers_mod.SubjectiveProviderState()
-    assert state.available_languages_provider is providers_mod.default_available_languages
+    assert (
+        state.available_languages_provider is providers_mod.default_available_languages
+    )
     assert (
         state.load_dimensions_payload_provider
         is providers_mod.default_load_dimensions_payload
@@ -206,7 +206,11 @@ def test_configure_and_reset_providers_updates_provider_state() -> None:
         metadata_mod.configure_subjective_dimension_providers(
             available_languages_provider=lambda: ["xlang"],
             load_dimensions_payload_provider=lambda: (["dim_x"], {}, "x"),
-            load_dimensions_payload_for_lang_provider=lambda lang: ([lang], {}, "xlang"),
+            load_dimensions_payload_for_lang_provider=lambda lang: (
+                [lang],
+                {},
+                "xlang",
+            ),
         )
         assert providers_mod.available_languages() == ["xlang"]
         assert providers_mod.load_dimensions_payload() == (["dim_x"], {}, "x")

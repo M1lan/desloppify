@@ -454,8 +454,7 @@ class TestMechanicalStaleness:
             "initialization_coupling": {"score": 80.0},
         }
         new_issues = [
-            _issue(id="s1", detector="structural", file="big.py",
-                     detail={"loc": 500}),
+            _issue(id="s1", detector="structural", file="big.py", detail={"loc": 500}),
         ]
         merge_scan(state, new_issues)
 
@@ -539,8 +538,7 @@ class TestMechanicalStaleness:
             },
         }
         new_issues = [
-            _issue(id="s1", detector="structural", file="big.py",
-                     detail={"loc": 500}),
+            _issue(id="s1", detector="structural", file="big.py", detail={"loc": 500}),
         ]
         merge_scan(state, new_issues)
 
@@ -557,8 +555,12 @@ class TestMechanicalStaleness:
             "initialization_coupling": {"score": 80.0},
         }
         new_issues = [
-            _issue(id="g1", detector="global_mutable_config", file="registry.py",
-                     detail={"name": "_registry"}),
+            _issue(
+                id="g1",
+                detector="global_mutable_config",
+                file="registry.py",
+                detail={"name": "_registry"},
+            ),
         ]
         merge_scan(state, new_issues)
 

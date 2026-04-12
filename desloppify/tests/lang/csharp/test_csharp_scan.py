@@ -8,7 +8,10 @@ from types import SimpleNamespace
 
 from desloppify.engine.planning.scan import PlanScanOptions
 from desloppify.engine.planning.scan import generate_issues
-from desloppify.languages._framework.runtime_support.runtime import LangRunOverrides, make_lang_run
+from desloppify.languages._framework.runtime_support.runtime import (
+    LangRunOverrides,
+    make_lang_run,
+)
 from desloppify.languages.csharp import CSharpConfig
 from desloppify.languages.csharp.phases import _apply_csharp_actionability_gates
 
@@ -24,7 +27,9 @@ def _signal_rich_area(filepath: str) -> str:
 
 
 def test_csharp_scan_pipeline_runs_on_fixture():
-    path = (Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app").resolve()
+    path = (
+        Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app"
+    ).resolve()
     issues, potentials = generate_issues(
         path, lang=CSharpConfig(), options=PlanScanOptions(include_slow=False)
     )
@@ -34,7 +39,9 @@ def test_csharp_scan_pipeline_runs_on_fixture():
 
 
 def test_csharp_objective_profile_skips_subjective_review():
-    path = (Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app").resolve()
+    path = (
+        Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app"
+    ).resolve()
     _, potentials = generate_issues(
         path,
         lang=CSharpConfig(),
@@ -44,7 +51,9 @@ def test_csharp_objective_profile_skips_subjective_review():
 
 
 def test_csharp_full_profile_keeps_subjective_review():
-    path = (Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app").resolve()
+    path = (
+        Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app"
+    ).resolve()
     _, potentials = generate_issues(
         path,
         lang=CSharpConfig(),
@@ -54,7 +63,9 @@ def test_csharp_full_profile_keeps_subjective_review():
 
 
 def test_csharp_signal_rich_fixture_emits_meaningful_issues(tmp_path):
-    fixture = (Path("desloppify") / "tests" / "fixtures" / "csharp" / "signal_rich").resolve()
+    fixture = (
+        Path("desloppify") / "tests" / "fixtures" / "csharp" / "signal_rich"
+    ).resolve()
     path = (tmp_path / "signal_rich").resolve()
     shutil.copytree(fixture, path)
     config = CSharpConfig()
@@ -86,7 +97,9 @@ def test_csharp_signal_rich_fixture_emits_meaningful_issues(tmp_path):
 
 
 def test_csharp_signal_rich_fixture_issues_are_deterministic(tmp_path):
-    fixture = (Path("desloppify") / "tests" / "fixtures" / "csharp" / "signal_rich").resolve()
+    fixture = (
+        Path("desloppify") / "tests" / "fixtures" / "csharp" / "signal_rich"
+    ).resolve()
     path = (tmp_path / "signal_rich").resolve()
     shutil.copytree(fixture, path)
 
@@ -199,7 +212,9 @@ def test_csharp_actionability_gate_respects_configurable_signal_minimum():
 
 
 def test_csharp_scan_uses_roslyn_cmd_override_from_lang_config(monkeypatch):
-    path = (Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app").resolve()
+    path = (
+        Path("desloppify") / "tests" / "fixtures" / "csharp" / "simple_app"
+    ).resolve()
     program = (path / "Program.cs").resolve()
     greeter = (path / "Services" / "Greeter.cs").resolve()
     payload = json.dumps(

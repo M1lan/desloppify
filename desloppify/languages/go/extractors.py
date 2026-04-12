@@ -43,18 +43,18 @@ def _find_matching_brace(content: str, open_pos: int) -> int | None:
         ch = content[i]
 
         # Backtick raw string — skip until closing backtick
-        if ch == '`':
+        if ch == "`":
             i += 1
-            while i < length and content[i] != '`':
+            while i < length and content[i] != "`":
                 i += 1
             i += 1
             continue
 
         # Block comment
-        if ch == '/' and i + 1 < length and content[i + 1] == '*':
+        if ch == "/" and i + 1 < length and content[i + 1] == "*":
             i += 2
             while i + 1 < length:
-                if content[i] == '*' and content[i + 1] == '/':
+                if content[i] == "*" and content[i + 1] == "/":
                     i += 2
                     break
                 i += 1
@@ -63,8 +63,8 @@ def _find_matching_brace(content: str, open_pos: int) -> int | None:
             continue
 
         # Line comment
-        if ch == '/' and i + 1 < length and content[i + 1] == '/':
-            while i < length and content[i] != '\n':
+        if ch == "/" and i + 1 < length and content[i + 1] == "/":
+            while i < length and content[i] != "\n":
                 i += 1
             continue
 
@@ -73,7 +73,7 @@ def _find_matching_brace(content: str, open_pos: int) -> int | None:
             i += 1
             while i < length:
                 c = content[i]
-                if c == '\\':
+                if c == "\\":
                     i += 2
                     continue
                 if c == '"':
@@ -87,7 +87,7 @@ def _find_matching_brace(content: str, open_pos: int) -> int | None:
             i += 1
             while i < length:
                 c = content[i]
-                if c == '\\':
+                if c == "\\":
                     i += 2
                     continue
                 if c == "'":
@@ -96,9 +96,9 @@ def _find_matching_brace(content: str, open_pos: int) -> int | None:
             i += 1
             continue
 
-        if ch == '{':
+        if ch == "{":
             depth += 1
-        elif ch == '}':
+        elif ch == "}":
             depth -= 1
             if depth == 0:
                 return i
@@ -139,16 +139,16 @@ def _find_body_brace(content: str, pos: int) -> int | None:
         ch = content[i]
 
         # Skip string / rune / backtick / comment literals
-        if ch == '`':
+        if ch == "`":
             i += 1
-            while i < length and content[i] != '`':
+            while i < length and content[i] != "`":
                 i += 1
             i += 1
             continue
         if ch == '"':
             i += 1
             while i < length:
-                if content[i] == '\\':
+                if content[i] == "\\":
                     i += 2
                     continue
                 if content[i] == '"':
@@ -156,14 +156,14 @@ def _find_body_brace(content: str, pos: int) -> int | None:
                 i += 1
             i += 1
             continue
-        if ch == '/' and i + 1 < length and content[i + 1] == '/':
-            while i < length and content[i] != '\n':
+        if ch == "/" and i + 1 < length and content[i + 1] == "/":
+            while i < length and content[i] != "\n":
                 i += 1
             continue
-        if ch == '/' and i + 1 < length and content[i + 1] == '*':
+        if ch == "/" and i + 1 < length and content[i + 1] == "*":
             i += 2
             while i + 1 < length:
-                if content[i] == '*' and content[i + 1] == '/':
+                if content[i] == "*" and content[i + 1] == "/":
                     i += 2
                     break
                 i += 1
@@ -171,16 +171,16 @@ def _find_body_brace(content: str, pos: int) -> int | None:
                 i += 1
             continue
 
-        if ch == '(':
+        if ch == "(":
             paren_depth += 1
-        elif ch == ')':
+        elif ch == ")":
             paren_depth -= 1
-        elif ch == '{' and paren_depth == 0:
+        elif ch == "{" and paren_depth == 0:
             # In Go, the body-opening '{' is always preceded by whitespace
             # (or ')' / '}' at end of return type).  Type-literal braces
             # like struct{} and interface{} are preceded by an identifier.
-            prev = content[i - 1] if i > 0 else ' '
-            if not prev.isalnum() and prev != '_':
+            prev = content[i - 1] if i > 0 else " "
+            if not prev.isalnum() and prev != "_":
                 return i
             # Otherwise it's a type-literal brace — skip the balanced pair.
         i += 1
@@ -195,9 +195,9 @@ def _extract_params(content: str, open_paren: int) -> list[str]:
     # Find closing paren of param list
     while i < length:
         ch = content[i]
-        if ch == '(':
+        if ch == "(":
             depth += 1
-        elif ch == ')':
+        elif ch == ")":
             depth -= 1
             if depth == 0:
                 break

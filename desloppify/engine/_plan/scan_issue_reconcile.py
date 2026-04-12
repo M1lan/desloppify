@@ -7,7 +7,10 @@ from datetime import UTC, datetime, timedelta
 
 from desloppify.engine._plan.annotations import get_issue_note
 from desloppify.engine._plan.constants import SYNTHETIC_PREFIXES
-from desloppify.engine._plan.cluster_semantics import EXECUTION_STATUS_DONE, cluster_is_active
+from desloppify.engine._plan.cluster_semantics import (
+    EXECUTION_STATUS_DONE,
+    cluster_is_active,
+)
 from desloppify.engine._plan.operations.lifecycle import clear_focus_if_cluster_empty
 from desloppify.engine._plan.operations.meta import append_log_entry
 from desloppify.engine._plan.operations.skip import resurface_stale_skips
@@ -35,9 +38,7 @@ class ReconcileResult:
     changes: int = 0
 
 
-def _find_candidates(
-    state: StateModel, detector: str, file: str
-) -> list[str]:
+def _find_candidates(state: StateModel, detector: str, file: str) -> list[str]:
     """Find alive issues that could be remaps for a disappeared issue."""
     candidates: list[str] = []
     for fid, issue in (state.get("work_items") or state.get("issues", {})).items():
@@ -152,7 +153,8 @@ def _referenced_plan_issue_ids(plan: PlanModel) -> set[str]:
         referenced_ids.update(cluster.get("issue_ids", []))
     already_superseded = set(plan.get("superseded", {}).keys())
     return {
-        fid for fid in referenced_ids - already_superseded
+        fid
+        for fid in referenced_ids - already_superseded
         if not any(fid.startswith(prefix) for prefix in SYNTHETIC_PREFIXES)
     }
 
@@ -163,8 +165,7 @@ def _prune_existing_superseded_references(
     result: ReconcileResult,
 ) -> None:
     superseded_ids = {
-        fid for fid in plan.get("superseded", {})
-        if isinstance(fid, str) and fid
+        fid for fid in plan.get("superseded", {}) if isinstance(fid, str) and fid
     }
     if not superseded_ids:
         return
@@ -277,8 +278,7 @@ def _reconcile_active_clusters_by_item_status(
         if not issue_ids:
             continue
         all_resolved = all(
-            issues.get(fid, {}).get("status") in _RESOLVED_STATUSES
-            for fid in issue_ids
+            issues.get(fid, {}).get("status") in _RESOLVED_STATUSES for fid in issue_ids
         )
         if not all_resolved:
             continue
@@ -325,7 +325,7 @@ def _sync_skipped_issue_statuses(plan: PlanModel, state: StateModel) -> None:
     Runs on every reconcile so existing data gets migrated on next scan.
     """
     skipped = plan.get("skipped", {})
-    issues = (state.get("work_items") or state.get("issues", {}))
+    issues = state.get("work_items") or state.get("issues", {})
     for fid, entry in skipped.items():
         issue = issues.get(fid)
         if issue is None or issue.get("status") != "open":
@@ -388,7 +388,7 @@ def reconcile_plan_after_scan(
         result.resurfaced = resurfaced
         result.changes += len(resurfaced)
         # Reopen resurfaced issues in state (they were deferred)
-        issues = (state.get("work_items") or state.get("issues", {}))
+        issues = state.get("work_items") or state.get("issues", {})
         for fid in resurfaced:
             issue = issues.get(fid)
             if issue and issue.get("status") == "deferred":
@@ -415,6 +415,7 @@ def reconcile_plan_after_scan(
         )
 
     return result
+
 
 __all__ = [
     "ReconcileResult",

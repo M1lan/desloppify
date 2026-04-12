@@ -52,11 +52,7 @@ def test_find_python_passthrough_wrappers_reports_wrapper_pairs() -> None:
 
 
 def test_find_facade_modules_detects_re_export_heavy_module() -> None:
-    tree = _parse(
-        "from x import A, B, C\n"
-        "from y import D\n"
-        "class Local: pass\n"
-    )
+    tree = _parse("from x import A, B, C\nfrom y import D\nclass Local: pass\n")
     result = wrappers_mod._find_facade_modules(tree, loc=3)
     assert result is not None
     assert result["re_export_ratio"] >= 0.7

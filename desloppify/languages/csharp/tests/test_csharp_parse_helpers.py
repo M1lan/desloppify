@@ -136,7 +136,7 @@ class TestExtractCsharpParams:
         assert names == ["args"]
 
     def test_strips_default_values(self):
-        names = extract_csharp_params("int x = 0, string name = \"hello\"")
+        names = extract_csharp_params('int x = 0, string name = "hello"')
         assert names == ["x", "name"]
 
     def test_handles_at_prefix(self):
@@ -168,7 +168,9 @@ class TestExtractCsharpReturnAnnotation:
         assert result == "void"
 
     def test_static(self):
-        result = extract_csharp_return_annotation("public static string GetName(", "GetName")
+        result = extract_csharp_return_annotation(
+            "public static string GetName(", "GetName"
+        )
         assert result == "string"
 
     def test_generic(self):

@@ -49,9 +49,15 @@ def test_global_install_writes_supported_targets(
     assert codex_target.is_file()
     assert gemini_target.is_file()
     assert "desloppify-skill-version" in claude_target.read_text(encoding="utf-8")
-    assert "<!-- desloppify-overlay: claude -->" in claude_target.read_text(encoding="utf-8")
-    assert "<!-- desloppify-overlay: codex -->" in codex_target.read_text(encoding="utf-8")
-    assert "<!-- desloppify-overlay: gemini -->" in gemini_target.read_text(encoding="utf-8")
+    assert "<!-- desloppify-overlay: claude -->" in claude_target.read_text(
+        encoding="utf-8"
+    )
+    assert "<!-- desloppify-overlay: codex -->" in codex_target.read_text(
+        encoding="utf-8"
+    )
+    assert "<!-- desloppify-overlay: gemini -->" in gemini_target.read_text(
+        encoding="utf-8"
+    )
 
 
 def test_global_single_interface_installs_only_requested_target(
@@ -112,7 +118,9 @@ def test_codex_global_setup_uses_section_replace(
     codex_dir = tmp_path / ".codex"
     codex_dir.mkdir()
     agents_md = codex_dir / "AGENTS.md"
-    agents_md.write_text("# My custom instructions\n\nKeep this content.\n", encoding="utf-8")
+    agents_md.write_text(
+        "# My custom instructions\n\nKeep this content.\n", encoding="utf-8"
+    )
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     setup_cmd_mod.cmd_setup(_setup_args(interface="codex"))

@@ -76,11 +76,14 @@ def _parse_cargo_messages(
         line_no = span.get("line_start")
         if not filename or not isinstance(line_no, int):
             continue
-        if skip_inline_cfg_test_modules and _should_skip_inline_cfg_test_module_diagnostic(
-            scan_path,
-            filename,
-            line_no,
-            inline_test_cache,
+        if (
+            skip_inline_cfg_test_modules
+            and _should_skip_inline_cfg_test_module_diagnostic(
+                scan_path,
+                filename,
+                line_no,
+                inline_test_cache,
+            )
         ):
             continue
         code = (message.get("code") or {}).get("code") or ""
@@ -623,7 +626,9 @@ def _run_cargo_metadata(
     *,
     run_subprocess: SubprocessRun | None = None,
 ) -> tuple[ToolRunResult | None, list[str]]:
-    runner: Callable[..., subprocess.CompletedProcess[str]] = run_subprocess or subprocess.run
+    runner: Callable[..., subprocess.CompletedProcess[str]] = (
+        run_subprocess or subprocess.run
+    )
     workspace_root = find_workspace_root(scan_path)
     try:
         result = runner(
@@ -665,7 +670,13 @@ def _run_cargo_metadata(
                 error_kind="tool_failed_unparsed_output",
                 message=(
                     f"cargo metadata exited with code {result.returncode}"
-                    + (f": {preview[:160].rstrip()}..." if len(preview) > 160 else f": {preview}" if preview else "")
+                    + (
+                        f": {preview[:160].rstrip()}..."
+                        if len(preview) > 160
+                        else f": {preview}"
+                        if preview
+                        else ""
+                    )
                 ),
                 returncode=result.returncode,
             ),
@@ -704,7 +715,9 @@ def run_rustdoc_result(
     run_subprocess: SubprocessRun | None = None,
 ) -> ToolRunResult:
     """Run `cargo rustdoc` once per workspace library package."""
-    metadata_error, packages = _run_cargo_metadata(scan_path, run_subprocess=run_subprocess)
+    metadata_error, packages = _run_cargo_metadata(
+        scan_path, run_subprocess=run_subprocess
+    )
     if metadata_error is not None:
         return metadata_error
     if not packages:

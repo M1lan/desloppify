@@ -18,11 +18,8 @@ import tempfile
 from pathlib import Path
 
 from desloppify.base.discovery.source import (
-
     collect_exclude_dirs,
-
     get_exclusions,
-
 )
 from desloppify.base.output.fallbacks import warn_best_effort
 
@@ -59,9 +56,9 @@ def _is_artifact_path(rel_path: str) -> bool:
 
 def _is_build_mirror_pair(first_rel: str, second_rel: str) -> bool:
     if first_rel.startswith(_BUILD_MIRROR_PREFIX):
-        return first_rel[len(_BUILD_MIRROR_PREFIX):] == second_rel
+        return first_rel[len(_BUILD_MIRROR_PREFIX) :] == second_rel
     if second_rel.startswith(_BUILD_MIRROR_PREFIX):
-        return second_rel[len(_BUILD_MIRROR_PREFIX):] == first_rel
+        return second_rel[len(_BUILD_MIRROR_PREFIX) :] == first_rel
     return False
 
 

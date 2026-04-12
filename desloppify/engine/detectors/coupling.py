@@ -221,7 +221,9 @@ def detect_cross_tool_imports(
                         "direction": "tools→tools",
                     }
                 )
-    return sorted(entries, key=lambda e: (e["source_tool"], e["file"])), CouplingEdgeCounts(
+    return sorted(
+        entries, key=lambda e: (e["source_tool"], e["file"])
+    ), CouplingEdgeCounts(
         violating_edges=violating_edges,
         eligible_edges=eligible_edges,
     )

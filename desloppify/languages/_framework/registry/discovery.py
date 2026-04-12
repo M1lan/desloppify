@@ -18,7 +18,12 @@ logger = logging.getLogger(__name__)
 
 # Broader than PARSE_INIT_ERRORS: plugin imports may also raise SyntaxError/TypeError.
 _PLUGIN_IMPORT_ERRORS: tuple[type[Exception], ...] = (
-    ImportError, SyntaxError, ValueError, TypeError, RuntimeError, OSError,
+    ImportError,
+    SyntaxError,
+    ValueError,
+    TypeError,
+    RuntimeError,
+    OSError,
 )
 _PLUGIN_CONFIG_LOAD_ERRORS: tuple[type[Exception], ...] = (
     OSError,
@@ -125,11 +130,7 @@ def load_all(*, force_reload: bool = False) -> None:
 
     # Discover packages (e.g. lang/typescript/)
     for d in sorted(lang_dir.iterdir()):
-        if (
-            d.is_dir()
-            and (d / "__init__.py").exists()
-            and not d.name.startswith("_")
-        ):
+        if d.is_dir() and (d / "__init__.py").exists() and not d.name.startswith("_"):
             module_name = f".{d.name}"
             try:
                 module = importlib.import_module(module_name, base_package)

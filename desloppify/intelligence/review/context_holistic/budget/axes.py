@@ -40,7 +40,8 @@ def _compute_sub_axes(
         100 - (avg_delegation_ratio * 80) - (len(delegation_classes) * 5)
     )
     avg_facade_ratio = (
-        sum(f["re_export_ratio"] for f in facade_modules[:10]) / len(facade_modules[:10])
+        sum(f["re_export_ratio"] for f in facade_modules[:10])
+        / len(facade_modules[:10])
         if facade_modules
         else 0.0
     )
@@ -133,8 +134,7 @@ def _build_type_discipline_context(
         context["enum_bypass_patterns"] = enum_bypass_patterns
     if type_strategy_census:
         context["type_strategy_census"] = {
-            strategy: len(items)
-            for strategy, items in type_strategy_census.items()
+            strategy: len(items) for strategy, items in type_strategy_census.items()
         }
     return context
 
@@ -196,9 +196,7 @@ def _assemble_context(
     context.update(
         _build_delegation_density_context(delegation_classes=delegation_classes)
     )
-    context.update(
-        _build_definition_directness_context(facade_modules=facade_modules)
-    )
+    context.update(_build_definition_directness_context(facade_modules=facade_modules))
     context.update(
         _build_type_discipline_context(
             typed_dict_violations=typed_dict_violations,

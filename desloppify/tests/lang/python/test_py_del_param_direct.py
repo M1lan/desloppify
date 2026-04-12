@@ -17,12 +17,9 @@ def _detect(src: str) -> list[dict]:
 
 
 class TestDetectDelParam:
-
     def test_del_param_in_first_stmt(self):
         results = _detect(
-            "def process(data, unused):\n"
-            "    del unused\n"
-            "    return data\n"
+            "def process(data, unused):\n    del unused\n    return data\n"
         )
         assert len(results) == 1
         assert "unused" in results[0]["content"]
@@ -61,27 +58,18 @@ class TestDetectDelParam:
         assert _detect("def f(x):\n    return x\n") == []
 
     def test_multiple_del_params(self):
-        results = _detect(
-            "def process(a, b, c):\n"
-            "    del a\n"
-            "    del b\n"
-            "    return c\n"
-        )
+        results = _detect("def process(a, b, c):\n    del a\n    del b\n    return c\n")
         assert len(results) == 2
 
     def test_kwonly_param(self):
         results = _detect(
-            "def f(data, *, unused=None):\n"
-            "    del unused\n"
-            "    return data\n"
+            "def f(data, *, unused=None):\n    del unused\n    return data\n"
         )
         assert len(results) == 1
 
     def test_async_function(self):
         results = _detect(
-            "async def f(data, unused):\n"
-            "    del unused\n"
-            "    return data\n"
+            "async def f(data, unused):\n    del unused\n    return data\n"
         )
         assert len(results) == 1
 
@@ -115,9 +103,5 @@ class TestDetectDelParam:
 
     def test_del_self_attribute_ignored(self):
         """del self.x is not a parameter deletion."""
-        results = _detect(
-            "def method(self, x):\n"
-            "    del self.x\n"
-            "    return x\n"
-        )
+        results = _detect("def method(self, x):\n    del self.x\n    return x\n")
         assert results == []

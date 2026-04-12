@@ -45,7 +45,9 @@ def test_full_extra_matches_union_of_other_extras() -> None:
 def test_treesitter_extra_declares_runtime_and_language_pack() -> None:
     optional = _optional_dependencies()
     treesitter_specs = optional.get("treesitter")
-    assert isinstance(treesitter_specs, list), "optional extra 'treesitter' must be a list"
+    assert isinstance(treesitter_specs, list), (
+        "optional extra 'treesitter' must be a list"
+    )
     package_names = _package_names(treesitter_specs)
     assert "tree-sitter" in package_names
     assert "tree-sitter-language-pack" in package_names

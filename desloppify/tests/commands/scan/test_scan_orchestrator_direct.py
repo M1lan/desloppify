@@ -71,10 +71,26 @@ def test_scan_orchestrator_forwards_runtime_and_payloads() -> None:
 def test_run_scan_generation_uses_planning_scan_surface(monkeypatch) -> None:
     calls: dict[str, object] = {}
 
-    monkeypatch.setattr(scan_workflow_mod, "enable_file_cache", lambda: calls.setdefault("file_cache_on", True))
-    monkeypatch.setattr(scan_workflow_mod, "disable_file_cache", lambda: calls.setdefault("file_cache_off", True))
-    monkeypatch.setattr(scan_workflow_mod, "enable_parse_cache", lambda: calls.setdefault("parse_cache_on", True))
-    monkeypatch.setattr(scan_workflow_mod, "disable_parse_cache", lambda: calls.setdefault("parse_cache_off", True))
+    monkeypatch.setattr(
+        scan_workflow_mod,
+        "enable_file_cache",
+        lambda: calls.setdefault("file_cache_on", True),
+    )
+    monkeypatch.setattr(
+        scan_workflow_mod,
+        "disable_file_cache",
+        lambda: calls.setdefault("file_cache_off", True),
+    )
+    monkeypatch.setattr(
+        scan_workflow_mod,
+        "enable_parse_cache",
+        lambda: calls.setdefault("parse_cache_on", True),
+    )
+    monkeypatch.setattr(
+        scan_workflow_mod,
+        "disable_parse_cache",
+        lambda: calls.setdefault("parse_cache_off", True),
+    )
     monkeypatch.setattr(
         scan_workflow_mod,
         "generate_plan_issues",
@@ -91,9 +107,15 @@ def test_run_scan_generation_uses_planning_scan_surface(monkeypatch) -> None:
             {"loc": 10},
         )[1],
     )
-    monkeypatch.setattr(scan_workflow_mod, "warn_explicit_lang_with_no_files", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        scan_workflow_mod, "warn_explicit_lang_with_no_files", lambda *_a, **_k: None
+    )
     monkeypatch.setattr(scan_workflow_mod, "get_exclusions", lambda: [])
-    monkeypatch.setattr(scan_workflow_mod, "_augment_stale_wontfix_impl", lambda issues, **_k: (issues, 0))
+    monkeypatch.setattr(
+        scan_workflow_mod,
+        "_augment_stale_wontfix_impl",
+        lambda issues, **_k: (issues, 0),
+    )
 
     runtime = SimpleNamespace(
         path=".",
@@ -127,7 +149,9 @@ def test_run_scan_generation_uses_planning_scan_surface(monkeypatch) -> None:
     assert calls["parse_cache_off"] is True
 
 
-def test_prepare_scan_runtime_resets_script_import_caches(monkeypatch, tmp_path) -> None:
+def test_prepare_scan_runtime_resets_script_import_caches(
+    monkeypatch, tmp_path
+) -> None:
     calls: list[str] = []
     args = SimpleNamespace(
         path=str(tmp_path),

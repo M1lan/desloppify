@@ -67,14 +67,26 @@ EXPECT_COMPARISON_RE = re.compile(
 EXPECT_TO_BE_DEFINED_RE = re.compile(r"""\.toBeDefined\s*\(""")
 
 BARREL_BASENAMES = {"index.js", "index.jsx", "index.mjs", "index.cjs"}
-_JS_EXTENSIONS = ["", ".js", ".jsx", ".mjs", ".cjs", "/index.js", "/index.jsx", "/index.mjs", "/index.cjs"]
+_JS_EXTENSIONS = [
+    "",
+    ".js",
+    ".jsx",
+    ".mjs",
+    ".cjs",
+    "/index.js",
+    "/index.jsx",
+    "/index.mjs",
+    "/index.cjs",
+]
 logger = logging.getLogger(__name__)
 
 
 def _relative_if_under_root(path_str: str) -> str:
     """Return project-relative path when possible; else return original."""
     try:
-        return str(Path(path_str).resolve().relative_to(get_project_root())).replace("\\", "/")
+        return str(Path(path_str).resolve().relative_to(get_project_root())).replace(
+            "\\", "/"
+        )
     except (OSError, ValueError):
         return path_str
 
@@ -224,7 +236,11 @@ def map_test_to_source(test_path: str, production_set: set[str]) -> str | None:
                 if p in src_basename:
                     src_basename = src_basename.replace(p, ".")
             suffix_parts[-1] = src_basename
-            candidate = os.path.join(prefix, *suffix_parts) if prefix else os.path.join(*suffix_parts)
+            candidate = (
+                os.path.join(prefix, *suffix_parts)
+                if prefix
+                else os.path.join(*suffix_parts)
+            )
             candidates.append(candidate)
 
     dir_basename = os.path.basename(dirname)
@@ -272,9 +288,7 @@ def _normalize_tautology_token(token: str) -> str | None:
     return None
 
 
-def is_placeholder_test(
-    content: str, *, assertions: int, test_functions: int
-) -> bool:
+def is_placeholder_test(content: str, *, assertions: int, test_functions: int) -> bool:
     """Heuristic for synthetic coverage-smoke tests with tautological assertions."""
     if assertions <= 0 or test_functions <= 0:
         return False
@@ -297,7 +311,9 @@ def is_placeholder_test(
 
     has_placeholder_label = any(p.search(content) for p in PLACEHOLDER_LABEL_PATTERNS)
     if tautological > 0:
-        if tautological >= assertions and (has_placeholder_label or assertions <= test_functions):
+        if tautological >= assertions and (
+            has_placeholder_label or assertions <= test_functions
+        ):
             return True
         if has_placeholder_label and (tautological / max(assertions, 1)) >= 0.5:
             return True

@@ -16,7 +16,9 @@ from desloppify.intelligence.review.dimensions.holistic import DIMENSIONS
 
 
 def test_collect_holistic_dims_by_lang_filters_empty_entries(monkeypatch):
-    monkeypatch.setattr(dimensions_mod, "available_langs", lambda: ["python", "typescript"])
+    monkeypatch.setattr(
+        dimensions_mod, "available_langs", lambda: ["python", "typescript"]
+    )
     monkeypatch.setattr(
         dimensions_mod,
         "get_lang",
@@ -242,9 +244,7 @@ def test_load_dimensions_for_lang_falls_back_to_shared(tmp_path, monkeypatch):
     assert "shared_dim" in prompts
 
 
-def test_load_dimensions_for_lang_applies_override_patch(
-    tmp_path, monkeypatch
-):
+def test_load_dimensions_for_lang_applies_override_patch(tmp_path, monkeypatch):
     shared_dir = tmp_path / "review_data"
     lang_dir = tmp_path / "lang_data"
     shared_dir.mkdir(parents=True)
@@ -273,16 +273,16 @@ def test_load_dimensions_for_lang_applies_override_patch(
         "system_prompt_append": "lang-tail",
     }
     (shared_dir / "dimensions.json").write_text(json.dumps(shared_payload))
-    (
-        lang_dir / "python" / "review_data" / "dimensions.override.json"
-    ).write_text(json.dumps(override_payload))
+    (lang_dir / "python" / "review_data" / "dimensions.override.json").write_text(
+        json.dumps(override_payload)
+    )
 
     monkeypatch.setattr(dimensions_data_mod, "_DATA_DIR", shared_dir)
     monkeypatch.setattr(dimensions_data_mod, "_LANG_DIR", lang_dir)
     dimensions_data_mod.load_dimensions_for_lang.cache_clear()
     try:
-        dims, prompts, system_prompt = (
-            dimensions_data_mod.load_dimensions_for_lang("python")
+        dims, prompts, system_prompt = dimensions_data_mod.load_dimensions_for_lang(
+            "python"
         )
     finally:
         dimensions_data_mod.load_dimensions_for_lang.cache_clear()
@@ -293,9 +293,7 @@ def test_load_dimensions_for_lang_applies_override_patch(
     assert "lang-tail" in system_prompt
 
 
-def test_load_dimensions_for_lang_override_remove_and_append(
-    tmp_path, monkeypatch
-):
+def test_load_dimensions_for_lang_override_remove_and_append(tmp_path, monkeypatch):
     shared_dir = tmp_path / "review_data"
     lang_dir = tmp_path / "lang_data"
     shared_dir.mkdir(parents=True)
@@ -317,9 +315,9 @@ def test_load_dimensions_for_lang_override_remove_and_append(
         },
     }
     (shared_dir / "dimensions.json").write_text(json.dumps(shared_payload))
-    (
-        lang_dir / "python" / "review_data" / "dimensions.override.json"
-    ).write_text(json.dumps(override_payload))
+    (lang_dir / "python" / "review_data" / "dimensions.override.json").write_text(
+        json.dumps(override_payload)
+    )
 
     monkeypatch.setattr(dimensions_data_mod, "_DATA_DIR", shared_dir)
     monkeypatch.setattr(dimensions_data_mod, "_LANG_DIR", lang_dir)
@@ -396,9 +394,9 @@ def test_load_dimensions_for_lang_meta_enabled_dimension_requires_no_append(
         }
     }
     (shared_dir / "dimensions.json").write_text(json.dumps(shared_payload))
-    (
-        lang_dir / "python" / "review_data" / "dimensions.override.json"
-    ).write_text(json.dumps(override_payload))
+    (lang_dir / "python" / "review_data" / "dimensions.override.json").write_text(
+        json.dumps(override_payload)
+    )
 
     monkeypatch.setattr(dimensions_data_mod, "_DATA_DIR", shared_dir)
     monkeypatch.setattr(dimensions_data_mod, "_LANG_DIR", lang_dir)
@@ -443,7 +441,9 @@ def test_dimension_metadata_can_override_weight_per_language():
         dimensions_metadata_mod,
         "load_dimensions_for_lang",
         lambda lang_name: (
-            ["shared_dimension", "lang_dimension"] if lang_name == "python" else ["shared_dimension"],
+            ["shared_dimension", "lang_dimension"]
+            if lang_name == "python"
+            else ["shared_dimension"],
             {
                 "shared_dimension": {
                     "prompt": "shared",
@@ -478,18 +478,27 @@ def test_dimension_metadata_can_override_weight_per_language():
             )
             == "Shared Display"
         )
-        assert dimensions_metadata_mod.dimension_display_name(
-            "lang_dimension", lang_name="python"
-        ) == "Lang Display"
-        assert dimensions_metadata_mod.dimension_weight(
-            "lang_dimension", lang_name="python"
-        ) == 4.0
+        assert (
+            dimensions_metadata_mod.dimension_display_name(
+                "lang_dimension", lang_name="python"
+            )
+            == "Lang Display"
+        )
+        assert (
+            dimensions_metadata_mod.dimension_weight(
+                "lang_dimension", lang_name="python"
+            )
+            == 4.0
+        )
         assert dimensions_metadata_mod.default_dimension_keys_for_lang("python") == (
             "lang_dimension",
             "shared_dimension",
         )
-        assert "lang_dimension" not in dimensions_metadata_mod.resettable_default_dimensions(
-            lang_name="python"
+        assert (
+            "lang_dimension"
+            not in dimensions_metadata_mod.resettable_default_dimensions(
+                lang_name="python"
+            )
         )
     finally:
         dimensions_metadata_mod.load_subjective_dimension_metadata.cache_clear()

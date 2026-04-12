@@ -13,7 +13,9 @@ from desloppify.languages._framework.issue_factories import make_smell_issues
 from desloppify.languages.kotlin.detectors.smells import detect_smells
 
 
-def phase_kotlin_smells(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_kotlin_smells(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run Kotlin-specific smell detectors and normalize them into issues."""
     smell_entries, total_smell_files = detect_smells(path)
     normalized_smells = normalize_smell_entries(smell_entries)

@@ -39,6 +39,7 @@ def test_file_finder_skips_godot_artifacts(tmp_path):
     cfg = GdscriptConfig()
     from desloppify.base.runtime_state import RuntimeContext, runtime_scope
     from desloppify.base.discovery.source import clear_source_file_cache_for_tests
+
     ctx = RuntimeContext(project_root=tmp_path)
     with runtime_scope(ctx):
         clear_source_file_cache_for_tests()

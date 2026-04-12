@@ -15,8 +15,7 @@ def _collect_holistic_dims_by_lang() -> dict[str, list[str]]:
     for lang_name in available_langs():
         try:
             dims = list(
-                getattr(get_lang(lang_name), "holistic_review_dimensions", [])
-                or []
+                getattr(get_lang(lang_name), "holistic_review_dimensions", []) or []
             )
         except (ValueError, TypeError, AttributeError, ImportError) as exc:
             logger.debug("Skipping holistic dimensions for %s: %s", lang_name, exc)

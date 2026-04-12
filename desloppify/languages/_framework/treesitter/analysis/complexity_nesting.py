@@ -74,7 +74,9 @@ def make_nesting_depth_compute(spec: TreeSitterLangSpec) -> ComputeFn:
     """Build a complexity compute callback for max nesting depth."""
     _cached_parser: dict[str, Any] = {}
 
-    def compute(content: str, lines: list[str], *, _filepath: str = "") -> tuple[int, str] | None:
+    def compute(
+        content: str, lines: list[str], *, _filepath: str = ""
+    ) -> tuple[int, str] | None:
         del content, lines
         if not _filepath:
             return None
@@ -94,4 +96,8 @@ def make_nesting_depth_compute(spec: TreeSitterLangSpec) -> ComputeFn:
     return compute
 
 
-__all__ = ["compute_nesting_depth_ts", "make_callback_depth_compute", "make_nesting_depth_compute"]
+__all__ = [
+    "compute_nesting_depth_ts",
+    "make_callback_depth_compute",
+    "make_nesting_depth_compute",
+]

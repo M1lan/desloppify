@@ -9,7 +9,9 @@ import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
-from desloppify.base.discovery.source import collect_exclude_dirs as _collect_exclude_dirs
+from desloppify.base.discovery.source import (
+    collect_exclude_dirs as _collect_exclude_dirs,
+)
 from desloppify.base.discovery.source import find_py_files
 from desloppify.base.discovery.source import get_exclusions as _get_exclusions
 from desloppify.base.discovery.file_paths import matches_exclusion as _matches_exclusion
@@ -27,8 +29,7 @@ def _selected_codes(category: str) -> list[str]:
 
 def _is_excluded(filepath: str, exclusions: tuple[str, ...]) -> bool:
     return bool(
-        exclusions
-        and any(_matches_exclusion(filepath, ex) for ex in exclusions)
+        exclusions and any(_matches_exclusion(filepath, ex) for ex in exclusions)
     )
 
 

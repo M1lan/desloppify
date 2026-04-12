@@ -106,7 +106,9 @@ PY_ENTRY_PATTERNS = [
 ]
 
 
-def phase_unused(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_unused(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     entries, total_files = unused_detector_mod.detect_unused(path)
     return make_unused_issues(entries, log), {
         "unused": adjust_potential(lang.zone_map, total_files),
@@ -125,7 +127,9 @@ def phase_structural(
     )
 
 
-def phase_coupling(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_coupling(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     return run_phase_coupling(path, lang, log_fn=log)
 
 
@@ -169,6 +173,7 @@ def phase_responsibility_cohesion(
     return results, {
         "responsibility_cohesion": adjust_potential(lang.zone_map, candidates)
     }
+
 
 def phase_uncalled_functions(
     path: Path, lang: LangRuntimeContract
@@ -229,6 +234,7 @@ def phase_unused_enums(
     if results:
         log(f"         unused enums: {len(results)} enum classes with zero imports")
     return results, {"unused_enums": adjust_potential(lang.zone_map, total)}
+
 
 __all__ = [
     "PY_COMPLEXITY_SIGNALS",

@@ -55,8 +55,14 @@ def resolve_import_spec(
     normalized = spec.strip().strip("\"'`")
 
     if not normalized or normalized in (
-        "base", "stats", "utils", "methods", "graphics",
-        "grDevices", "datasets", "tools",
+        "base",
+        "stats",
+        "utils",
+        "methods",
+        "graphics",
+        "grDevices",
+        "datasets",
+        "tools",
     ):
         return None
 

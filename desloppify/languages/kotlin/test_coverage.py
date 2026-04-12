@@ -32,9 +32,7 @@ MOCK_PATTERNS = [
     ]
 ]
 SNAPSHOT_PATTERNS: list[re.Pattern[str]] = []
-TEST_FUNCTION_RE = re.compile(
-    r"(?m)^\s*(?:@Test\s+)?fun\s+(?:`[^`]+`|test\w+)\s*\("
-)
+TEST_FUNCTION_RE = re.compile(r"(?m)^\s*(?:@Test\s+)?fun\s+(?:`[^`]+`|test\w+)\s*\(")
 BARREL_BASENAMES: set[str] = set()
 
 

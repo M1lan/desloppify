@@ -11,15 +11,10 @@ from desloppify.base.discovery.file_paths import rel
 from desloppify.base.output.fallbacks import log_best_effort_failure
 
 from desloppify.base.discovery.source import (
-
     disable_file_cache,
-
     enable_file_cache,
-
     is_file_cache_enabled,
-
     read_file_text,
-
 )
 from desloppify.intelligence.review._prepare.helpers import append_full_sweep_batch
 from desloppify.intelligence.review.context import (
@@ -86,6 +81,7 @@ class HolisticReviewPrepareOptions:
     include_issue_history: bool = False
     issue_history_max_issues: int = 30
     issue_history_max_batch_items: int = 20
+
 
 def _rel_list(s: set[str] | list[str]) -> list[str]:
     """Normalize a set or list of paths to sorted relative paths (max 10)."""

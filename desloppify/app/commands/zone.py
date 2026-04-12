@@ -104,7 +104,7 @@ def _zone_set(args: argparse.Namespace):
         sp = state_path(args)
         if sp.exists():
             state = load_state(sp)
-            issues = (state.get("work_items") or state.get("issues", {}))
+            issues = state.get("work_items") or state.get("issues", {})
             updated = 0
             for issue in issues.values():
                 if issue.get("file") == normalized:
@@ -138,7 +138,7 @@ def _zone_clear(args: argparse.Namespace):
             sp = state_path(args)
             if sp.exists():
                 state = load_state(sp)
-                issues = (state.get("work_items") or state.get("issues", {}))
+                issues = state.get("work_items") or state.get("issues", {})
                 updated = 0
                 for issue in issues.values():
                     if issue.get("file") == normalized:
@@ -146,7 +146,9 @@ def _zone_clear(args: argparse.Namespace):
                         updated += 1
                 if updated:
                     save_state(state, sp)
-                print(f"  Re-stamped {updated} issue(s) to 'production' (will reclassify on next scan).")
+                print(
+                    f"  Re-stamped {updated} issue(s) to 'production' (will reclassify on next scan)."
+                )
         except (ImportError, OSError, TypeError, ValueError):
             print(colorize("  (Will apply on next scan.)", "dim"))
             return

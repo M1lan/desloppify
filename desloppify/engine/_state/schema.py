@@ -272,7 +272,11 @@ def validate_state_invariants(state: StateModel) -> None:
         raise ValueError(f"state.scan_metadata.source has invalid value {source!r}")
     if source == "plan_reconstruction":
         issue_count = metadata.get("reconstructed_issue_count", 0)
-        if not isinstance(issue_count, int) or isinstance(issue_count, bool) or issue_count < 0:
+        if (
+            not isinstance(issue_count, int)
+            or isinstance(issue_count, bool)
+            or issue_count < 0
+        ):
             raise ValueError(
                 "state.scan_metadata.reconstructed_issue_count must be a non-negative int"
             )
@@ -290,9 +294,7 @@ def validate_state_invariants(state: StateModel) -> None:
             )
         origin = issue.get("origin")
         if origin not in WORK_ITEM_ORIGINS:
-            raise ValueError(
-                f"issue {issue_id!r} has invalid origin {origin!r}"
-            )
+            raise ValueError(f"issue {issue_id!r} has invalid origin {origin!r}")
         if issue.get("status") not in _ALLOWED_ISSUE_STATUSES:
             raise ValueError(
                 f"issue {issue_id!r} has invalid status {issue.get('status')!r}"
@@ -313,7 +315,9 @@ def _coerce_scan_source(
     state: StateModel | dict[str, Any],
     metadata: dict[str, Any] | None = None,
 ) -> str:
-    raw_metadata = metadata if isinstance(metadata, dict) else state.get("scan_metadata")
+    raw_metadata = (
+        metadata if isinstance(metadata, dict) else state.get("scan_metadata")
+    )
     metadata_dict = raw_metadata if isinstance(raw_metadata, dict) else {}
     raw_source = metadata_dict.get("source")
     source = raw_source if isinstance(raw_source, str) else ""

@@ -39,7 +39,9 @@ def detect_ts_security(
         try:
             content = Path(filepath).read_text(errors="replace")
         except OSError as exc:
-            log_best_effort_failure(logger, f"read TypeScript security source {filepath}", exc)
+            log_best_effort_failure(
+                logger, f"read TypeScript security source {filepath}", exc
+            )
             entries.append(
                 _make_security_entry(
                     filepath,
@@ -85,7 +87,9 @@ def detect_ts_security(
             )
         )
 
-    return DetectorResult(entries=entries, population_kind="files", population_size=scanned)
+    return DetectorResult(
+        entries=entries, population_kind="files", population_size=scanned
+    )
 
 
 __all__ = [

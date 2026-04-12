@@ -77,7 +77,9 @@ cmd_deps = make_cmd_deps(
     module_name=__name__,
 )
 cmd_cycles = make_cmd_cycles(
-    build_dep_graph_fn=lambda path: build_dep_graph(path, include_mod_declarations=False),
+    build_dep_graph_fn=lambda path: build_dep_graph(
+        path, include_mod_declarations=False
+    ),
     module_name=__name__,
 )
 cmd_orphaned = make_cmd_orphaned(
@@ -147,6 +149,8 @@ def _make_tool_detect_command(
 
     command.__module__ = __name__
     return command
+
+
 def _make_entry_detect_command(
     label: str,
     detector_fn: EntryDetector,

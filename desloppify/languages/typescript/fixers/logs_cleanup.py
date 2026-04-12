@@ -83,7 +83,9 @@ _EMPTY_CALLBACK_RE = re.compile(
 )
 
 
-def mark_orphaned_comments(lines: list[str], log_start: int, lines_to_remove: set[int]) -> None:
+def mark_orphaned_comments(
+    lines: list[str], log_start: int, lines_to_remove: set[int]
+) -> None:
     """Mark up to 3 preceding comment lines as orphaned if debug-tagged."""
     for offset in range(1, 4):
         idx = log_start - offset

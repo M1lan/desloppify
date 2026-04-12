@@ -25,7 +25,9 @@ def render_deps_cli(args, *, build_dep_graph, resolve_roslyn_cmd) -> None:
         print(f"  Instability:         {coupling['instability']}")
         return
 
-    by_importers = sorted(graph.items(), key=lambda kv: (-kv[1].get("importer_count", 0), rel(kv[0])))
+    by_importers = sorted(
+        graph.items(), key=lambda kv: (-kv[1].get("importer_count", 0), rel(kv[0]))
+    )
     if getattr(args, "json", False):
         top = by_importers[: getattr(args, "top", 20)]
         print(
@@ -49,7 +51,13 @@ def render_deps_cli(args, *, build_dep_graph, resolve_roslyn_cmd) -> None:
     print(colorize(f"\nC# dependency graph: {len(graph)} files\n", "bold"))
     rows = []
     for filepath, entry in by_importers[: getattr(args, "top", 20)]:
-        rows.append([rel(filepath), str(entry.get("importer_count", 0)), str(entry.get("import_count", 0))])
+        rows.append(
+            [
+                rel(filepath),
+                str(entry.get("importer_count", 0)),
+                str(entry.get("import_count", 0)),
+            ]
+        )
     if rows:
         print_table(["File", "Importers", "Imports"], rows, [70, 9, 7])
 
@@ -65,7 +73,10 @@ def render_cycles_cli(args, *, build_dep_graph, resolve_roslyn_cmd) -> None:
                 {
                     "count": len(cycles),
                     "cycles": [
-                        {"length": cycle["length"], "files": [rel(filepath) for filepath in cycle["files"]]}
+                        {
+                            "length": cycle["length"],
+                            "files": [rel(filepath) for filepath in cycle["files"]],
+                        }
                         for cycle in cycles
                     ],
                 },

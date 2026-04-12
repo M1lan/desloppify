@@ -172,7 +172,9 @@ def _count_importers(
     )
     count = 0
     for match_file in matching:
-        match_resolved = str(_resolve_source_file(match_file, scan_root=scan_root).resolve())
+        match_resolved = str(
+            _resolve_source_file(match_file, scan_root=scan_root).resolve()
+        )
         if match_resolved != declaring_resolved:
             count += 1
     return count

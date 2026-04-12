@@ -10,11 +10,16 @@ import desloppify.base.registry as core_registry_mod
 import desloppify.engine._scoring.policy.core as scoring_policy_mod
 import desloppify.languages._framework.registry.discovery as discovery_mod
 import desloppify.languages._framework.registry.state as registry_state
-from desloppify.languages._framework.registry.discovery import load_all, raise_load_errors
+from desloppify.languages._framework.registry.discovery import (
+    load_all,
+    raise_load_errors,
+)
 
 
 def test_raise_load_errors_includes_module_name_and_exception_type(monkeypatch):
-    monkeypatch.setattr(registry_state._STATE, "load_errors", {".dummy": ImportError("boom")})
+    monkeypatch.setattr(
+        registry_state._STATE, "load_errors", {".dummy": ImportError("boom")}
+    )
 
     with pytest.raises(ImportError, match=r"\.dummy: ImportError: boom"):
         raise_load_errors()
@@ -114,7 +119,9 @@ def test_load_all_calls_module_register_entrypoint(monkeypatch, tmp_path):
     assert ".python" in registered
 
 
-def test_load_all_force_reload_reimports_without_reset_side_effects(monkeypatch, tmp_path):
+def test_load_all_force_reload_reimports_without_reset_side_effects(
+    monkeypatch, tmp_path
+):
     plugin_file = tmp_path / "plugin_go.py"
     plugin_file.write_text("# plugin placeholder\n")
 
@@ -191,7 +198,11 @@ def test_load_all_propagates_unexpected_user_plugin_errors(monkeypatch, tmp_path
 
     monkeypatch.setattr(discovery_mod, "__file__", str(tmp_path / "discovery.py"))
     monkeypatch.setattr(discovery_mod, "get_project_root", lambda: tmp_path)
-    monkeypatch.setattr(discovery_mod, "_user_plugins_trusted", lambda: (_ for _ in ()).throw(RuntimeError("plugin gate crash")))
+    monkeypatch.setattr(
+        discovery_mod,
+        "_user_plugins_trusted",
+        lambda: (_ for _ in ()).throw(RuntimeError("plugin gate crash")),
+    )
 
     registry_state.set_load_attempted(False)
     registry_state.set_load_errors({})
@@ -200,7 +211,9 @@ def test_load_all_propagates_unexpected_user_plugin_errors(monkeypatch, tmp_path
 
 
 def test_reset_runtime_state_clears_registry_and_hooks():
-    saved_registry = {name: registry_state.get(name) for name in registry_state.all_keys()}
+    saved_registry = {
+        name: registry_state.get(name) for name in registry_state.all_keys()
+    }
     saved_attempted = registry_state.was_load_attempted()
     saved_errors = dict(registry_state.get_load_errors())
 

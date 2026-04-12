@@ -116,7 +116,9 @@ def _recover_output_from_fallback_text(
 ) -> bool:
     if valid or deps.validate_output_fn is None:
         return valid
-    fallback_text = (result.stdout_text or "").strip() or (result.stderr_text or "").strip()
+    fallback_text = (result.stdout_text or "").strip() or (
+        result.stderr_text or ""
+    ).strip()
     if not fallback_text:
         return False
     try:
@@ -130,9 +132,7 @@ def _recover_output_from_fallback_text(
         return False
     if not validate(output_file):
         return False
-    log_sections.append(
-        "Runner output recovered from stdout/stderr fallback text."
-    )
+    log_sections.append("Runner output recovered from stdout/stderr fallback text.")
     return True
 
 

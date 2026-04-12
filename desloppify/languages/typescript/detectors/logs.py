@@ -54,7 +54,9 @@ def detect_logs(path: Path) -> DetectorResult[dict]:
             {"file": filepath, "line": lineno, "tag": tag, "content": content.strip()}
         )
 
-    return DetectorResult(entries=entries, population_kind="files", population_size=total_files)
+    return DetectorResult(
+        entries=entries, population_kind="files", population_size=total_files
+    )
 
 
 def cmd_logs(args: argparse.Namespace) -> None:
@@ -96,7 +98,9 @@ def cmd_logs(args: argparse.Namespace) -> None:
     print_table(["File", "Count"], rows, [70, 6])
 
     if args.fix:
-        print(colorize(f"\n--fix: Will remove {len(entries)} tagged log lines.", "yellow"))
+        print(
+            colorize(f"\n--fix: Will remove {len(entries)} tagged log lines.", "yellow")
+        )
         confirm = input("Proceed? [y/N] ").strip().lower()
         if confirm == "y":
             _fix_logs(by_file)
@@ -109,7 +113,11 @@ def _fix_logs(by_file: dict[str, list]):
     failed = 0
     for filepath, file_entries in by_file.items():
         lines_to_remove = {e["line"] for e in file_entries}
-        p = Path(filepath) if Path(filepath).is_absolute() else Path(resolve_path(filepath))
+        p = (
+            Path(filepath)
+            if Path(filepath).is_absolute()
+            else Path(resolve_path(filepath))
+        )
         try:
             original = p.read_text()
             new_lines = []

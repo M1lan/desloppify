@@ -718,5 +718,3 @@ class TestFixUnusedParams:
         ]
         _ = fix_unused_params(entries, dry_run=True)
         assert ts_file.read_text() == original
-
-

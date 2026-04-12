@@ -17,8 +17,15 @@ def _add_detect_parser(sub, detector_names: list[str]) -> None:
         epilog=f"detectors: {', '.join(detector_names)}",
     )
     p_detect.add_argument("detector", type=str, help="Detector to run")
-    p_detect.add_argument("--top", type=int, default=20, help="Max items to show (default: 20)")
-    p_detect.add_argument("--path", type=str, default=None, help="Project root directory (default: auto-detected)")
+    p_detect.add_argument(
+        "--top", type=int, default=20, help="Max items to show (default: 20)"
+    )
+    p_detect.add_argument(
+        "--path",
+        type=str,
+        default=None,
+        help="Project root directory (default: auto-detected)",
+    )
     p_detect.add_argument("--json", action="store_true", help="Output as JSON")
     p_detect.add_argument(
         "--fix",
@@ -64,7 +71,12 @@ def _add_move_parser(sub) -> None:
 
 def _add_zone_parser(sub) -> None:
     p_zone = sub.add_parser("zone", help="Show/set/clear zone classifications")
-    p_zone.add_argument("--path", type=str, default=None, help="Project root directory (default: auto-detected)")
+    p_zone.add_argument(
+        "--path",
+        type=str,
+        default=None,
+        help="Project root directory (default: auto-detected)",
+    )
     p_zone.add_argument("--state", type=str, default=None, help="Path to state file")
     zone_sub = p_zone.add_subparsers(dest="zone_action")
     zone_sub.add_parser("show", help="Show zone classifications for all files")
@@ -91,7 +103,9 @@ def _add_config_parser(sub) -> None:
 
 
 def _add_directives_parser(sub) -> None:
-    p = sub.add_parser("directives", help="View/set agent directives for phase transitions")
+    p = sub.add_parser(
+        "directives", help="View/set agent directives for phase transitions"
+    )
     d_sub = p.add_subparsers(dest="directives_action")
     d_sub.add_parser("show", help="Show all configured directives")
     d_set = d_sub.add_parser("set", help="Set a directive for a lifecycle phase")
@@ -124,7 +138,12 @@ def _add_autofix_parser(sub, langs: list[str]) -> None:
         epilog="\n".join(_fixer_help_lines(langs)),
     )
     p_autofix.add_argument("fixer", type=str, help="What to fix")
-    p_autofix.add_argument("--path", type=str, default=None, help="Project root directory (default: auto-detected)")
+    p_autofix.add_argument(
+        "--path",
+        type=str,
+        default=None,
+        help="Project root directory (default: auto-detected)",
+    )
     p_autofix.add_argument("--state", type=str, default=None, help="Path to state file")
     p_autofix.add_argument(
         "--dry-run",
@@ -135,7 +154,12 @@ def _add_autofix_parser(sub, langs: list[str]) -> None:
 
 def _add_viz_parser(sub) -> None:
     p_viz = sub.add_parser("viz", help="Generate interactive HTML treemap")
-    p_viz.add_argument("--path", type=str, default=None, help="Project root directory (default: auto-detected)")
+    p_viz.add_argument(
+        "--path",
+        type=str,
+        default=None,
+        help="Project root directory (default: auto-detected)",
+    )
     p_viz.add_argument("--output", type=str, default=None, help="Output file path")
     p_viz.add_argument("--state", type=str, default=None, help="Path to state file")
 
@@ -179,11 +203,15 @@ def _add_dev_parser(sub) -> None:
     )
     d_scaffold.set_defaults(wire_pyproject=True)
 
-    dev_sub.add_parser("test-hermes", help="Test Hermes model switching (switch and switch back)")
+    dev_sub.add_parser(
+        "test-hermes", help="Test Hermes model switching (switch and switch back)"
+    )
 
 
 def _add_langs_parser(sub) -> None:
-    sub.add_parser("langs", help="List all available language plugins with depth and tools")
+    sub.add_parser(
+        "langs", help="List all available language plugins with depth and tools"
+    )
 
 
 def _add_update_skill_parser(sub) -> None:

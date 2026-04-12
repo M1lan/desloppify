@@ -19,7 +19,12 @@ _SWITCH_CASE_MINIMUM = 2
 _MAX_CATCH_BODY = 1000
 _MAX_SWITCH_BODY_SCAN = 5000
 
-_ERROR_HANDLER_BASENAMES = ("logger", "errorpresentation", "errorhandler", "errorreporting")
+_ERROR_HANDLER_BASENAMES = (
+    "logger",
+    "errorpresentation",
+    "errorhandler",
+    "errorreporting",
+)
 _PRECEDING_SKIP_PATTERNS = re.compile(
     r"componentDidCatch|import\.meta\.env\.DEV|process\.env\.NODE_ENV"
 )
@@ -84,7 +89,9 @@ def _find_function_start(line: str, next_lines: list[str]) -> str | None:
     if not assignment_match:
         return None
 
-    combined = "\n".join([stripped] + [next_line.strip() for next_line in next_lines[:2]])
+    combined = "\n".join(
+        [stripped] + [next_line.strip() for next_line in next_lines[:2]]
+    )
     eq_pos = combined.find("=", assignment_match.end())
     if eq_pos == -1:
         return None
@@ -96,7 +103,9 @@ def _find_function_start(line: str, next_lines: list[str]) -> str | None:
     return None
 
 
-def _find_opening_brace_line(lines: list[str], start: int, *, window: int = 5) -> int | None:
+def _find_opening_brace_line(
+    lines: list[str], start: int, *, window: int = 5
+) -> int | None:
     for idx in range(start, min(start + window, len(lines))):
         if "{" in lines[idx]:
             return idx
@@ -104,7 +113,10 @@ def _find_opening_brace_line(lines: list[str], start: int, *, window: int = 5) -
 
 
 def _extract_function_body(
-    lines: list[str], start_line: int, *, max_scan: int = 2000,
+    lines: list[str],
+    start_line: int,
+    *,
+    max_scan: int = 2000,
 ) -> str | None:
     """Extract the inner body text of a function starting at start_line."""
     brace_line = _find_opening_brace_line(lines, start_line, window=5)

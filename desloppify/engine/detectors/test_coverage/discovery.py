@@ -50,7 +50,9 @@ def _discover_scorable_and_tests(
         return path[len(root_prefix) :] if path.startswith(root_prefix) else path
 
     all_files = zone_map.all_files()
-    production_files = set(zone_map.include_only(all_files, Zone.PRODUCTION, Zone.SCRIPT))
+    production_files = set(
+        zone_map.include_only(all_files, Zone.PRODUCTION, Zone.SCRIPT)
+    )
     test_files = set(zone_map.include_only(all_files, Zone.TEST))
 
     if extra_test_files:

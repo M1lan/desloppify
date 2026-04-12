@@ -140,9 +140,7 @@ def detect_orphaned_files(
     alias_resolver = resolved_options.alias_resolver
 
     # Framework convention detection
-    is_nextjs = (
-        resolved_options.detect_frameworks and _detect_nextjs_project(path)
-    )
+    is_nextjs = resolved_options.detect_frameworks and _detect_nextjs_project(path)
 
     dynamic_targets = (
         dynamic_import_finder(path, extensions) if dynamic_import_finder else set()

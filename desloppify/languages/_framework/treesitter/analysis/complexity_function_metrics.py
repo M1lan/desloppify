@@ -17,7 +17,9 @@ def make_long_functions_compute(spec: TreeSitterLangSpec) -> ComputeFn:
 
     _cached_parser: dict[str, Any] = {}
 
-    def compute(content: str, lines: list[str], *, _filepath: str = "") -> tuple[int, str] | None:
+    def compute(
+        content: str, lines: list[str], *, _filepath: str = ""
+    ) -> tuple[int, str] | None:
         del content, lines
         if not _filepath:
             return None
@@ -112,7 +114,9 @@ def make_cyclomatic_complexity_compute(spec: TreeSitterLangSpec) -> ComputeFn:
 
     _cached_parser: dict[str, Any] = {}
 
-    def compute(content: str, lines: list[str], *, _filepath: str = "") -> tuple[int, str] | None:
+    def compute(
+        content: str, lines: list[str], *, _filepath: str = ""
+    ) -> tuple[int, str] | None:
         del content, lines
         if not _filepath:
             return None
@@ -149,7 +153,9 @@ def make_max_params_compute(spec: TreeSitterLangSpec) -> ComputeFn:
 
     _cached_parser: dict[str, Any] = {}
 
-    def compute(content: str, lines: list[str], *, _filepath: str = "") -> tuple[int, str] | None:
+    def compute(
+        content: str, lines: list[str], *, _filepath: str = ""
+    ) -> tuple[int, str] | None:
         del content, lines
         if not _filepath:
             return None

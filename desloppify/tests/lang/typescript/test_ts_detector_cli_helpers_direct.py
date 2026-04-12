@@ -44,7 +44,9 @@ def test_block_helpers_code_text_strips_comments_and_strings() -> None:
 
 
 def test_line_state_helpers_detect_template_and_block_comment_states() -> None:
-    end_pos, found_close, depth = line_state_mod._scan_template_content("x`${a}`y`", 1, 0)
+    end_pos, found_close, depth = line_state_mod._scan_template_content(
+        "x`${a}`y`", 1, 0
+    )
     assert found_close is True
     assert depth == 0
     assert end_pos > 1
@@ -103,7 +105,10 @@ def test_react_cli_json_and_empty_paths(monkeypatch, capsys) -> None:
     monkeypatch.setattr(
         react_cli_mod,
         "detect_state_sync",
-        lambda _path: ([{"file": "/repo/src/a.tsx", "line": 10, "setters": ["setX"]}], {}),
+        lambda _path: (
+            [{"file": "/repo/src/a.tsx", "line": 10, "setters": ["setX"]}],
+            {},
+        ),
     )
     monkeypatch.setattr(react_cli_mod, "rel", lambda p: str(p).split("/repo/")[-1])
     args = argparse.Namespace(path=".", json=True, top=5)

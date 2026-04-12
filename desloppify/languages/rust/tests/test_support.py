@@ -59,7 +59,7 @@ def test_strip_rust_comments_removes_doc_examples_with_markdown_backticks():
         "/// Returns an `Entry`.\n"
         "///\n"
         "/// ```\n"
-        "/// match map.entry(\"key\") {\n"
+        '/// match map.entry("key") {\n'
         "///     Entry::Vacant(_) => unimplemented!(),\n"
         "/// }\n"
         "/// ```\n"
@@ -86,14 +86,14 @@ def test_find_workspace_root_skips_invalid_nested_manifest(tmp_path):
 
 
 def test_iter_use_specs_ignores_use_text_inside_strings():
-    content = r'''
+    content = r"""
 fn registry() {
     let description = r#"
     use this wording in docs only; still not an import.
     "#;
 }
 use crate::real::Thing;
-'''
+"""
 
     specs = iter_use_specs(content)
 

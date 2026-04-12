@@ -68,9 +68,7 @@ def _render_dimension_legend(
         if e.get("stale") and e.get("dimension_key")
     ]
     if stale_keys:
-        print(
-            colorize("  [stale] = assessment outdated", "yellow")
-        )
+        print(colorize("  [stale] = assessment outdated", "yellow"))
         if objective_backlog <= 0:
             n = len(stale_keys)
             dims_arg = ",".join(stale_keys)
@@ -84,7 +82,10 @@ def _render_dimension_legend(
 
 
 def show_dimension_table(
-    state: StateModel, dim_scores: dict[str, Any], *, objective_backlog: int = 0,
+    state: StateModel,
+    dim_scores: dict[str, Any],
+    *,
+    objective_backlog: int = 0,
 ) -> None:
     """Show dimension health table with dual scores and progress bars."""
     print()
@@ -108,7 +109,9 @@ def show_dimension_table(
         bar_len=bar_len,
         review_issue_counts=review_issue_counts,
     )
-    _render_dimension_legend(scorecard_subjective, state=state, objective_backlog=objective_backlog)
+    _render_dimension_legend(
+        scorecard_subjective, state=state, objective_backlog=objective_backlog
+    )
     print()
 
 
@@ -323,7 +326,7 @@ def show_structural_areas(state: StateModel) -> None:
 
 def show_review_summary(state: StateModel) -> None:
     """Show review work items summary if any exist."""
-    issues = (state.get("work_items") or state.get("issues", {}))
+    issues = state.get("work_items") or state.get("issues", {})
     review_open = [
         f
         for f in issues.values()
@@ -337,7 +340,12 @@ def show_review_summary(state: StateModel) -> None:
     parts = [f"{len(review_open)} issue{'s' if len(review_open) != 1 else ''} open"]
     if uninvestigated:
         parts.append(f"{uninvestigated} uninvestigated")
-    print(colorize(f"  Review: {', '.join(parts)} — `desloppify show review --status open`", "cyan"))
+    print(
+        colorize(
+            f"  Review: {', '.join(parts)} — `desloppify show review --status open`",
+            "cyan",
+        )
+    )
     dim_scores = state.get("dimension_scores", {})
     if "Test health" in dim_scores:
         print(

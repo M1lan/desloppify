@@ -152,9 +152,7 @@ def _apply_csharp_actionability_gates(
             entry, lang
         )
         corroboration_count = len(signals)
-        issue["confidence"] = (
-            "medium" if corroboration_count >= min_signals else "low"
-        )
+        issue["confidence"] = "medium" if corroboration_count >= min_signals else "low"
         detail = issue.setdefault("detail", {})
         detail["corroboration_signals"] = signals
         detail["corroboration_count"] = corroboration_count

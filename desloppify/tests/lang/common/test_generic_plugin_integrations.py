@@ -8,7 +8,10 @@ from unittest.mock import patch
 
 import pytest
 
-from desloppify.languages._framework.generic_support.core import capability_report, generic_lang
+from desloppify.languages._framework.generic_support.core import (
+    capability_report,
+    generic_lang,
+)
 from desloppify.languages._framework.generic_parts.tool_factories import (
     make_generic_fixer,
 )
@@ -34,7 +37,15 @@ class TestScoringIntegration:
         generic_lang(
             name="test_scoring_1",
             extensions=[".x"],
-            tools=[{"label": "t", "cmd": "echo", "fmt": "gnu", "id": "test_score_det_1", "tier": 2}],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_score_det_1",
+                    "tier": 2,
+                }
+            ],
         )
         cq = next(d for d in DIMENSIONS if d.name == "Code quality")
         assert "test_score_det_1" in cq.detectors
@@ -45,7 +56,15 @@ class TestScoringIntegration:
         generic_lang(
             name="test_scoring_2",
             extensions=[".x"],
-            tools=[{"label": "t", "cmd": "echo", "fmt": "gnu", "id": "test_score_det_2", "tier": 3}],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_score_det_2",
+                    "tier": 3,
+                }
+            ],
         )
         policy = DETECTOR_SCORING_POLICIES["test_score_det_2"]
         assert policy.tier == 3
@@ -63,7 +82,15 @@ class TestNarrativeIntegration:
         generic_lang(
             name="test_narrative_1",
             extensions=[".x"],
-            tools=[{"label": "narr tool", "cmd": "echo", "fmt": "gnu", "id": "test_narr_det_1", "tier": 2}],
+            tools=[
+                {
+                    "label": "narr tool",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_narr_det_1",
+                    "tier": 2,
+                }
+            ],
         )
         assert "test_narr_det_1" in DETECTOR_TOOLS
         assert DETECTOR_TOOLS["test_narr_det_1"]["action_type"] == "manual_fix"
@@ -74,10 +101,16 @@ class TestNarrativeIntegration:
         generic_lang(
             name="test_narrative_2",
             extensions=[".x"],
-            tools=[{
-                "label": "narr tool", "cmd": "echo", "fmt": "gnu",
-                "id": "test_narr_det_2", "tier": 2, "fix_cmd": "echo --fix",
-            }],
+            tools=[
+                {
+                    "label": "narr tool",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_narr_det_2",
+                    "tier": 2,
+                    "fix_cmd": "echo --fix",
+                }
+            ],
         )
         assert DETECTOR_TOOLS["test_narr_det_2"]["action_type"] == "auto_fix"
         assert "test-narr-det-2" in DETECTOR_TOOLS["test_narr_det_2"]["fixers"]
@@ -92,7 +125,15 @@ class TestSharedPhases:
         cfg = generic_lang(
             name="test_phases_1",
             extensions=[".x"],
-            tools=[{"label": "t", "cmd": "echo", "fmt": "gnu", "id": "test_ph_1", "tier": 2}],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_ph_1",
+                    "tier": 2,
+                }
+            ],
         )
         assert "Security" in [p.label for p in cfg.phases]
 
@@ -100,7 +141,15 @@ class TestSharedPhases:
         cfg = generic_lang(
             name="test_phases_2",
             extensions=[".x"],
-            tools=[{"label": "t", "cmd": "echo", "fmt": "gnu", "id": "test_ph_2", "tier": 2}],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_ph_2",
+                    "tier": 2,
+                }
+            ],
         )
         assert "Subjective review" in [p.label for p in cfg.phases]
 
@@ -108,7 +157,15 @@ class TestSharedPhases:
         cfg = generic_lang(
             name="test_phases_3",
             extensions=[".x"],
-            tools=[{"label": "t", "cmd": "echo", "fmt": "gnu", "id": "test_ph_3", "tier": 2}],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_ph_3",
+                    "tier": 2,
+                }
+            ],
         )
         assert "Boilerplate duplication" in [p.label for p in cfg.phases]
 
@@ -116,7 +173,15 @@ class TestSharedPhases:
         cfg = generic_lang(
             name="test_phases_4",
             extensions=[".x"],
-            tools=[{"label": "t", "cmd": "echo", "fmt": "gnu", "id": "test_ph_4", "tier": 2}],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_ph_4",
+                    "tier": 2,
+                }
+            ],
         )
         assert "Duplicates" in [p.label for p in cfg.phases]
 
@@ -124,7 +189,15 @@ class TestSharedPhases:
         cfg = generic_lang(
             name="test_phases_5",
             extensions=[".x"],
-            tools=[{"label": "mytool", "cmd": "echo", "fmt": "gnu", "id": "test_ph_5", "tier": 2}],
+            tools=[
+                {
+                    "label": "mytool",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_ph_5",
+                    "tier": 2,
+                }
+            ],
         )
         labels = [p.label for p in cfg.phases]
         assert labels.index("mytool") < labels.index("Security")
@@ -141,10 +214,16 @@ class TestFixers:
         cfg = generic_lang(
             name="test_fixer_1",
             extensions=[".x"],
-            tools=[{
-                "label": "fixlint", "cmd": "echo", "fmt": "gnu",
-                "id": "test_fixer_det_1", "tier": 2, "fix_cmd": "fixlint --fix",
-            }],
+            tools=[
+                {
+                    "label": "fixlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_fixer_det_1",
+                    "tier": 2,
+                    "fix_cmd": "fixlint --fix",
+                }
+            ],
         )
         assert "test-fixer-det-1" in cfg.fixers
         fixer = cfg.fixers["test-fixer-det-1"]
@@ -156,7 +235,15 @@ class TestFixers:
         cfg = generic_lang(
             name="test_fixer_2",
             extensions=[".x"],
-            tools=[{"label": "nofixlint", "cmd": "echo", "fmt": "gnu", "id": "test_fixer_det_2", "tier": 2}],
+            tools=[
+                {
+                    "label": "nofixlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_fixer_det_2",
+                    "tier": 2,
+                }
+            ],
         )
         assert cfg.fixers == {}
 
@@ -164,17 +251,27 @@ class TestFixers:
         cfg = generic_lang(
             name="test_fixer_3",
             extensions=[".x"],
-            tools=[{
-                "label": "t", "cmd": "echo", "fmt": "gnu",
-                "id": "some_lint_tool", "tier": 2, "fix_cmd": "some-lint --fix",
-            }],
+            tools=[
+                {
+                    "label": "t",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "some_lint_tool",
+                    "tier": 2,
+                    "fix_cmd": "some-lint --fix",
+                }
+            ],
         )
         assert "some-lint-tool" in cfg.fixers
 
     def test_fixer_dry_run_returns_entries(self):
         tool = {
-            "label": "t", "cmd": "echo", "fmt": "gnu",
-            "id": "test_fixer_dry", "tier": 2, "fix_cmd": "echo --fix",
+            "label": "t",
+            "cmd": "echo",
+            "fmt": "gnu",
+            "id": "test_fixer_dry",
+            "tier": 2,
+            "fix_cmd": "echo --fix",
         }
         fixer = make_generic_fixer(tool)
         entries = [{"file": "a.x", "line": 1}, {"file": "b.x", "line": 2}]
@@ -184,12 +281,19 @@ class TestFixers:
 
     def test_fixer_detect_calls_tool(self):
         tool = {
-            "label": "t", "cmd": "echo 'a.x:1: error'", "fmt": "gnu",
-            "id": "test_fixer_detect", "tier": 2, "fix_cmd": "echo --fix",
+            "label": "t",
+            "cmd": "echo 'a.x:1: error'",
+            "fmt": "gnu",
+            "id": "test_fixer_detect",
+            "tier": 2,
+            "fix_cmd": "echo --fix",
         }
         fixer = make_generic_fixer(tool)
         mock_result = subprocess.CompletedProcess(
-            args="fake", returncode=1, stdout="a.x:1: some error\n", stderr="",
+            args="fake",
+            returncode=1,
+            stdout="a.x:1: some error\n",
+            stderr="",
         )
         with patch(
             "desloppify.languages._framework.generic_parts.tool_runner.subprocess.run",
@@ -201,8 +305,12 @@ class TestFixers:
 
     def test_fixer_fix_handles_tool_unavailable(self):
         tool = {
-            "label": "t", "cmd": "echo", "fmt": "gnu",
-            "id": "test_fixer_unavail", "tier": 2, "fix_cmd": "nonexistent_tool_xyz",
+            "label": "t",
+            "cmd": "echo",
+            "fmt": "gnu",
+            "id": "test_fixer_unavail",
+            "tier": 2,
+            "fix_cmd": "nonexistent_tool_xyz",
         }
         fixer = make_generic_fixer(tool)
         entries = [{"file": "a.x", "line": 1}]
@@ -223,9 +331,13 @@ class TestCapabilityReport:
         from desloppify.languages._framework.base.types import LangConfig
 
         cfg = LangConfig(
-            name="test_full", extensions=[".py"], exclusions=[],
-            default_src=".", build_dep_graph=lambda p: {},
-            entry_patterns=[], barrel_names=set(),
+            name="test_full",
+            extensions=[".py"],
+            exclusions=[],
+            default_src=".",
+            build_dep_graph=lambda p: {},
+            entry_patterns=[],
+            barrel_names=set(),
         )
         cfg.integration_depth = "full"
         assert capability_report(cfg) is None
@@ -234,7 +346,15 @@ class TestCapabilityReport:
         cfg = generic_lang(
             name="test_cap_1",
             extensions=[".x"],
-            tools=[{"label": "xlint", "cmd": "echo", "fmt": "gnu", "id": "test_cap_det_1", "tier": 2}],
+            tools=[
+                {
+                    "label": "xlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_cap_det_1",
+                    "tier": 2,
+                }
+            ],
         )
         present, missing = capability_report(cfg)
         assert "linting (xlint)" in present
@@ -247,10 +367,16 @@ class TestCapabilityReport:
         cfg = generic_lang(
             name="test_cap_2",
             extensions=[".x"],
-            tools=[{
-                "label": "xlint", "cmd": "echo", "fmt": "gnu",
-                "id": "test_cap_det_2", "tier": 2, "fix_cmd": "xlint --fix",
-            }],
+            tools=[
+                {
+                    "label": "xlint",
+                    "cmd": "echo",
+                    "fmt": "gnu",
+                    "id": "test_cap_det_2",
+                    "tier": 2,
+                    "fix_cmd": "xlint --fix",
+                }
+            ],
         )
         present, missing = capability_report(cfg)
         assert "auto-fix" in present

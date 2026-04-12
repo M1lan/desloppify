@@ -315,7 +315,9 @@ class TestKotlinExtraction:
         from desloppify.languages._framework.treesitter.analysis.extractors import (
             ts_extract_functions,
         )
-        from desloppify.languages._framework.treesitter.specs.compiled import KOTLIN_SPEC
+        from desloppify.languages._framework.treesitter.specs.compiled import (
+            KOTLIN_SPEC,
+        )
 
         functions = ts_extract_functions(tmp_path, KOTLIN_SPEC, [kotlin_file])
         names = [f.name for f in functions]
@@ -326,7 +328,9 @@ class TestKotlinExtraction:
         from desloppify.languages._framework.treesitter.analysis.extractors import (
             ts_extract_classes,
         )
-        from desloppify.languages._framework.treesitter.specs.compiled import KOTLIN_SPEC
+        from desloppify.languages._framework.treesitter.specs.compiled import (
+            KOTLIN_SPEC,
+        )
 
         classes = ts_extract_classes(tmp_path, KOTLIN_SPEC, [kotlin_file])
         names = [c.name for c in classes]
@@ -405,7 +409,10 @@ class TestGoImportResolver:
         )
 
         # No go.mod => cannot determine if local.
-        assert resolve_go_import("github.com/foo/bar", "/src/main.go", str(tmp_path)) is None
+        assert (
+            resolve_go_import("github.com/foo/bar", "/src/main.go", str(tmp_path))
+            is None
+        )
 
     def test_local_import_resolves(self, tmp_path):
         from desloppify.languages._framework.treesitter.imports.resolver_cache import (
@@ -489,9 +496,7 @@ class TestCxxIncludeResolver:
         )
 
         (tmp_path / "local.h").write_text("// header")
-        result = resolve_cxx_include(
-            "local.h", str(tmp_path / "main.c"), str(tmp_path)
-        )
+        result = resolve_cxx_include("local.h", str(tmp_path / "main.c"), str(tmp_path))
         assert result is not None
         assert result.endswith("local.h")
 
@@ -527,12 +532,12 @@ class TestDepGraphBuilder:
         main_file = tmp_path / "main.go"
         pkg_file = pkg_dir / "pkg.go"
 
-        main_file.write_text('package main\nimport "example.com/test/pkg"\nfunc main() { pkg.Do() }\n')
+        main_file.write_text(
+            'package main\nimport "example.com/test/pkg"\nfunc main() { pkg.Do() }\n'
+        )
         pkg_file.write_text("package pkg\nfunc Do() {}\n")
 
-        graph = ts_build_dep_graph(
-            tmp_path, GO_SPEC, [str(main_file), str(pkg_file)]
-        )
+        graph = ts_build_dep_graph(tmp_path, GO_SPEC, [str(main_file), str(pkg_file)])
         assert len(graph) == 2
         # main.go should import pkg.go
         main_imports = graph[str(main_file)]["imports"]
@@ -560,7 +565,9 @@ class TestNormalize:
             _run_query,
             _unwrap_node,
         )
-        from desloppify.languages._framework.treesitter.imports.normalize import normalize_body
+        from desloppify.languages._framework.treesitter.imports.normalize import (
+            normalize_body,
+        )
         from desloppify.languages._framework.treesitter.specs.compiled import GO_SPEC
 
         source = b"""package main
@@ -596,6 +603,7 @@ class TestGracefulDegradation:
         with patch.dict("sys.modules", {"tree_sitter_language_pack": None}):
             # Re-importing won't change the cached _AVAILABLE, so test the guard
             import desloppify.languages._framework.treesitter as ts_mod
+
             saved = ts_mod._AVAILABLE
             ts_mod._AVAILABLE = False
             assert ts_mod.is_available() is False
@@ -612,19 +620,25 @@ class TestGracefulDegradation:
         saved = ts_mod._AVAILABLE
         ts_mod._AVAILABLE = False
         try:
-            from desloppify.languages._framework.generic_support.core import generic_lang
-            from desloppify.languages._framework.treesitter.specs.compiled import GO_SPEC
+            from desloppify.languages._framework.generic_support.core import (
+                generic_lang,
+            )
+            from desloppify.languages._framework.treesitter.specs.compiled import (
+                GO_SPEC,
+            )
 
             cfg = generic_lang(
                 name="_test_no_ts",
                 extensions=[".go"],
-                tools=[{
-                    "label": "dummy",
-                    "cmd": "echo ok",
-                    "fmt": "gnu",
-                    "id": "dummy_check",
-                    "tier": 3,
-                }],
+                tools=[
+                    {
+                        "label": "dummy",
+                        "cmd": "echo ok",
+                        "fmt": "gnu",
+                        "id": "dummy_check",
+                        "tier": 3,
+                    }
+                ],
                 treesitter_spec=GO_SPEC,
             )
             assert cfg.extract_functions is noop_extract_functions
@@ -633,6 +647,7 @@ class TestGracefulDegradation:
             ts_mod._AVAILABLE = saved
             # Clean up registry.
             from desloppify.languages._framework.registry import state as registry_state
+
             registry_state.remove("_test_no_ts")
 
     def test_file_read_error_skipped(self, tmp_path):
@@ -688,7 +703,6 @@ class TestGenericLangIntegration:
         assert "Security" in phase_labels
 
 
-
 # ── Spec validation tests ─────────────────────────────────────
 
 
@@ -705,7 +719,9 @@ class TestSpecValidation:
             parser, language = _get_parser(spec.grammar)
         except (LookupError, Exception) as exc:
             if "not available" in str(exc) or "not found" in str(exc).lower():
-                pytest.skip(f"grammar {spec.grammar!r} not available in this environment")
+                pytest.skip(
+                    f"grammar {spec.grammar!r} not available in this environment"
+                )
             raise
         # Verify function query compiles.
         if spec.function_query:
@@ -722,106 +738,152 @@ class TestSpecValidation:
 
     def test_go_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import GO_SPEC
+
         self._test_spec(GO_SPEC)
 
     def test_rust_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import RUST_SPEC
+
         self._test_spec(RUST_SPEC)
 
     def test_ruby_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import RUBY_SPEC
+
         self._test_spec(RUBY_SPEC)
 
     def test_java_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import JAVA_SPEC
+
         self._test_spec(JAVA_SPEC)
 
     def test_kotlin_spec(self):
-        from desloppify.languages._framework.treesitter.specs.compiled import KOTLIN_SPEC
+        from desloppify.languages._framework.treesitter.specs.compiled import (
+            KOTLIN_SPEC,
+        )
+
         self._test_spec(KOTLIN_SPEC)
 
     def test_csharp_spec(self):
-        from desloppify.languages._framework.treesitter.specs.compiled import CSHARP_SPEC
+        from desloppify.languages._framework.treesitter.specs.compiled import (
+            CSHARP_SPEC,
+        )
+
         self._test_spec(CSHARP_SPEC)
 
     def test_swift_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import SWIFT_SPEC
+
         self._test_spec(SWIFT_SPEC)
 
     def test_php_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import PHP_SPEC
+
         self._test_spec(PHP_SPEC)
 
     def test_c_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import C_SPEC
+
         self._test_spec(C_SPEC)
 
     def test_cpp_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import CPP_SPEC
+
         self._test_spec(CPP_SPEC)
 
     def test_scala_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import SCALA_SPEC
+
         self._test_spec(SCALA_SPEC)
 
     def test_elixir_spec(self):
-        from desloppify.languages._framework.treesitter.specs.functional import ELIXIR_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            ELIXIR_SPEC,
+        )
+
         self._test_spec(ELIXIR_SPEC)
 
     def test_haskell_spec(self):
-        from desloppify.languages._framework.treesitter.specs.functional import HASKELL_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            HASKELL_SPEC,
+        )
+
         self._test_spec(HASKELL_SPEC)
 
     def test_bash_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import BASH_SPEC
+
         self._test_spec(BASH_SPEC)
 
     def test_lua_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import LUA_SPEC
+
         self._test_spec(LUA_SPEC)
 
     def test_perl_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import PERL_SPEC
+
         self._test_spec(PERL_SPEC)
 
     def test_clojure_spec(self):
-        from desloppify.languages._framework.treesitter.specs.functional import CLOJURE_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            CLOJURE_SPEC,
+        )
+
         self._test_spec(CLOJURE_SPEC)
 
     def test_zig_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import ZIG_SPEC
+
         self._test_spec(ZIG_SPEC)
 
     def test_nim_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import NIM_SPEC
+
         self._test_spec(NIM_SPEC)
 
     def test_powershell_spec(self):
-        from desloppify.languages._framework.treesitter.specs.scripting import POWERSHELL_SPEC
+        from desloppify.languages._framework.treesitter.specs.scripting import (
+            POWERSHELL_SPEC,
+        )
+
         self._test_spec(POWERSHELL_SPEC)
 
     def test_gdscript_spec(self):
-        from desloppify.languages._framework.treesitter.specs.scripting import GDSCRIPT_SPEC
+        from desloppify.languages._framework.treesitter.specs.scripting import (
+            GDSCRIPT_SPEC,
+        )
+
         self._test_spec(GDSCRIPT_SPEC)
 
     def test_dart_spec(self):
         from desloppify.languages._framework.treesitter.specs.compiled import DART_SPEC
+
         self._test_spec(DART_SPEC)
 
     def test_js_spec(self):
         from desloppify.languages._framework.treesitter.specs.scripting import JS_SPEC
+
         self._test_spec(JS_SPEC)
 
     def test_erlang_spec(self):
-        from desloppify.languages._framework.treesitter.specs.functional import ERLANG_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            ERLANG_SPEC,
+        )
+
         self._test_spec(ERLANG_SPEC)
 
     def test_ocaml_spec(self):
-        from desloppify.languages._framework.treesitter.specs.functional import OCAML_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            OCAML_SPEC,
+        )
+
         self._test_spec(OCAML_SPEC)
 
     def test_fsharp_spec(self):
-        from desloppify.languages._framework.treesitter.specs.functional import FSHARP_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            FSHARP_SPEC,
+        )
+
         self._test_spec(FSHARP_SPEC)
 
 
@@ -836,7 +898,9 @@ class TestParseTreeCache:
             disable_parse_cache,
             enable_parse_cache,
         )
-        from desloppify.languages._framework.treesitter.analysis.extractors import _get_parser
+        from desloppify.languages._framework.treesitter.analysis.extractors import (
+            _get_parser,
+        )
 
         parser, _language = _get_parser("go")
         with runtime_scope(make_runtime_context()):
@@ -858,7 +922,9 @@ class TestParseTreeCache:
             current_parse_tree_cache,
             disable_parse_cache,
         )
-        from desloppify.languages._framework.treesitter.analysis.extractors import _get_parser
+        from desloppify.languages._framework.treesitter.analysis.extractors import (
+            _get_parser,
+        )
 
         with runtime_scope(make_runtime_context()):
             disable_parse_cache()
@@ -910,9 +976,7 @@ class TestBashSourceResolver:
         )
 
         (tmp_path / "lib.sh").write_text("# lib")
-        result = resolve_bash_source(
-            "./lib", str(tmp_path / "main.sh"), str(tmp_path)
-        )
+        result = resolve_bash_source("./lib", str(tmp_path / "main.sh"), str(tmp_path))
         assert result is not None
         assert result.endswith("lib.sh")
 
@@ -1120,9 +1184,7 @@ class TestJsImportResolver:
         )
 
         (tmp_path / "utils.js").write_text("export function foo() {}")
-        result = resolve_js_import(
-            "./utils", str(tmp_path / "main.js"), str(tmp_path)
-        )
+        result = resolve_js_import("./utils", str(tmp_path / "main.js"), str(tmp_path))
         assert result is not None
         assert result.endswith("utils.js")
 
@@ -1140,9 +1202,7 @@ class TestJsImportResolver:
         )
 
         (tmp_path / "App.jsx").write_text("export default function App() {}")
-        result = resolve_js_import(
-            "./App", str(tmp_path / "index.js"), str(tmp_path)
-        )
+        result = resolve_js_import("./App", str(tmp_path / "index.js"), str(tmp_path))
         assert result is not None
         assert result.endswith("App.jsx")
 

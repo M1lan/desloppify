@@ -46,6 +46,7 @@ def test_complexity_function_metrics_helpers(monkeypatch) -> None:
     assert function_metrics_mod._count_decisions(root) == 2
 
     spec = SimpleNamespace(grammar="python")
+
     def fake_ensure_parser(cache, _spec, *, with_query=False):
         cache["parser"] = "parser"
         if with_query:
@@ -60,7 +61,25 @@ def test_complexity_function_metrics_helpers(monkeypatch) -> None:
     )
     monkeypatch.setattr(
         "desloppify.languages._framework.treesitter.analysis.extractors._run_query",
-        lambda *_a, **_k: [(0, {"func": FakeNode("func", children=[FakeNode("parameters", children=[FakeNode("identifier", text="self"), FakeNode("identifier", text="value")])])})],
+        lambda *_a, **_k: [
+            (
+                0,
+                {
+                    "func": FakeNode(
+                        "func",
+                        children=[
+                            FakeNode(
+                                "parameters",
+                                children=[
+                                    FakeNode("identifier", text="self"),
+                                    FakeNode("identifier", text="value"),
+                                ],
+                            )
+                        ],
+                    )
+                },
+            )
+        ],
     )
     monkeypatch.setattr(
         "desloppify.languages._framework.treesitter.analysis.extractors._unwrap_node",
@@ -76,7 +95,9 @@ def test_complexity_nesting_helpers(monkeypatch) -> None:
         children=[
             FakeNode(
                 "if_statement",
-                children=[FakeNode("while_statement", children=[FakeNode("identifier")])],
+                children=[
+                    FakeNode("while_statement", children=[FakeNode("identifier")])
+                ],
             )
         ],
     )
@@ -85,7 +106,12 @@ def test_complexity_nesting_helpers(monkeypatch) -> None:
         "get_or_parse_tree",
         lambda *_a, **_k: (b"source", SimpleNamespace(root_node=root)),
     )
-    assert nesting_mod.compute_nesting_depth_ts("src/app.py", SimpleNamespace(grammar="py"), None, None) == 2
+    assert (
+        nesting_mod.compute_nesting_depth_ts(
+            "src/app.py", SimpleNamespace(grammar="py"), None, None
+        )
+        == 2
+    )
 
     def fake_ensure_parser(cache, _spec, with_query=False):  # noqa: ARG001
         cache["parser"] = "parser"
@@ -104,7 +130,9 @@ def test_extractors_helpers_cover_params_and_exports(monkeypatch) -> None:
         children=[
             FakeNode("identifier", text="self"),
             FakeNode("identifier", text="value"),
-            FakeNode("type_annotation", children=[FakeNode("identifier", text="IgnoredType")]),
+            FakeNode(
+                "type_annotation", children=[FakeNode("identifier", text="IgnoredType")]
+            ),
         ],
     )
     func_node = FakeNode("func", children=[params])
@@ -130,7 +158,9 @@ def test_extractors_helpers_cover_params_and_exports(monkeypatch) -> None:
     )
     name_node = FakeNode("identifier", text="Sample")
 
-    monkeypatch.setattr(extractors_mod, "_get_parser", lambda _grammar: ("parser", "lang"))
+    monkeypatch.setattr(
+        extractors_mod, "_get_parser", lambda _grammar: ("parser", "lang")
+    )
     monkeypatch.setattr(extractors_mod, "_make_query", lambda _lang, source: source)
     monkeypatch.setattr(
         extractors_mod,
@@ -146,9 +176,13 @@ def test_extractors_helpers_cover_params_and_exports(monkeypatch) -> None:
             else [(0, {"class": class_node, "name": name_node})]
         ),
     )
-    monkeypatch.setattr(extractors_mod, "normalize_body", lambda *_a, **_k: "one\ntwo\nthree")
+    monkeypatch.setattr(
+        extractors_mod, "normalize_body", lambda *_a, **_k: "one\ntwo\nthree"
+    )
 
-    spec = SimpleNamespace(grammar="py", function_query="func query", class_query="class query")
+    spec = SimpleNamespace(
+        grammar="py", function_query="func query", class_query="class query"
+    )
     functions = extractors_mod.ts_extract_functions(Path("."), spec, ["src/app.py"])
     classes = extractors_mod.ts_extract_classes(Path("."), spec, ["src/app.py"])
 
@@ -160,7 +194,9 @@ def test_extractors_helpers_cover_params_and_exports(monkeypatch) -> None:
 
 
 def test_smells_helpers_detect_empty_handlers_and_unreachable_code() -> None:
-    empty_body = FakeNode("block", children=[FakeNode("{", text="{"), FakeNode("}", text="}")])
+    empty_body = FakeNode(
+        "block", children=[FakeNode("{", text="{"), FakeNode("}", text="}")]
+    )
     handler = FakeNode("catch_clause", children=[empty_body])
     assert smells_mod._is_empty_handler(handler) is True
 
@@ -179,26 +215,39 @@ def test_smells_helpers_detect_empty_handlers_and_unreachable_code() -> None:
 def test_unused_import_helpers_and_detection(monkeypatch) -> None:
     as_alias = FakeNode(
         "import_statement",
-        children=[FakeNode("identifier", text="import"), FakeNode("identifier", text="as"), FakeNode("identifier", text="alias")],
+        children=[
+            FakeNode("identifier", text="import"),
+            FakeNode("identifier", text="as"),
+            FakeNode("identifier", text="alias"),
+        ],
     )
-    go_alias = FakeNode("import_spec", children=[FakeNode("package_identifier", text="pkg")])
+    go_alias = FakeNode(
+        "import_spec", children=[FakeNode("package_identifier", text="pkg")]
+    )
     assert unused_imports_mod._extract_alias(as_alias) == "alias"
     assert unused_imports_mod._extract_alias(go_alias) == "pkg"
     assert unused_imports_mod._extract_import_name("pkg/module") == "module"
     assert unused_imports_mod._extract_import_name("crate::Thing") == "Thing"
-    assert unused_imports_mod._extract_import_name("WidgetCatalog.hpp") == "WidgetCatalog"
+    assert (
+        unused_imports_mod._extract_import_name("WidgetCatalog.hpp") == "WidgetCatalog"
+    )
     assert unused_imports_mod._extract_import_name("vendor/json.hpp") == "json"
 
     import_node = FakeNode(
         "import_statement",
-        children=[FakeNode("identifier", text="import"), FakeNode("string", text="'pkg/module'")],
+        children=[
+            FakeNode("identifier", text="import"),
+            FakeNode("string", text="'pkg/module'"),
+        ],
         start_point=(0, 0),
         end_point=(0, 10),
         start_byte=0,
         end_byte=19,
     )
     path_node = FakeNode("string", text="'pkg/module'")
-    monkeypatch.setattr(unused_imports_mod, "_get_parser", lambda _grammar: ("parser", "lang"))
+    monkeypatch.setattr(
+        unused_imports_mod, "_get_parser", lambda _grammar: ("parser", "lang")
+    )
     monkeypatch.setattr(unused_imports_mod, "_make_query", lambda *_a, **_k: "query")
     monkeypatch.setattr(
         unused_imports_mod,
@@ -214,7 +263,9 @@ def test_unused_import_helpers_and_detection(monkeypatch) -> None:
         lambda *_a, **_k: [(0, {"import": import_node, "path": path_node})],
     )
     monkeypatch.setattr(unused_imports_mod, "_unwrap_node", lambda node: node)
-    monkeypatch.setattr(unused_imports_mod, "_node_text", lambda node: node.text.decode("utf-8"))
+    monkeypatch.setattr(
+        unused_imports_mod, "_node_text", lambda node: node.text.decode("utf-8")
+    )
 
     spec = SimpleNamespace(grammar="py", import_query="query")
     entries = unused_imports_mod.detect_unused_imports(["src/app.py"], spec)

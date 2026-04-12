@@ -58,9 +58,9 @@ SNAPSHOT_PATTERNS: list[re.Pattern[str]] = [
 
 TEST_FUNCTION_RE = re.compile(
     r"(?m)(?:"
-    r"^\s*(?:public\s+)?function\s+(test\w+)\s*\("                 # PHPUnit method
-    r"|^\s*/\*\*[^*]*@test[^/]*/\s*\n\s*(?:public\s+)?function\s+" # @test docblock
-    r"|^\s*(?:it|test)\s*\("                                        # Pest test/it
+    r"^\s*(?:public\s+)?function\s+(test\w+)\s*\("  # PHPUnit method
+    r"|^\s*/\*\*[^*]*@test[^/]*/\s*\n\s*(?:public\s+)?function\s+"  # @test docblock
+    r"|^\s*(?:it|test)\s*\("  # Pest test/it
     r")"
 )
 
@@ -75,9 +75,9 @@ BARREL_BASENAMES: set[str] = set()
 # Matches: use App\Models\User as UserModel;
 _PHP_USE_RE = re.compile(
     r"^\s*use\s+"
-    r"([\w\\]+)"          # namespace prefix
+    r"([\w\\]+)"  # namespace prefix
     r"(?:"
-    r"\\\{([^}]+)\}"      # group import list
+    r"\\\{([^}]+)\}"  # group import list
     r"|(?:\s+as\s+\w+)?"  # optional alias (ignored for resolution)
     r")\s*;",
     re.MULTILINE,
@@ -177,7 +177,9 @@ _ENTRYPOINT_PATH_PATTERNS = [
 ]
 
 _ENTRYPOINT_CONTENT_PATTERNS = [
-    re.compile(r"class\s+\w+\s+extends\s+(?:Controller|Command|Job|Mailable|Notification|FormRequest|Resource)\b"),
+    re.compile(
+        r"class\s+\w+\s+extends\s+(?:Controller|Command|Job|Mailable|Notification|FormRequest|Resource)\b"
+    ),
     re.compile(r"class\s+\w+\s+implements\s+ShouldQueue\b"),
     re.compile(r"Route::\w+\("),
     re.compile(r"Artisan::command\("),
@@ -222,7 +224,7 @@ def map_test_to_source(test_path: str, production_set: set[str]) -> str | None:
         idx = normalized.find(test_prefix)
         if idx == -1:
             continue
-        rel_from_test = normalized[idx + len(test_prefix):]
+        rel_from_test = normalized[idx + len(test_prefix) :]
         # Replace Test.php suffix
         if rel_from_test.endswith("Test.php"):
             rel_from_test = rel_from_test[:-8] + ".php"
@@ -267,9 +269,7 @@ def resolve_import_spec(
     return None
 
 
-def resolve_barrel_reexports(
-    _filepath: str, _production_files: set[str]
-) -> set[str]:
+def resolve_barrel_reexports(_filepath: str, _production_files: set[str]) -> set[str]:
     """PHP has no barrel-file re-export expansion."""
     return set()
 

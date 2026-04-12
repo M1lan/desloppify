@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # Minimum thresholds to analyze a file.
 _MIN_FUNCTIONS = 8  # Don't flag files with few functions.
-_MIN_CLUSTERS = 5   # Minimum disconnected clusters to flag.
+_MIN_CLUSTERS = 5  # Minimum disconnected clusters to flag.
 _MIN_NON_SINGLETON_CLUSTERS = 3  # Minimum multi-function clusters to flag.
 
 
@@ -73,7 +73,7 @@ def detect_responsibility_cohesion(
             if not func_node or not name_node:
                 continue
             name = _node_text(name_node)
-            body = source[func_node.start_byte:func_node.end_byte]
+            body = source[func_node.start_byte : func_node.end_byte]
             functions[name] = body.decode("utf-8", errors="replace")
 
         if len(functions) < _MIN_FUNCTIONS:
@@ -89,7 +89,7 @@ def detect_responsibility_cohesion(
                     continue
                 # Check if the function body references the other function name.
                 # Use word boundary matching to avoid substring false positives.
-                if re.search(r'\b' + re.escape(other_name) + r'\b', body):
+                if re.search(r"\b" + re.escape(other_name) + r"\b", body):
                     adjacency[fn_name].add(other_name)
                     adjacency[other_name].add(fn_name)
 
@@ -128,14 +128,16 @@ def detect_responsibility_cohesion(
 
             families = [c[0] for c in components[:8]]  # Top 8 cluster names.
 
-            entries.append({
-                "file": filepath,
-                "loc": loc,
-                "function_count": len(functions),
-                "component_count": len(components),
-                "component_sizes": [len(c) for c in components],
-                "families": families,
-            })
+            entries.append(
+                {
+                    "file": filepath,
+                    "loc": loc,
+                    "function_count": len(functions),
+                    "component_count": len(components),
+                    "component_sizes": [len(c) for c in components],
+                    "families": families,
+                }
+            )
 
     entries.sort(key=lambda e: -e["component_count"])
     return entries, checked

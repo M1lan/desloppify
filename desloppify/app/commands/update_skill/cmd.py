@@ -28,6 +28,7 @@ def _ssl_context() -> ssl.SSLContext:
     """Build SSL context, preferring certifi CA bundle for macOS compatibility."""
     try:
         import certifi  # noqa: F811
+
         return ssl.create_default_context(cafile=certifi.where())
     except ImportError:
         return ssl.create_default_context()
@@ -95,11 +96,7 @@ def _ensure_frontmatter_first(content: str) -> str:
         return content  # malformed frontmatter, leave untouched
 
     # Reassemble: frontmatter first, then the prefix lines, then the rest.
-    reordered = (
-        lines[fm_start : fm_end + 1]
-        + prefix_lines
-        + lines[fm_end + 1 :]
-    )
+    reordered = lines[fm_start : fm_end + 1] + prefix_lines + lines[fm_end + 1 :]
     return "\n".join(reordered)
 
 
@@ -128,7 +125,7 @@ def _replace_section(file_content: str, new_section: str) -> str:
         return file_content.rstrip() + "\n\n" + new_section
 
     before = file_content[:begin]
-    after = file_content[end + len(SKILL_END):]
+    after = file_content[end + len(SKILL_END) :]
     before = before.rstrip() + "\n\n" if before.strip() else ""
     after = "\n" + after.lstrip("\n") if after.strip() else "\n"
     return before + new_section + after
@@ -181,7 +178,9 @@ def _update_installed_skill_with_deps(
         return False
 
     if "desloppify-skill-version" not in skill_content:
-        print(colorize_fn("Downloaded content doesn't look like a skill document.", "red"))
+        print(
+            colorize_fn("Downloaded content doesn't look like a skill document.", "red")
+        )
         return False
 
     new_section = _build_section(skill_content, overlay_content)

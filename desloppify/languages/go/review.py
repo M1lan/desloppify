@@ -36,9 +36,7 @@ LOW_VALUE_PATTERN = re.compile(
 
 _IMPORT_RE = re.compile(r"""(?m)^\s*(?:import\s+)?"([^"]+)"\s*$""")
 _TYPE_RE = re.compile(r"(?m)^\s*type\s+([A-Z]\w*)\s+(?:struct|interface)\b")
-_FUNCTION_RE = re.compile(
-    r"(?m)^func\s+(?:\(\s*\w+\s+\*?\w+\s*\)\s*)?([A-Z]\w*)\s*\("
-)
+_FUNCTION_RE = re.compile(r"(?m)^func\s+(?:\(\s*\w+\s+\*?\w+\s*\)\s*)?([A-Z]\w*)\s*\(")
 
 
 def module_patterns(content: str) -> list[str]:

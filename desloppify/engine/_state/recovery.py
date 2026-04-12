@@ -16,10 +16,7 @@ def _append_review_id(
     normalized = issue_id.strip()
     if not normalized:
         return
-    if not (
-        normalized.startswith("review::")
-        or normalized.startswith("concerns::")
-    ):
+    if not (normalized.startswith("review::") or normalized.startswith("concerns::")):
         return
     if normalized in seen:
         return
@@ -94,7 +91,7 @@ def _hydrate_saved_issue_ids(
     issue_ids: list[str],
 ) -> dict:
     recovered = dict(state)
-    issues = (state.get("work_items") or state.get("issues", {}))
+    issues = state.get("work_items") or state.get("issues", {})
     recovered_issues = dict(issues) if isinstance(issues, dict) else {}
 
     for issue_id in issue_ids:

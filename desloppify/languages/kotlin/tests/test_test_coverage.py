@@ -27,28 +27,38 @@ class TestHasTestableLogic:
         assert not has_testable_logic("foo.kt", "")
 
     def test_imports_only(self):
-        assert not has_testable_logic("foo.kt", "import com.example.Foo\npackage com.example\n")
+        assert not has_testable_logic(
+            "foo.kt", "import com.example.Foo\npackage com.example\n"
+        )
 
 
 class TestMapTestToSource:
     def test_test_suffix(self):
         production = {"src/main/kotlin/com/app/Feature.kt"}
-        result = map_test_to_source("src/main/kotlin/com/app/FeatureTest.kt", production)
+        result = map_test_to_source(
+            "src/main/kotlin/com/app/FeatureTest.kt", production
+        )
         assert result == "src/main/kotlin/com/app/Feature.kt"
 
     def test_spec_suffix(self):
         production = {"src/main/kotlin/com/app/Feature.kt"}
-        result = map_test_to_source("src/main/kotlin/com/app/FeatureSpec.kt", production)
+        result = map_test_to_source(
+            "src/main/kotlin/com/app/FeatureSpec.kt", production
+        )
         assert result == "src/main/kotlin/com/app/Feature.kt"
 
     def test_mirrored_test_dir(self):
         production = {"src/main/kotlin/com/app/Feature.kt"}
-        result = map_test_to_source("src/test/kotlin/com/app/FeatureTest.kt", production)
+        result = map_test_to_source(
+            "src/test/kotlin/com/app/FeatureTest.kt", production
+        )
         assert result == "src/main/kotlin/com/app/Feature.kt"
 
     def test_no_match(self):
         production = {"src/main/kotlin/com/app/Other.kt"}
-        result = map_test_to_source("src/test/kotlin/com/app/FeatureTest.kt", production)
+        result = map_test_to_source(
+            "src/test/kotlin/com/app/FeatureTest.kt", production
+        )
         assert result is None
 
     def test_non_test_file(self):
@@ -95,13 +105,20 @@ class TestAssertPatterns:
 
 class TestMockPatterns:
     def test_mockk(self):
-        assert any(p.search("val service = mockk<UserService>()") for p in MOCK_PATTERNS)
+        assert any(
+            p.search("val service = mockk<UserService>()") for p in MOCK_PATTERNS
+        )
 
     def test_every(self):
-        assert any(p.search("every { service.getUser() } returns user") for p in MOCK_PATTERNS)
+        assert any(
+            p.search("every { service.getUser() } returns user") for p in MOCK_PATTERNS
+        )
 
     def test_co_every(self):
-        assert any(p.search("coEvery { service.fetchUser() } returns user") for p in MOCK_PATTERNS)
+        assert any(
+            p.search("coEvery { service.fetchUser() } returns user")
+            for p in MOCK_PATTERNS
+        )
 
 
 class TestStripComments:

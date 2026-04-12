@@ -19,7 +19,9 @@ import desloppify.languages.typescript.detectors.smells as smells_detector_mod
 from desloppify.state_io import Issue
 
 
-def phase_smells(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_smells(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     smell_entries, total_smell_files = smells_detector_mod.detect_smells(path)
     normalized_smells = normalize_smell_entries(smell_entries)
     results = make_smell_issues(

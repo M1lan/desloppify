@@ -350,7 +350,9 @@ class TestConstantReturn:
         """,
         )
         entries, _ = detect_smells(path)
-        constant_return = next((entry for entry in entries if entry["id"] == "constant_return"), None)
+        constant_return = next(
+            (entry for entry in entries if entry["id"] == "constant_return"), None
+        )
         assert constant_return is not None
         contents = [match["content"] for match in constant_return["matches"]]
         assert any("helper()" in content for content in contents)

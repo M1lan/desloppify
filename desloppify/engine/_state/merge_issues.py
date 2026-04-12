@@ -145,17 +145,21 @@ def verify_disappeared(
             file_path = previous.get("file", "")
             file_deleted = False
             if project_root and file_path and file_path != ".":
-                file_deleted = not os.path.exists(
-                    os.path.join(project_root, file_path)
-                )
+                file_deleted = not os.path.exists(os.path.join(project_root, file_path))
             # Auto-resolve if zone policy now says this detector should be
             # skipped for this file's zone (e.g. test_coverage on test files).
             # Bug reported by @claytona500 in PR #478.
             detector = previous.get("detector", "")
-            if zone_map and file_path and should_skip_issue(zone_map, file_path, detector):
+            if (
+                zone_map
+                and file_path
+                and should_skip_issue(zone_map, file_path, detector)
+            ):
                 previous["status"] = "auto_resolved"
                 previous["resolved_at"] = now
-                previous["note"] = f"Auto-resolved: zone policy now skips {detector} for this file"
+                previous["note"] = (
+                    f"Auto-resolved: zone policy now skips {detector} for this file"
+                )
                 resolved_detectors.add(detector or "unknown")
                 resolved += 1
                 continue
@@ -255,7 +259,8 @@ def upsert_issues(
             if (
                 is_assessment_request(previous)
                 and previous["status"] in {"fixed", "auto_resolved"}
-                and (previous.get("resolution_attestation") or {}).get("kind") == "agent_import"
+                and (previous.get("resolution_attestation") or {}).get("kind")
+                == "agent_import"
             ):
                 continue
             previous_status = previous["status"]
@@ -272,7 +277,14 @@ def upsert_issues(
             reopened_count += 1
             changed_detectors.add(detector)
 
-    return current_ids, new_count, reopened_count, by_detector, ignored_count, changed_detectors
+    return (
+        current_ids,
+        new_count,
+        reopened_count,
+        by_detector,
+        ignored_count,
+        changed_detectors,
+    )
 
 
 __all__ = [

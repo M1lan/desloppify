@@ -6,7 +6,9 @@ import logging
 import os
 from pathlib import Path
 
-from desloppify.app.commands.helpers.dynamic_loaders import load_optional_scorecard_module
+from desloppify.app.commands.helpers.dynamic_loaders import (
+    load_optional_scorecard_module,
+)
 from desloppify.app.commands.scan.contracts import ScanQueryPayload
 from desloppify.app.commands.scan.workflow import (
     ScanMergeResult,
@@ -38,7 +40,7 @@ def build_scan_query_payload(
 ) -> ScanQueryPayload:
     """Build the canonical query payload persisted after a scan."""
     scores = score_snapshot(state)
-    issues = (state.get("work_items") or state.get("issues", {}))
+    issues = state.get("work_items") or state.get("issues", {})
     open_scope = (
         open_scope_breakdown(issues, state.get("scan_path"))
         if isinstance(issues, dict)
@@ -104,7 +106,9 @@ def _load_scorecard_helpers():
     return generate, badge_config
 
 
-def _missing_scorecard_result(args, config: dict[str, object]) -> tuple[Path | None, OutputResult]:
+def _missing_scorecard_result(
+    args, config: dict[str, object]
+) -> tuple[Path | None, OutputResult]:
     explicit_badge_request = bool(
         getattr(args, "badge_path", None)
         or config.get("badge_path")
@@ -113,7 +117,7 @@ def _missing_scorecard_result(args, config: dict[str, object]) -> tuple[Path | N
     if explicit_badge_request:
         print(
             colorize(
-                "  Scorecard support not installed. Install with: pip install \"desloppify[scorecard]\"",
+                '  Scorecard support not installed. Install with: pip install "desloppify[scorecard]"',
                 "yellow",
             )
         )
@@ -123,7 +127,9 @@ def _missing_scorecard_result(args, config: dict[str, object]) -> tuple[Path | N
             message="scorecard support not installed",
             error_kind="scorecard_dependency_missing",
         )
-    return None, OutputResult(ok=True, status="skipped", message="badge generation disabled")
+    return None, OutputResult(
+        ok=True, status="skipped", message="badge generation disabled"
+    )
 
 
 def _badge_relative_path(badge_path: Path) -> str:
@@ -156,9 +162,7 @@ def emit_scorecard_badge(
     try:
         badge_path, disabled = get_badge_config(args, config)
     except OSError as exc:
-        print(
-            colorize(f"  ⚠ Could not resolve scorecard badge path: {exc}", "yellow")
-        )
+        print(colorize(f"  ⚠ Could not resolve scorecard badge path: {exc}", "yellow"))
         return None, OutputResult(
             ok=False,
             status="error",
@@ -166,7 +170,9 @@ def emit_scorecard_badge(
             error_kind="badge_path_resolution_error",
         )
     if disabled or not badge_path:
-        return None, OutputResult(ok=True, status="skipped", message="badge generation disabled")
+        return None, OutputResult(
+            ok=True, status="skipped", message="badge generation disabled"
+        )
 
     try:
         generate_scorecard(state, badge_path)

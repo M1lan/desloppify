@@ -16,9 +16,7 @@ class TestExtractKotlinFunctions:
     def test_basic_function(self, tmp_path):
         kt = tmp_path / "Foo.kt"
         kt.write_text(
-            "fun greet(name: String): String {\n"
-            '    return "Hello, $name"\n'
-            "}\n"
+            'fun greet(name: String): String {\n    return "Hello, $name"\n}\n'
         )
         results = extract_kotlin_functions(str(kt))
         assert len(results) == 1
@@ -29,11 +27,7 @@ class TestExtractKotlinFunctions:
 
     def test_basic_function_body_contains_return(self, tmp_path):
         kt = tmp_path / "Calc.kt"
-        kt.write_text(
-            "fun add(a: Int, b: Int): Int {\n"
-            "    return a + b\n"
-            "}\n"
-        )
+        kt.write_text("fun add(a: Int, b: Int): Int {\n    return a + b\n}\n")
         results = extract_kotlin_functions(str(kt))
         assert len(results) == 1
         assert "return a + b" in results[0].body
@@ -41,12 +35,7 @@ class TestExtractKotlinFunctions:
     def test_basic_function_end_line(self, tmp_path):
         kt = tmp_path / "Multi.kt"
         kt.write_text(
-            "fun multi(\n"
-            "    x: Int,\n"
-            "    y: Int\n"
-            "): Int {\n"
-            "    return x * y\n"
-            "}\n"
+            "fun multi(\n    x: Int,\n    y: Int\n): Int {\n    return x * y\n}\n"
         )
         results = extract_kotlin_functions(str(kt))
         assert len(results) == 1
@@ -55,11 +44,7 @@ class TestExtractKotlinFunctions:
 
     def test_extension_function_receiver_type(self, tmp_path):
         kt = tmp_path / "Extensions.kt"
-        kt.write_text(
-            "fun String.isEmail(): Boolean {\n"
-            '    return contains("@")\n'
-            "}\n"
-        )
+        kt.write_text('fun String.isEmail(): Boolean {\n    return contains("@")\n}\n')
         results = extract_kotlin_functions(str(kt))
         assert len(results) == 1
         assert results[0].name == "String.isEmail"
@@ -67,9 +52,7 @@ class TestExtractKotlinFunctions:
     def test_suspend_function(self, tmp_path):
         kt = tmp_path / "Network.kt"
         kt.write_text(
-            "suspend fun fetchData(url: String): String {\n"
-            '    return "data"\n'
-            "}\n"
+            'suspend fun fetchData(url: String): String {\n    return "data"\n}\n'
         )
         results = extract_kotlin_functions(str(kt))
         assert len(results) == 1
@@ -78,13 +61,7 @@ class TestExtractKotlinFunctions:
     def test_multiple_functions(self, tmp_path):
         kt = tmp_path / "Utils.kt"
         kt.write_text(
-            "fun foo(): Int {\n"
-            "    return 1\n"
-            "}\n"
-            "\n"
-            "fun bar(): Int {\n"
-            "    return 2\n"
-            "}\n"
+            "fun foo(): Int {\n    return 1\n}\n\nfun bar(): Int {\n    return 2\n}\n"
         )
         results = extract_kotlin_functions(str(kt))
         names = [fi.name for fi in results]

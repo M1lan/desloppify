@@ -5,7 +5,10 @@ from __future__ import annotations
 from desloppify.intelligence.review._context.models import HolisticContext
 from desloppify.intelligence.review.context_signals.auth import is_auth_runtime_path
 
-from .prepare_batches_core import _collect_unique_files, _representative_files_for_directory
+from .prepare_batches_core import (
+    _collect_unique_files,
+    _representative_files_for_directory,
+)
 
 _AUTH_SIBLING_PER_DIRECTORY_LIMIT = 2
 _AUTH_SIBLING_PER_MODULE_LIMIT = 1
@@ -92,7 +95,9 @@ def _authorization_files(
         for file_paths in rls_files.values():
             if isinstance(file_paths, list):
                 for filepath in file_paths:
-                    if not isinstance(filepath, str) or not is_auth_runtime_path(filepath):
+                    if not isinstance(filepath, str) or not is_auth_runtime_path(
+                        filepath
+                    ):
                         continue
                     auth_files.append({"file": filepath})
     return _collect_unique_files([auth_files], max_files=max_files)
@@ -178,7 +183,9 @@ def _state_design_files(
         if isinstance(item, dict)
     ]
     error_files = [
-        item for item in evidence.get("error_hotspots", [])[:10] if isinstance(item, dict)
+        item
+        for item in evidence.get("error_hotspots", [])[:10]
+        if isinstance(item, dict)
     ]
     density_files = [
         {"file": item["file"]}

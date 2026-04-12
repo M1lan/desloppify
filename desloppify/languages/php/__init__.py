@@ -8,19 +8,39 @@ from desloppify.languages.php import test_coverage as _test_coverage_mod
 # ── Zone rules ────────────────────────────────────────────────
 
 PHP_ZONE_RULES = [
-    ZoneRule(Zone.GENERATED, ["/database/migrations/", "/storage/", "/bootstrap/cache/"]),
-    ZoneRule(Zone.TEST, [
-        "/tests/", "Test.php", "TestCase.php",
-        "/factories/", "Pest.php",
-    ]),
-    ZoneRule(Zone.CONFIG, [
-        "/config/", "composer.json", ".env", ".env.example",
-        "phpunit.xml", "phpstan.neon", "webpack.mix.js", "vite.config.js",
-    ]),
-    ZoneRule(Zone.SCRIPT, [
-        "artisan",
-        "/database/seeders/",
-    ]),
+    ZoneRule(
+        Zone.GENERATED, ["/database/migrations/", "/storage/", "/bootstrap/cache/"]
+    ),
+    ZoneRule(
+        Zone.TEST,
+        [
+            "/tests/",
+            "Test.php",
+            "TestCase.php",
+            "/factories/",
+            "Pest.php",
+        ],
+    ),
+    ZoneRule(
+        Zone.CONFIG,
+        [
+            "/config/",
+            "composer.json",
+            ".env",
+            ".env.example",
+            "phpunit.xml",
+            "phpstan.neon",
+            "webpack.mix.js",
+            "vite.config.js",
+        ],
+    ),
+    ZoneRule(
+        Zone.SCRIPT,
+        [
+            "artisan",
+            "/database/seeders/",
+        ],
+    ),
 ] + COMMON_ZONE_RULES
 
 # ── Entry patterns (files legitimately having zero importers) ─
@@ -80,8 +100,13 @@ generic_lang(
         },
     ],
     exclude=[
-        "vendor", "storage", "bootstrap/cache", "node_modules",
-        "_ide_helper.php", "_ide_helper_models.php", ".phpstorm.meta.php",
+        "vendor",
+        "storage",
+        "bootstrap/cache",
+        "node_modules",
+        "_ide_helper.php",
+        "_ide_helper_models.php",
+        ".phpstorm.meta.php",
     ],
     depth="shallow",
     detect_markers=["composer.json"],

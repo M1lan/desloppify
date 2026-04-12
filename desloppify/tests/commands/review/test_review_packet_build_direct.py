@@ -24,7 +24,9 @@ def test_build_run_batches_next_command_preserves_state_scope(tmp_path: Path) ->
     assert "--no-retrospective" in command
 
 
-def test_build_external_submit_next_command_preserves_state_scope(tmp_path: Path) -> None:
+def test_build_external_submit_next_command_preserves_state_scope(
+    tmp_path: Path,
+) -> None:
     context = packet_build_mod.ReviewPacketContext(
         path=tmp_path,
         state_path=tmp_path / "alt-state.json",
@@ -77,7 +79,9 @@ def test_attach_plan_deferral_context_uses_plan_for_selected_state(
             }
         }
 
-    monkeypatch.setattr(packet_build_mod, "plan_path_for_state", fake_plan_path_for_state)
+    monkeypatch.setattr(
+        packet_build_mod, "plan_path_for_state", fake_plan_path_for_state
+    )
     monkeypatch.setattr("desloppify.engine.plan_state.load_plan", fake_load_plan)
 
     packet = {

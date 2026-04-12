@@ -14,7 +14,9 @@ import desloppify.languages.python.detectors.smells_ast._node_detectors_complexi
 import desloppify.languages.python.detectors.smells_ast._node_detectors_nesting as nesting_mod
 
 
-def test_python_security_prerequisites_and_detection_flow(monkeypatch, tmp_path) -> None:
+def test_python_security_prerequisites_and_detection_flow(
+    monkeypatch, tmp_path
+) -> None:
     missing = py_security_mod.missing_bandit_coverage()
     assert missing.detector == "security"
     assert missing.status == "reduced"
@@ -36,8 +38,12 @@ def test_python_security_prerequisites_and_detection_flow(monkeypatch, tmp_path)
         def coverage(self):
             return {"detector": "security", "status": "full"}
 
-    monkeypatch.setattr(py_security_mod, "scan_root_from_files", lambda _files: tmp_path)
-    monkeypatch.setattr(py_security_mod, "collect_exclude_dirs", lambda _root: [".venv", "build"])
+    monkeypatch.setattr(
+        py_security_mod, "scan_root_from_files", lambda _files: tmp_path
+    )
+    monkeypatch.setattr(
+        py_security_mod, "collect_exclude_dirs", lambda _root: [".venv", "build"]
+    )
     monkeypatch.setattr(
         py_security_mod,
         "detect_with_bandit",
@@ -71,14 +77,19 @@ def test_dict_key_shared_helpers_cover_names_keys_and_distance() -> None:
     assert shared_mod._get_str_key(ast.parse("123", mode="eval").body) is None
 
 
-def test_schema_helpers_cover_parsing_clustering_and_issue_generation(monkeypatch, tmp_path) -> None:
+def test_schema_helpers_cover_parsing_clustering_and_issue_generation(
+    monkeypatch, tmp_path
+) -> None:
     assert schema_mod._jaccard(frozenset(), frozenset()) == 1.0
     assert schema_mod._jaccard(frozenset({"a", "b"}), frozenset({"b", "c"})) == 1 / 3
 
     source_file = (tmp_path / "sample.py").resolve()
     source_file.write_text("value = {'a': 1, 'b': 2, 'c': 3}\n", encoding="utf-8")
     assert schema_mod._read_python_file(str(source_file)) is not None
-    assert schema_mod._parse_python_ast("def broken(:\n", filepath=str(source_file)) is None
+    assert (
+        schema_mod._parse_python_ast("def broken(:\n", filepath=str(source_file))
+        is None
+    )
 
     dict_node = ast.parse("{'a': 1, 'b': 2, 'c': 3}", mode="eval").body
     assert schema_mod._extract_literal_keyset(dict_node) == frozenset({"a", "b", "c"})
@@ -97,9 +108,13 @@ def test_schema_helpers_cover_parsing_clustering_and_issue_generation(monkeypatc
     assert issues
     assert issues[0]["kind"] == "schema_drift"
 
-    monkeypatch.setattr(schema_mod, "find_py_files", lambda _path: ["a.py", "b.py", "c.py"])
+    monkeypatch.setattr(
+        schema_mod, "find_py_files", lambda _path: ["a.py", "b.py", "c.py"]
+    )
     monkeypatch.setattr(schema_mod, "_collect_schema_literals", lambda _files: literals)
-    monkeypatch.setattr(schema_mod, "_cluster_by_jaccard", lambda _literals, threshold=0.8: [literals])
+    monkeypatch.setattr(
+        schema_mod, "_cluster_by_jaccard", lambda _literals, threshold=0.8: [literals]
+    )
     detected, checked = schema_mod.detect_schema_drift(Path("."))
     assert checked == 5
     assert detected
@@ -162,9 +177,13 @@ def test_visitor_helpers_track_calls_escapes_and_scope_issues() -> None:
     tracked.writes = {"apples": [2], "count": [10, 12]}
     tracked.reads = {"apple": [3], "count": [20]}
 
-    issues = visitor_helpers_mod.analyze_scope_issues(visitor, {"state": tracked}, "process")
+    issues = visitor_helpers_mod.analyze_scope_issues(
+        visitor, {"state": tracked}, "process"
+    )
     kinds = {issue["kind"] for issue in issues}
-    assert {"dead_write", "phantom_read", "near_miss", "overwritten_key"}.issubset(kinds)
+    assert {"dead_write", "phantom_read", "near_miss", "overwritten_key"}.issubset(
+        kinds
+    )
 
 
 def test_complexity_and_nesting_node_detectors(monkeypatch) -> None:
@@ -185,7 +204,9 @@ def run(x):
     score = complexity_mod._compute_cyclomatic_complexity(fn_node)
     assert score >= 4
 
-    monkeypatch.setattr(complexity_mod, "_compute_cyclomatic_complexity", lambda _node: 13)
+    monkeypatch.setattr(
+        complexity_mod, "_compute_cyclomatic_complexity", lambda _node: 13
+    )
     high = complexity_mod._detect_high_cyclomatic_complexity("a.py", fn_node)
     assert high and "cyclomatic complexity" in high[0]["content"]
 
@@ -199,14 +220,19 @@ def cached(n):
     return len(state) + n
 """
     )
-    cached_fn = next(node for node in module_tree.body if isinstance(node, ast.FunctionDef))
+    cached_fn = next(
+        node for node in module_tree.body if isinstance(node, ast.FunctionDef)
+    )
     mutable = complexity_mod._detect_lru_cache_mutable("mod.py", cached_fn, module_tree)
     assert mutable and "mutable global" in mutable[0]["content"]
 
     no_cache_tree = ast.parse("def plain(x):\n    return x\n")
     plain_fn = no_cache_tree.body[0]
     assert isinstance(plain_fn, ast.FunctionDef)
-    assert complexity_mod._detect_lru_cache_mutable("mod.py", plain_fn, no_cache_tree) == []
+    assert (
+        complexity_mod._detect_lru_cache_mutable("mod.py", plain_fn, no_cache_tree)
+        == []
+    )
 
     nested_tree = ast.parse(
         """
@@ -227,7 +253,10 @@ def outer():
     assert nested_issues and "inner defs" in nested_issues[0]["content"]
 
     mutable_ref_issues = nesting_mod._detect_mutable_ref_hack("a.py", outer_fn)
-    assert mutable_ref_issues and "mutable-list ref hack" in mutable_ref_issues[0]["content"]
+    assert (
+        mutable_ref_issues
+        and "mutable-list ref hack" in mutable_ref_issues[0]["content"]
+    )
 
     inner_defs: list[ast.AST] = []
     max_depth = nesting_mod._walk_inner_defs(outer_fn.body, 0, inner_defs)

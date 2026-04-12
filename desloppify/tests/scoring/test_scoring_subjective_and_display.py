@@ -125,7 +125,9 @@ class TestSubjectiveScoring:
 
         import desloppify.engine._scoring.state_integration as state_scoring_mod
 
-        src = inspect.getsource(state_scoring_mod._resolve_allowed_subjective_dimensions)
+        src = inspect.getsource(
+            state_scoring_mod._resolve_allowed_subjective_dimensions
+        )
         assert "load_dimensions_for_lang" in src
         assert "HOLISTIC_DIMENSIONS_BY_LANG" not in src
 
@@ -227,7 +229,9 @@ class TestSubjectiveScoring:
         # Subjective pool: all assessments at 0 → subj_avg = 0.0
         # Budget blend: 100.0 * 0.4 + 0.0 * 0.6 = 40.0
         score = compute_health_score(result)
-        expected = 100.0 * (1 - SUBJECTIVE_WEIGHT_FRACTION) + 0.0 * SUBJECTIVE_WEIGHT_FRACTION
+        expected = (
+            100.0 * (1 - SUBJECTIVE_WEIGHT_FRACTION) + 0.0 * SUBJECTIVE_WEIGHT_FRACTION
+        )
         assert score == pytest.approx(round(expected, 1), abs=0.2)
 
     def test_assessment_counts_open_review_issues(self):
@@ -306,6 +310,7 @@ class TestSubjectiveScoring:
     def test_subjective_review_not_in_any_scoring_dimension(self):
         """Verify subjective_review is excluded from scoring dimensions (non-objective)."""
         from desloppify.engine._scoring.policy.core import _NON_OBJECTIVE_DETECTORS
+
         assert "subjective_review" in _NON_OBJECTIVE_DETECTORS
         for dim in DIMENSIONS:
             assert "subjective_review" not in dim.detectors, (

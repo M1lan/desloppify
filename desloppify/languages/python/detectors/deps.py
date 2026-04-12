@@ -67,7 +67,9 @@ def build_dep_graph(
 
     for filepath in py_files:
         abs_path = (
-            filepath if Path(filepath).is_absolute() else str(get_project_root() / filepath)
+            filepath
+            if Path(filepath).is_absolute()
+            else str(get_project_root() / filepath)
         )
         try:
             content = Path(abs_path).read_text()
@@ -129,5 +131,6 @@ def build_dep_graph(
                             graph[source_resolved]["deferred_imports"].add(target)
 
     return finalize_graph(dict(graph))
+
 
 __all__ = ["build_dep_graph", "find_python_dynamic_imports"]

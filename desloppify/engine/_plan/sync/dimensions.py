@@ -49,6 +49,7 @@ _FORCE_IDS_KEY = "force_visible_ids"
 # ID helpers
 # ---------------------------------------------------------------------------
 
+
 def current_unscored_ids(state: StateModel) -> set[str]:
     """Return the set of ``subjective::<slug>`` IDs that are currently unscored (placeholder).
 
@@ -83,6 +84,7 @@ def current_under_target_ids(
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _prune_subjective_ids(
     order: list[str],
     *,
@@ -91,9 +93,9 @@ def _prune_subjective_ids(
 ) -> None:
     """Remove subjective IDs from *order* that are not in *keep_ids*, appending removed to *pruned*."""
     to_remove = [
-        fid for fid in order
-        if fid.startswith(SUBJECTIVE_PREFIX)
-        and fid not in keep_ids
+        fid
+        for fid in order
+        if fid.startswith(SUBJECTIVE_PREFIX) and fid not in keep_ids
     ]
     for fid in to_remove:
         order.remove(fid)
@@ -147,6 +149,7 @@ def _inject_subjective_ids(
 # ---------------------------------------------------------------------------
 # Deferral tracking and escalation
 # ---------------------------------------------------------------------------
+
 
 def _clear_defer_meta(plan: PlanModel) -> None:
     plan.pop(_DEFER_META_KEY, None)
@@ -233,6 +236,7 @@ def _update_deferral(
 # Unified subjective dimension sync
 # ---------------------------------------------------------------------------
 
+
 def sync_subjective_dimensions(
     plan: PlanModel,
     state: StateModel,
@@ -266,7 +270,8 @@ def sync_subjective_dimensions(
     # --- Compute all ID sets once -----------------------------------------
     unscored_ids = current_unscored_ids(state)
     stale_ids = stale_policy_mod.current_stale_ids(
-        state, subjective_prefix=SUBJECTIVE_PREFIX,
+        state,
+        subjective_prefix=SUBJECTIVE_PREFIX,
     )
     under_target_ids = current_under_target_ids(state)
     skipped_ids = _skipped_subjective_ids(plan)
@@ -291,7 +296,8 @@ def sync_subjective_dimensions(
     escalated = False
     if should_defer_under_target and under_target_injectable:
         escalated = _update_deferral(
-            plan, state,
+            plan,
+            state,
             injectable_ids=under_target_injectable,
             stale_ids=set(),
             under_target_ids=under_target_ids,

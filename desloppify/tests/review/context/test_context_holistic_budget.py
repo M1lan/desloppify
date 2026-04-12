@@ -215,11 +215,7 @@ def test_abstractions_context_wrapper_rate_calculation(tmp_path):
 
 
 def test_find_python_passthrough_wrappers_handles_docstring_only_wrapper():
-    content = (
-        "def wrap(x):\n"
-        '    \"\"\"Thin wrapper.\"\"\"\n'
-        "    return build(x)\n"
-    )
+    content = 'def wrap(x):\n    """Thin wrapper."""\n    return build(x)\n'
     assert budget_mod._find_python_passthrough_wrappers(_parse(content)) == [
         ("wrap", "build")
     ]
@@ -227,11 +223,7 @@ def test_find_python_passthrough_wrappers_handles_docstring_only_wrapper():
 
 def test_find_python_passthrough_wrappers_handles_large_comment_runs_without_hanging():
     comments = "\n".join("    # comment" for _ in range(1500))
-    content = (
-        "def wrap(x):\n"
-        f"{comments}\n"
-        "    value = build(x)\n"
-    )
+    content = f"def wrap(x):\n{comments}\n    value = build(x)\n"
     assert budget_mod._find_python_passthrough_wrappers(_parse(content)) == []
 
 
@@ -391,10 +383,7 @@ def test_typed_dict_get_violation_detected():
 def test_typed_dict_no_violation_without_annotation():
     """Variables not annotated as TypedDict don't trigger violations."""
     decl_content = (
-        "from typing import TypedDict\n"
-        "\n"
-        "class Config(TypedDict):\n"
-        "    name: str\n"
+        "from typing import TypedDict\n\nclass Config(TypedDict):\n    name: str\n"
     )
     usage_content = (
         "def process(cfg) -> str:\n"  # no annotation

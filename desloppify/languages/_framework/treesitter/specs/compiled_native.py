@@ -25,9 +25,7 @@ C_SPEC = TreeSitterLangSpec(
             name: (type_identifier) @name
             body: (field_declaration_list) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:printf\(|fprintf\(|perror\()",
-    ),
+    log_patterns=(r"^\s*(?:printf\(|fprintf\(|perror\()",),
 )
 
 CPP_SPEC = TreeSitterLangSpec(
@@ -56,9 +54,7 @@ CPP_SPEC = TreeSitterLangSpec(
             name: (type_identifier) @name
             body: (field_declaration_list) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:std::cout|std::cerr|printf\(|fprintf\()",
-    ),
+    log_patterns=(r"^\s*(?:std::cout|std::cerr|printf\(|fprintf\()",),
 )
 
 SCALA_SPEC = TreeSitterLangSpec(
@@ -85,9 +81,7 @@ SCALA_SPEC = TreeSitterLangSpec(
             name: (identifier) @name
             body: (template_body) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:println\(|print\(|Logger\.|log\.)",
-    ),
+    log_patterns=(r"^\s*(?:println\(|print\(|Logger\.|log\.)",),
 )
 
 

@@ -23,26 +23,46 @@ logger = logging.getLogger(__name__)
 # ── Empty catch/except blocks ─────────────────────────────────
 
 # Node types for catch/except clauses across languages.
-_CATCH_NODE_TYPES = frozenset({
-    "catch_clause",       # Java, JS, C#, Kotlin, Dart
-    "except_clause",      # Python
-    "rescue",             # Ruby
-    "rescue_clause",      # Elixir
-    "catch",              # Erlang, Scala
-    "handler",            # C++
-})
+_CATCH_NODE_TYPES = frozenset(
+    {
+        "catch_clause",  # Java, JS, C#, Kotlin, Dart
+        "except_clause",  # Python
+        "rescue",  # Ruby
+        "rescue_clause",  # Elixir
+        "catch",  # Erlang, Scala
+        "handler",  # C++
+    }
+)
 
 # Node types for block bodies.
-_BLOCK_NODE_TYPES = frozenset({
-    "block", "statement_block", "compound_statement", "body",
-    "clause_body", "do_block", "stab_clause",
-})
+_BLOCK_NODE_TYPES = frozenset(
+    {
+        "block",
+        "statement_block",
+        "compound_statement",
+        "body",
+        "clause_body",
+        "do_block",
+        "stab_clause",
+    }
+)
 
 # Node types to ignore when checking if a block is "empty".
-_IGNORABLE_NODE_TYPES = frozenset({
-    "comment", "{", "}", ":", "pass_statement", "do", "end",
-    "catch", "rescue", "except", "finally",
-})
+_IGNORABLE_NODE_TYPES = frozenset(
+    {
+        "comment",
+        "{",
+        "}",
+        ":",
+        "pass_statement",
+        "do",
+        "end",
+        "catch",
+        "rescue",
+        "except",
+        "finally",
+    }
+)
 
 
 def detect_empty_catches(
@@ -72,11 +92,13 @@ def detect_empty_catches(
             node = stack.pop()
             if node.type in _CATCH_NODE_TYPES:
                 if _is_empty_handler(node):
-                    entries.append({
-                        "file": filepath,
-                        "line": node.start_point[0] + 1,
-                        "type": node.type,
-                    })
+                    entries.append(
+                        {
+                            "file": filepath,
+                            "line": node.start_point[0] + 1,
+                            "type": node.type,
+                        }
+                    )
             for i in range(node.child_count - 1, -1, -1):
                 stack.append(node.children[i])
 
@@ -96,7 +118,8 @@ def _is_empty_handler(catch_node) -> bool:
         # Some grammars inline the body as direct children of the catch clause.
         # Check if the catch node itself has only ignorable children.
         meaningful = [
-            c for c in catch_node.children
+            c
+            for c in catch_node.children
             if c.type not in _IGNORABLE_NODE_TYPES
             and c.type not in _CATCH_NODE_TYPES
             and not c.type.startswith("catch")
@@ -119,23 +142,39 @@ def _is_empty_handler(catch_node) -> bool:
 # ── Unreachable code ──────────────────────────────────────────
 
 # Node types that terminate control flow.
-_TERMINATOR_TYPES = frozenset({
-    "return_statement", "return",
-    "break_statement", "break",
-    "continue_statement", "continue",
-    "throw_statement", "throw_expression",
-    "raise_statement",
-    "yield_statement",  # Not strictly terminating, but often last in generators
-})
+_TERMINATOR_TYPES = frozenset(
+    {
+        "return_statement",
+        "return",
+        "break_statement",
+        "break",
+        "continue_statement",
+        "continue",
+        "throw_statement",
+        "throw_expression",
+        "raise_statement",
+        "yield_statement",  # Not strictly terminating, but often last in generators
+    }
+)
 
 # Node types whose children form a statement sequence.
-_SEQUENCE_NODE_TYPES = frozenset({
-    "block", "statement_block", "compound_statement",
-    "program", "module", "source_file", "compilation_unit",
-    "body", "function_body", "method_body",
-    "clause_body", "do_block",
-    "switch_body",
-})
+_SEQUENCE_NODE_TYPES = frozenset(
+    {
+        "block",
+        "statement_block",
+        "compound_statement",
+        "program",
+        "module",
+        "source_file",
+        "compilation_unit",
+        "body",
+        "function_body",
+        "method_body",
+        "clause_body",
+        "do_block",
+        "switch_body",
+    }
+)
 
 
 def detect_unreachable_code(
@@ -186,16 +225,28 @@ def _check_sequence_for_unreachable(block_node, filepath: str, entries: list[dic
             # Code after terminator — this is unreachable.
             # Don't flag if the next node is itself a closing brace or similar.
             if child.type not in _IGNORABLE_NODE_TYPES and child.type not in (
-                "}", "]", ")", "end", "else_clause", "elif_clause",
-                "else", "elif", "catch_clause", "except_clause",
-                "finally_clause", "case_clause", "default_clause",
+                "}",
+                "]",
+                ")",
+                "end",
+                "else_clause",
+                "elif_clause",
+                "else",
+                "elif",
+                "catch_clause",
+                "except_clause",
+                "finally_clause",
+                "case_clause",
+                "default_clause",
                 "rescue",
             ):
-                entries.append({
-                    "file": filepath,
-                    "line": child.start_point[0] + 1,
-                    "after": terminator_type,
-                })
+                entries.append(
+                    {
+                        "file": filepath,
+                        "line": child.start_point[0] + 1,
+                        "after": terminator_type,
+                    }
+                )
             # Only flag the first unreachable node per terminator.
             saw_terminator = False
 

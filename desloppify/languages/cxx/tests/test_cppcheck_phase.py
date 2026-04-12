@@ -62,7 +62,9 @@ def test_phase_cppcheck_retries_per_file_after_batch_timeout(tmp_path, monkeypat
     assert lang.coverage_warnings == []
 
 
-def test_phase_cppcheck_records_reduced_coverage_when_single_file_retry_still_fails(tmp_path, monkeypatch):
+def test_phase_cppcheck_records_reduced_coverage_when_single_file_retry_still_fails(
+    tmp_path, monkeypatch
+):
     monkeypatch.setattr(
         cxx_phases,
         "find_cxx_files",
@@ -106,6 +108,7 @@ def test_phase_cppcheck_records_reduced_coverage_when_single_file_retry_still_fa
     assert lang.detector_coverage["cppcheck_issue"]["status"] == "reduced"
     assert lang.detector_coverage["cppcheck_issue"]["reason"] == "tool_timeout"
     assert lang.coverage_warnings[0]["detector"] == "cppcheck_issue"
+
 
 def test_phase_cppcheck_uses_unique_issue_ids_for_same_line(tmp_path, monkeypatch):
     monkeypatch.setattr(

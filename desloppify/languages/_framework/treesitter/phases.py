@@ -29,7 +29,9 @@ if TYPE_CHECKING:
 def make_ast_smells_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
     """Create an AST smells phase: empty catches + unreachable code."""
 
-    def run(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+    def run(
+        path: Path, lang: LangRuntimeContract
+    ) -> tuple[list[Issue], dict[str, int]]:
         from desloppify.languages._framework.treesitter.analysis.smells import (
             detect_empty_catches,
             detect_unreachable_code,
@@ -45,11 +47,16 @@ def make_ast_smells_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
             default_content="catch",
         )
         for match in catches:
-            issues.append(make_issue(
-                "smells", match.file, f"empty_catch::{match.line}",
-                tier=3, confidence="high",
-                summary=f"Empty {match.content} — swallows errors silently",
-            ))
+            issues.append(
+                make_issue(
+                    "smells",
+                    match.file,
+                    f"empty_catch::{match.line}",
+                    tier=3,
+                    confidence="high",
+                    summary=f"Empty {match.content} — swallows errors silently",
+                )
+            )
         if catches:
             potentials["empty_catch"] = len(catches)
             log(f"         empty catch blocks: {len(catches)}")
@@ -60,11 +67,16 @@ def make_ast_smells_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
             default_content="return",
         )
         for match in unreachable:
-            issues.append(make_issue(
-                "smells", match.file, f"unreachable_code::{match.line}",
-                tier=3, confidence="high",
-                summary=f"Unreachable code after {match.content}",
-            ))
+            issues.append(
+                make_issue(
+                    "smells",
+                    match.file,
+                    f"unreachable_code::{match.line}",
+                    tier=3,
+                    confidence="high",
+                    summary=f"Unreachable code after {match.content}",
+                )
+            )
         if unreachable:
             potentials["unreachable_code"] = len(unreachable)
             log(f"         unreachable code: {len(unreachable)}")
@@ -77,7 +89,9 @@ def make_ast_smells_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
 def make_cohesion_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
     """Create a responsibility cohesion phase."""
 
-    def run(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+    def run(
+        path: Path, lang: LangRuntimeContract
+    ) -> tuple[list[Issue], dict[str, int]]:
         from desloppify.languages._framework.treesitter.analysis.cohesion import (
             detect_responsibility_cohesion,
         )
@@ -89,20 +103,24 @@ def make_cohesion_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
         entries, checked = detect_responsibility_cohesion(file_list, spec)
         for e in entries:
             families = ", ".join(e["families"][:4])
-            issues.append(make_issue(
-                "responsibility_cohesion", e["file"],
-                f"cohesion::{e['file']}",
-                tier=3, confidence="medium",
-                summary=(
-                    f"{e['component_count']} disconnected function clusters "
-                    f"({e['function_count']} functions) — likely mixed responsibilities"
-                ),
-                detail={
-                    "cluster_count": e["component_count"],
-                    "family": families,
-                    "families": e["families"],
-                },
-            ))
+            issues.append(
+                make_issue(
+                    "responsibility_cohesion",
+                    e["file"],
+                    f"cohesion::{e['file']}",
+                    tier=3,
+                    confidence="medium",
+                    summary=(
+                        f"{e['component_count']} disconnected function clusters "
+                        f"({e['function_count']} functions) — likely mixed responsibilities"
+                    ),
+                    detail={
+                        "cluster_count": e["component_count"],
+                        "family": families,
+                        "families": e["families"],
+                    },
+                )
+            )
         if entries:
             potentials["responsibility_cohesion"] = len(entries)
             log(f"         low-cohesion files: {len(entries)}")
@@ -115,7 +133,9 @@ def make_cohesion_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
 def make_unused_imports_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
     """Create an unused imports phase."""
 
-    def run(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+    def run(
+        path: Path, lang: LangRuntimeContract
+    ) -> tuple[list[Issue], dict[str, int]]:
         from desloppify.languages._framework.treesitter.analysis.unused_imports import (
             detect_unused_imports,
         )
@@ -127,12 +147,19 @@ def make_unused_imports_phase(spec: TreeSitterLangSpec) -> DetectorPhase:
         entries = detect_unused_imports(file_list, spec)
         for e in entries:
             symbol = e.get("symbol")
-            issue_name = f"unused_import::{e['line']}" + (f"::{symbol}" if symbol else "")
-            issues.append(make_issue(
-                "unused", e["file"], issue_name,
-                tier=3, confidence="medium",
-                summary=f"Unused import: {e['name']}",
-            ))
+            issue_name = f"unused_import::{e['line']}" + (
+                f"::{symbol}" if symbol else ""
+            )
+            issues.append(
+                make_issue(
+                    "unused",
+                    e["file"],
+                    issue_name,
+                    tier=3,
+                    confidence="medium",
+                    summary=f"Unused import: {e['name']}",
+                )
+            )
         if entries:
             potentials["unused_imports"] = len(entries)
             log(f"         unused imports: {len(entries)}")

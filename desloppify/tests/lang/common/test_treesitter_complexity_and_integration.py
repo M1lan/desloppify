@@ -21,7 +21,9 @@ class TestASTComplexity:
         from desloppify.languages._framework.treesitter.analysis.complexity_nesting import (
             compute_nesting_depth_ts,
         )
-        from desloppify.languages._framework.treesitter.analysis.extractors import _get_parser
+        from desloppify.languages._framework.treesitter.analysis.extractors import (
+            _get_parser,
+        )
         from desloppify.languages._framework.treesitter.specs.compiled import GO_SPEC
 
         code = """\
@@ -57,7 +59,9 @@ func complex() {
         from desloppify.languages._framework.treesitter.analysis.complexity_nesting import (
             compute_nesting_depth_ts,
         )
-        from desloppify.languages._framework.treesitter.analysis.extractors import _get_parser
+        from desloppify.languages._framework.treesitter.analysis.extractors import (
+            _get_parser,
+        )
         from desloppify.languages._framework.treesitter.specs.compiled import GO_SPEC
 
         code = """\
@@ -163,7 +167,9 @@ add(A, B) ->
         from desloppify.languages._framework.treesitter.analysis.extractors import (
             ts_extract_functions,
         )
-        from desloppify.languages._framework.treesitter.specs.functional import ERLANG_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            ERLANG_SPEC,
+        )
 
         functions = ts_extract_functions(tmp_path, ERLANG_SPEC, [erlang_file])
         # Erlang functions — at least some should be extracted.
@@ -198,7 +204,9 @@ end
         from desloppify.languages._framework.treesitter.analysis.extractors import (
             ts_extract_functions,
         )
-        from desloppify.languages._framework.treesitter.specs.functional import OCAML_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            OCAML_SPEC,
+        )
 
         functions = ts_extract_functions(tmp_path, OCAML_SPEC, [ocaml_file])
         assert len(functions) >= 1
@@ -228,7 +236,9 @@ let add a b =
         from desloppify.languages._framework.treesitter.analysis.extractors import (
             ts_extract_functions,
         )
-        from desloppify.languages._framework.treesitter.specs.functional import FSHARP_SPEC
+        from desloppify.languages._framework.treesitter.specs.functional import (
+            FSHARP_SPEC,
+        )
 
         functions = ts_extract_functions(tmp_path, FSHARP_SPEC, [fsharp_file])
         # F# let bindings may or may not match — depends on grammar details.
@@ -437,7 +447,7 @@ except Exception:
 
         py_spec = TreeSitterLangSpec(
             grammar="python",
-            function_query='(function_definition name: (identifier) @name body: (block) @body) @func',
+            function_query="(function_definition name: (identifier) @name body: (block) @body) @func",
             comment_node_types=frozenset({"comment"}),
         )
         entries = detect_empty_catches([str(f)], py_spec)
@@ -462,7 +472,7 @@ except Exception as e:
 
         py_spec = TreeSitterLangSpec(
             grammar="python",
-            function_query='(function_definition name: (identifier) @name body: (block) @body) @func',
+            function_query="(function_definition name: (identifier) @name body: (block) @body) @func",
             comment_node_types=frozenset({"comment"}),
         )
         entries = detect_empty_catches([str(f)], py_spec)
@@ -548,7 +558,9 @@ class TestResponsibilityCohesion:
         f.write_text(code)
 
         entries, checked = detect_responsibility_cohesion(
-            [str(f)], GO_SPEC, min_loc=5,
+            [str(f)],
+            GO_SPEC,
+            min_loc=5,
         )
         # All functions are connected — should NOT be flagged.
         assert len(entries) == 0
@@ -569,7 +581,9 @@ class TestResponsibilityCohesion:
         f.write_text(code)
 
         entries, checked = detect_responsibility_cohesion(
-            [str(f)], GO_SPEC, min_loc=5,
+            [str(f)],
+            GO_SPEC,
+            min_loc=5,
         )
         # All singletons — toolkit pattern, not mixed responsibilities.
         assert len(entries) == 0
@@ -604,7 +618,9 @@ class TestResponsibilityCohesion:
         f.write_text(code)
 
         entries, checked = detect_responsibility_cohesion(
-            [str(f)], GO_SPEC, min_loc=5,
+            [str(f)],
+            GO_SPEC,
+            min_loc=5,
         )
         # 3 non-singleton clusters (auth, db, http) + 2 singletons = 5 clusters
         assert len(entries) == 1
@@ -730,7 +746,7 @@ func main() {
 
         spec = TreeSitterLangSpec(
             grammar="go",
-            function_query='(function_declaration name: (identifier) @name body: (block) @body) @func',
+            function_query="(function_declaration name: (identifier) @name body: (block) @body) @func",
             comment_node_types=frozenset({"comment"}),
             import_query="",  # no import query
         )
@@ -1063,7 +1079,7 @@ export function f(x: Foo) {
         code = (
             b'import { jest } from "@jest/globals";\n'
             b'jest.spyOn(console, "log");\n'
-            b'\x00\n'
+            b"\x00\n"
             b'jest.spyOn(console, "warn");\n'
         )
         f = tmp_path / "main.ts"

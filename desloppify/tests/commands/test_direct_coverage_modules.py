@@ -84,7 +84,9 @@ import desloppify.languages.typescript.detectors.smells.helpers as ts_smell_help
 import desloppify.languages.typescript.detectors.deps.runtime as ts_deps_runtime
 import desloppify.languages.typescript.extractors_components as ts_extractors_components
 from desloppify.engine._work_queue.models import QueueBuildOptions, QueueVisibility
-from desloppify.intelligence.review import prepare_batches_builders as review_prepare_batches
+from desloppify.intelligence.review import (
+    prepare_batches_builders as review_prepare_batches,
+)
 from desloppify.languages._framework.registry import resolution as lang_resolution
 from desloppify.languages.csharp import move as csharp_move
 from desloppify.languages.csharp import review as csharp_review
@@ -343,7 +345,9 @@ def test_smoke_lang_plugins():
     assert isinstance(gdscript_review.HOLISTIC_REVIEW_DIMENSIONS, list)
 
 
-def test_rust_move_smells_and_shared_helpers_have_direct_coverage(monkeypatch, tmp_path):
+def test_rust_move_smells_and_shared_helpers_have_direct_coverage(
+    monkeypatch, tmp_path
+):
     assert rust_move_mod.VERIFY_HINT == "cargo check"
     assert rust_move_mod.find_replacements("src/lib.rs", "src/new.rs", {}) == {}
     assert rust_move_mod.find_self_replacements("src/lib.rs", "src/new.rs", {}) == []

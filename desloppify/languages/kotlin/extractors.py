@@ -104,7 +104,11 @@ def _find_matching_brace(content: str, open_pos: int) -> int | None:
             if i + 2 < length and content[i + 1] == '"' and content[i + 2] == '"':
                 i += 3
                 while i + 2 < length:
-                    if content[i] == '"' and content[i + 1] == '"' and content[i + 2] == '"':
+                    if (
+                        content[i] == '"'
+                        and content[i + 1] == '"'
+                        and content[i + 2] == '"'
+                    ):
                         i += 3
                         break
                     i += 1

@@ -104,4 +104,3 @@ class ScopedDictStore(Generic[K, V]):
     def iter_scoped_buckets(self) -> list[dict[K, V]]:
         """Return all non-default scope buckets."""
         return list(self._by_scope.values())
-

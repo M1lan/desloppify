@@ -5,7 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from desloppify.languages.kotlin.phases import KOTLIN_COMPLEXITY_SIGNALS, phase_structural
+from desloppify.languages.kotlin.phases import (
+    KOTLIN_COMPLEXITY_SIGNALS,
+    phase_structural,
+)
 from desloppify.languages.kotlin.detectors.smells import detect_smells
 from desloppify.languages.kotlin.extractors import find_kotlin_files
 
@@ -76,7 +79,9 @@ def _write_kt(tmp_path: Path, name: str, content: str) -> Path:
 class TestDetectSmellsNonNullAssertion:
     def test_detects_nn_assertion_overuse(self, tmp_path):
         # >3 occurrences of !! triggers the smell
-        _write_kt(tmp_path, "Foo.kt", "val a = x!!\nval b = y!!\nval c = z!!\nval d = w!!\n")
+        _write_kt(
+            tmp_path, "Foo.kt", "val a = x!!\nval b = y!!\nval c = z!!\nval d = w!!\n"
+        )
         entries, _ = detect_smells(tmp_path)
         ids = [e["id"] for e in entries]
         assert "kotlin_non_null_assertion" in ids
@@ -171,12 +176,7 @@ class TestCommentAndStringExclusion:
         # !! inside string literals — the pattern uses stripped content but
         # _match_in_string should filter matches inside quoted strings.
         # We generate >3 occurrences all inside strings.
-        content = (
-            'val a = "x!!"\n'
-            'val b = "y!!"\n'
-            'val c = "z!!"\n'
-            'val d = "w!!"\n'
-        )
+        content = 'val a = "x!!"\nval b = "y!!"\nval c = "z!!"\nval d = "w!!"\n'
         _write_kt(tmp_path, "Foo.kt", content)
         entries, _ = detect_smells(tmp_path)
         ids = [e["id"] for e in entries]
@@ -188,7 +188,7 @@ class TestCleanFile:
         _write_kt(
             tmp_path,
             "Clean.kt",
-            "package com.example\n\nfun greet(name: String): String = \"Hello, $name\"\n",
+            'package com.example\n\nfun greet(name: String): String = "Hello, $name"\n',
         )
         entries, total = detect_smells(tmp_path)
         assert entries == []

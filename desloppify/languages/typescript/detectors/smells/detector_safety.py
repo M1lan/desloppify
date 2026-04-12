@@ -37,7 +37,9 @@ def _detect_catch_return_default(ctx, smell_counts: dict[str, list[dict]]) -> No
             continue
 
         noop_count = len(re.findall(r"\(\)\s*=>\s*\{\s*\}", obj_content))
-        false_count = len(re.findall(r":\s*(?:false|null|undefined|0|''|\"\")\b", obj_content))
+        false_count = len(
+            re.findall(r":\s*(?:false|null|undefined|0|''|\"\")\b", obj_content)
+        )
         if noop_count + false_count >= _CATCH_DEFAULT_FIELD_THRESHOLD:
             line_no, snippet = _content_line_info(ctx.content, match.start())
             _emit(smell_counts, "catch_return_default", ctx, line_no, snippet)

@@ -74,7 +74,9 @@ def _collect_module_level_mutables(tree: ast.Module) -> dict[str, int]:
         if isinstance(stmt, ast.Assign):
             for target in stmt.targets:
                 if isinstance(target, ast.Name) and _is_mutable_init(stmt.value):
-                    if _is_upper_case(target.id) and isinstance(stmt.value, ast.Constant):
+                    if _is_upper_case(target.id) and isinstance(
+                        stmt.value, ast.Constant
+                    ):
                         continue
                     mutables[target.id] = stmt.lineno
         elif (
@@ -139,7 +141,9 @@ def _find_mutations_in_functions(
                             target.value.id in mutables
                             and target.value.id not in param_names
                         ):
-                            mutations.setdefault(target.value.id, []).append(child.lineno)
+                            mutations.setdefault(target.value.id, []).append(
+                                child.lineno
+                            )
             elif isinstance(child, ast.AugAssign):
                 if (
                     isinstance(child.target, ast.Name)

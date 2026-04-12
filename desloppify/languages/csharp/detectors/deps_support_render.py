@@ -75,14 +75,20 @@ def render_deps_for_graph(args: argparse.Namespace, *, graph: dict[str, dict]) -
 
     print(colorize(f"\nC# dependency graph: {len(graph)} files\n", "bold"))
     rows = [
-        [rel(filepath), str(entry.get("importer_count", 0)), str(entry.get("import_count", 0))]
+        [
+            rel(filepath),
+            str(entry.get("importer_count", 0)),
+            str(entry.get("import_count", 0)),
+        ]
         for filepath, entry in by_importers[: getattr(args, "top", 20)]
     ]
     if rows:
         print_table(["File", "Importers", "Imports"], rows, [70, 9, 7])
 
 
-def render_cycles_for_graph(args: argparse.Namespace, *, graph: dict[str, dict]) -> None:
+def render_cycles_for_graph(
+    args: argparse.Namespace, *, graph: dict[str, dict]
+) -> None:
     """Show import cycles in C# source files."""
     cycles, _ = detect_cycles(graph)
     if getattr(args, "json", False):
@@ -91,7 +97,10 @@ def render_cycles_for_graph(args: argparse.Namespace, *, graph: dict[str, dict])
                 {
                     "count": len(cycles),
                     "cycles": [
-                        {"length": cycle["length"], "files": [rel(path) for path in cycle["files"]]}
+                        {
+                            "length": cycle["length"],
+                            "files": [rel(path) for path in cycle["files"]],
+                        }
                         for cycle in cycles
                     ],
                 },

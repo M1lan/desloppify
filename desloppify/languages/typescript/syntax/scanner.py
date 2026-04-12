@@ -31,4 +31,3 @@ def scan_code(
             else:
                 yield (i, ch, False)
         i += 1
-

@@ -35,8 +35,12 @@ from desloppify.languages.csharp.detectors.deps import (
     build_dep_graph as build_csharp_dep_graph,
 )
 from desloppify.languages.csharp.detectors.security import detect_csharp_security
-from desloppify.languages.csharp.extractors import CSHARP_FILE_EXCLUSIONS, find_csharp_files
+from desloppify.languages.csharp.extractors import (
+    CSHARP_FILE_EXCLUSIONS,
+    find_csharp_files,
+)
 from desloppify.languages.csharp.phases import phase_coupling, phase_structural
+
 
 class CSharpConfig(LangConfig):
     """C# language configuration."""

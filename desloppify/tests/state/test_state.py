@@ -34,7 +34,9 @@ def merge_scan(state, current_issues, *args, **kwargs):
     options = kwargs.pop("options", None)
     if args:
         if len(args) != 1:
-            raise TypeError("merge_scan test helper accepts at most one positional option")
+            raise TypeError(
+                "merge_scan test helper accepts at most one positional option"
+            )
         options = args[0]
     if options is None:
         options = MergeScanOptions(**kwargs)
@@ -121,9 +123,7 @@ class TestApplyIssueNoiseBudget:
                 "smells::b.py::y2", detector="smells", tier=2, confidence="medium"
             ),
         ]
-        surfaced, hidden = apply_issue_noise_budget(
-            issues, budget=0, global_budget=3
-        )
+        surfaced, hidden = apply_issue_noise_budget(issues, budget=0, global_budget=3)
         detectors = [f["detector"] for f in surfaced]
         assert detectors.count("unused") == 2
         assert detectors.count("smells") == 1
@@ -155,8 +155,7 @@ class TestResolveIssueNoiseGlobalBudget:
 
     def test_reads_valid_int_from_config(self):
         assert (
-            resolve_issue_noise_global_budget({"issue_noise_global_budget": 25})
-            == 25
+            resolve_issue_noise_global_budget({"issue_noise_global_budget": 25}) == 25
         )
 
     def test_invalid_value_falls_back_to_default(self):
@@ -166,10 +165,7 @@ class TestResolveIssueNoiseGlobalBudget:
         )
 
     def test_negative_value_clamps_to_zero(self):
-        assert (
-            resolve_issue_noise_global_budget({"issue_noise_global_budget": -5})
-            == 0
-        )
+        assert resolve_issue_noise_global_budget({"issue_noise_global_budget": -5}) == 0
 
 
 class TestResolveIssueNoiseSettings:
@@ -630,7 +626,13 @@ class TestMissingIssuesResolved:
         old["lang"] = "python"
         st["issues"]["det::a.py::fn"] = old
 
-        diff = merge_scan(st, [], MergeScanOptions(lang="python", force_resolve=True, project_root=str(tmp_path)))
+        diff = merge_scan(
+            st,
+            [],
+            MergeScanOptions(
+                lang="python", force_resolve=True, project_root=str(tmp_path)
+            ),
+        )
         assert diff["auto_resolved"] == 0
         assert st["issues"]["det::a.py::fn"]["status"] == "open"
         assert st["issues"]["det::a.py::fn"]["resolved_at"] is None
@@ -642,7 +644,13 @@ class TestMissingIssuesResolved:
         old["lang"] = "python"
         st["issues"]["det::a.py::fn"] = old
 
-        diff = merge_scan(st, [], MergeScanOptions(lang="python", force_resolve=True, project_root=str(tmp_path)))
+        diff = merge_scan(
+            st,
+            [],
+            MergeScanOptions(
+                lang="python", force_resolve=True, project_root=str(tmp_path)
+            ),
+        )
         assert diff["auto_resolved"] == 1
         assert st["issues"]["det::a.py::fn"]["status"] == "auto_resolved"
         assert "no longer exists" in st["issues"]["det::a.py::fn"]["note"]
@@ -668,8 +676,14 @@ class TestMissingIssuesResolved:
         diff = merge_scan(st, [], MergeScanOptions(lang="python", force_resolve=True))
         assert diff["auto_resolved"] == 1
         assert st["issues"]["det::a.py::fn"]["status"] == "fixed"
-        assert st["issues"]["det::a.py::fn"]["resolution_attestation"]["scan_verified"] is True
-        assert "scan_verified_at" in st["issues"]["det::a.py::fn"]["resolution_attestation"]
+        assert (
+            st["issues"]["det::a.py::fn"]["resolution_attestation"]["scan_verified"]
+            is True
+        )
+        assert (
+            "scan_verified_at"
+            in st["issues"]["det::a.py::fn"]["resolution_attestation"]
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -705,7 +719,11 @@ class TestWontfixAutoResolution:
         # Simulate: user wrote tests for ALL files → 0 issues
         # test_coverage ran (in potentials) but found nothing
         diff = merge_scan(
-            st, [], MergeScanOptions(lang="python", potentials={"test_coverage": 50, "smells": 100})
+            st,
+            [],
+            MergeScanOptions(
+                lang="python", potentials={"test_coverage": 50, "smells": 100}
+            ),
         )
         assert diff["auto_resolved"] == 2
         assert (
@@ -713,12 +731,13 @@ class TestWontfixAutoResolution:
             == "wontfix"
         )
         assert (
-            st["issues"]["test_coverage::mod4.py::untested_module"]["resolution_attestation"]["scan_verified"]
+            st["issues"]["test_coverage::mod4.py::untested_module"][
+                "resolution_attestation"
+            ]["scan_verified"]
             is True
         )
         assert (
-            st["issues"]["test_coverage::mod0.py::untested_module"]["status"]
-            == "open"
+            st["issues"]["test_coverage::mod0.py::untested_module"]["status"] == "open"
         )
 
     def test_wontfix_not_resolved_when_detector_suspect(self):
@@ -744,7 +763,9 @@ class TestWontfixAutoResolution:
         st["issues"][wf["id"]] = wf
 
         # test_coverage NOT in potentials → suspect → wontfix preserved
-        diff = merge_scan(st, [], MergeScanOptions(lang="python", potentials={"smells": 100}))
+        diff = merge_scan(
+            st, [], MergeScanOptions(lang="python", potentials={"smells": 100})
+        )
         assert "test_coverage" in diff["suspect_detectors"]
         assert (
             st["issues"]["test_coverage::mod4.py::untested_module"]["status"]
@@ -782,7 +803,11 @@ class TestWontfixAutoResolution:
             )
             for i in range(2, 4)
         ]
-        _ = merge_scan(st, current, MergeScanOptions(lang="python", potentials={"test_coverage": 50}))
+        _ = merge_scan(
+            st,
+            current,
+            MergeScanOptions(lang="python", potentials={"test_coverage": 50}),
+        )
         # The 2 wontfix issues stay wontfix and become scan-verified.
         assert (
             st["issues"]["test_coverage::mod0.py::untested_module"]["status"]
@@ -793,17 +818,17 @@ class TestWontfixAutoResolution:
             == "wontfix"
         )
         assert (
-            st["issues"]["test_coverage::mod0.py::untested_module"]["resolution_attestation"]["scan_verified"]
+            st["issues"]["test_coverage::mod0.py::untested_module"][
+                "resolution_attestation"
+            ]["scan_verified"]
             is True
         )
         # The 2 open issues should still be open (they were re-emitted)
         assert (
-            st["issues"]["test_coverage::mod2.py::untested_module"]["status"]
-            == "open"
+            st["issues"]["test_coverage::mod2.py::untested_module"]["status"] == "open"
         )
         assert (
-            st["issues"]["test_coverage::mod3.py::untested_module"]["status"]
-            == "open"
+            st["issues"]["test_coverage::mod3.py::untested_module"]["status"] == "open"
         )
 
     def test_empty_potentials_dict_not_treated_as_none(self):
@@ -814,9 +839,7 @@ class TestWontfixAutoResolution:
         # Build a state with 3 open issues for a detector
         existing = {}
         for i in range(3):
-            f = _make_raw_issue(
-                f"det::mod{i}.py::x", detector="det", file=f"mod{i}.py"
-            )
+            f = _make_raw_issue(f"det::mod{i}.py::x", detector="det", file=f"mod{i}.py")
             existing[f["id"]] = f
         # Empty potentials {} — ran_detectors should be set() not None
         suspect = find_suspect_detectors(existing, {}, False, ran_detectors=set())
@@ -830,9 +853,7 @@ class TestWontfixAutoResolution:
 
         existing = {}
         for i in range(3):
-            f = _make_raw_issue(
-                f"det::mod{i}.py::x", detector="det", file=f"mod{i}.py"
-            )
+            f = _make_raw_issue(f"det::mod{i}.py::x", detector="det", file=f"mod{i}.py")
             existing[f["id"]] = f
         suspect = find_suspect_detectors(existing, {}, False, ran_detectors=None)
         assert "det" in suspect
@@ -845,7 +866,12 @@ class TestWontfixAutoResolution:
         merge_scan(
             st,
             [],
-            MergeScanOptions(lang="python", potentials={"review": 3}, merge_potentials=True, force_resolve=True),
+            MergeScanOptions(
+                lang="python",
+                potentials={"review": 3},
+                merge_potentials=True,
+                force_resolve=True,
+            ),
         )
 
         pots = st["potentials"]["python"]
@@ -860,7 +886,11 @@ class TestWontfixAutoResolution:
         merge_scan(
             st,
             [],
-            MergeScanOptions(lang="typescript", potentials={"logs": 0, "unused": 0, "subjective_review": 0}, force_resolve=True),
+            MergeScanOptions(
+                lang="typescript",
+                potentials={"logs": 0, "unused": 0, "subjective_review": 0},
+                force_resolve=True,
+            ),
         )
 
         assert st["objective_score"] == 100.0
@@ -875,7 +905,11 @@ class TestWontfixAutoResolution:
         merge_scan(
             st,
             [],
-            MergeScanOptions(lang="typescript", potentials={"logs": 0, "unused": 0, "subjective_review": 0}, force_resolve=True),
+            MergeScanOptions(
+                lang="typescript",
+                potentials={"logs": 0, "unused": 0, "subjective_review": 0},
+                force_resolve=True,
+            ),
         )
 
         # Objective excludes subjective dimensions.

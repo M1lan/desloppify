@@ -156,7 +156,9 @@ def _is_broad_except(stripped: str) -> bool:
     return bool(match and match.group(1) in ("Exception", "BaseException"))
 
 
-def _detect_empty_except(filepath: str, lines: list[str], smell_counts: dict[str, list]) -> None:
+def _detect_empty_except(
+    filepath: str, lines: list[str], smell_counts: dict[str, list]
+) -> None:
     """Find broad except blocks that just pass or have empty body."""
     for i, stripped, body_lines in _walk_except_blocks(lines):
         if (not body_lines or body_lines == ["pass"]) and _is_broad_except(stripped):
@@ -195,7 +197,9 @@ def _read_smell_source_file(
     """Load one source file for smell detection."""
     try:
         file_path = (
-            Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+            Path(filepath)
+            if Path(filepath).is_absolute()
+            else get_project_root() / filepath
         )
         content = file_path.read_text()
         return content, content.splitlines()

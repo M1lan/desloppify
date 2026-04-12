@@ -9,7 +9,18 @@ from desloppify.engine.policy.zones import FileZoneMap, Zone, ZoneRule
 
 def _make_zone_map(file_list: list[str]) -> FileZoneMap:
     rules = [
-        ZoneRule(Zone.TEST, ["test_", ".test.", ".spec.", "/tests/", "\\tests\\", "/__tests__/", "\\__tests__\\"]),
+        ZoneRule(
+            Zone.TEST,
+            [
+                "test_",
+                ".test.",
+                ".spec.",
+                "/tests/",
+                "\\tests\\",
+                "/__tests__/",
+                "\\__tests__\\",
+            ],
+        ),
     ]
     return FileZoneMap(file_list, rules)
 
@@ -48,12 +59,20 @@ add_executable(WidgetBehaviorTest
 
 
 def test_has_testable_logic_accepts_function_definitions_without_regex_crash():
-    assert cxx_cov.has_testable_logic("widget.cpp", "int widget() { return 1; }\n") is True
-    assert cxx_cov.has_testable_logic("widget_test.cpp", "int widget() { return 1; }\n") is False
+    assert (
+        cxx_cov.has_testable_logic("widget.cpp", "int widget() { return 1; }\n") is True
+    )
+    assert (
+        cxx_cov.has_testable_logic("widget_test.cpp", "int widget() { return 1; }\n")
+        is False
+    )
 
 
 def test_has_testable_logic_excludes_test_prefix_files():
-    assert cxx_cov.has_testable_logic("test_widget.cpp", "int widget() { return 1; }\n") is False
+    assert (
+        cxx_cov.has_testable_logic("test_widget.cpp", "int widget() { return 1; }\n")
+        is False
+    )
 
 
 def test_map_test_to_source_and_resolve_import_spec(tmp_path):
@@ -69,11 +88,12 @@ def test_map_test_to_source_and_resolve_import_spec(tmp_path):
 
     production = {str(source.resolve()), str(header.resolve())}
 
-    assert cxx_cov.map_test_to_source(str(test_file), production) == str(source.resolve())
-    assert (
-        cxx_cov.resolve_import_spec("../src/widget.hpp", str(test_file), production)
-        == str(header.resolve())
+    assert cxx_cov.map_test_to_source(str(test_file), production) == str(
+        source.resolve()
     )
+    assert cxx_cov.resolve_import_spec(
+        "../src/widget.hpp", str(test_file), production
+    ) == str(header.resolve())
 
 
 def test_discover_test_mapping_files_finds_cmakelists_within_test_tree(tmp_path):
@@ -82,8 +102,13 @@ def test_discover_test_mapping_files_finds_cmakelists_within_test_tree(tmp_path)
     nested_cmake = tmp_path / "tests" / "kernel_parity" / "CMakeLists.txt"
     test_file.parent.mkdir(parents=True)
     test_file.write_text("// test\n", encoding="utf-8")
-    cmake_file.write_text("add_executable(WidgetBehaviorTest widget_behavior.cpp ../src/widget.cpp)\n", encoding="utf-8")
-    nested_cmake.write_text("add_library(ParityHelpers ../src/widget.hpp)\n", encoding="utf-8")
+    cmake_file.write_text(
+        "add_executable(WidgetBehaviorTest widget_behavior.cpp ../src/widget.cpp)\n",
+        encoding="utf-8",
+    )
+    nested_cmake.write_text(
+        "add_library(ParityHelpers ../src/widget.hpp)\n", encoding="utf-8"
+    )
 
     discovered = cxx_cov.discover_test_mapping_files({str(test_file.resolve())}, set())
 
@@ -95,7 +120,7 @@ def test_detect_test_coverage_uses_cmake_test_sources_for_direct_mapping(tmp_pat
     test_file = _write(
         tmp_path,
         "tests/widget_behavior.cpp",
-        '#include <gtest/gtest.h>\n\nTEST(WidgetBehavior, Smoke) {\n    EXPECT_EQ(1, 1);\n}\n',
+        "#include <gtest/gtest.h>\n\nTEST(WidgetBehavior, Smoke) {\n    EXPECT_EQ(1, 1);\n}\n",
     )
     _write(
         tmp_path,
@@ -118,6 +143,7 @@ def test_detect_test_coverage_uses_cmake_test_sources_for_direct_mapping(tmp_pat
     untested = [
         entry
         for entry in entries
-        if entry["file"] == prod and entry["detail"]["kind"] in {"untested_module", "untested_critical"}
+        if entry["file"] == prod
+        and entry["detail"]["kind"] in {"untested_module", "untested_critical"}
     ]
     assert untested == []

@@ -14,6 +14,7 @@ from desloppify.engine._scoring.state_integration import _count_issues
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_issue(
     issue_id: str,
     *,
@@ -108,9 +109,7 @@ class TestScoringCandidatesExcludesSuppressed:
             "f1": _make_issue("f1", detector="unused"),
             "f2": _make_issue("f2", detector="unused", suppressed=True),
         }
-        candidates = list(
-            _iter_scoring_candidates("unused", issues, frozenset())
-        )
+        candidates = list(_iter_scoring_candidates("unused", issues, frozenset()))
         assert len(candidates) == 1
         assert candidates[0]["id"] == "f1"
 
@@ -118,9 +117,7 @@ class TestScoringCandidatesExcludesSuppressed:
         issues = {
             "f1": _make_issue("f1", detector="unused", suppressed=True),
         }
-        candidates = list(
-            _iter_scoring_candidates("unused", issues, frozenset())
-        )
+        candidates = list(_iter_scoring_candidates("unused", issues, frozenset()))
         assert candidates == []
 
 
@@ -218,14 +215,21 @@ class TestRemoveIgnoredPreservesStatus:
         removed_worktrees = remove_ignored_issues(state, ".claude/worktrees")
         assert removed_worktrees == 1
         assert (
-            state["work_items"]["security::.claude/worktrees/a/file.py::b101"]["suppressed"]
+            state["work_items"]["security::.claude/worktrees/a/file.py::b101"][
+                "suppressed"
+            ]
             is True
         )
-        assert state["work_items"]["security::.claude/file.py::b101"]["suppressed"] is False
+        assert (
+            state["work_items"]["security::.claude/file.py::b101"]["suppressed"]
+            is False
+        )
 
         removed_claude = remove_ignored_issues(state, ".claude")
         assert removed_claude == 2
-        assert state["work_items"]["security::.claude/file.py::b101"]["suppressed"] is True
+        assert (
+            state["work_items"]["security::.claude/file.py::b101"]["suppressed"] is True
+        )
         assert state["work_items"]["security::src/app.py::b101"]["suppressed"] is False
 
 

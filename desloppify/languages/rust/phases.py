@@ -20,7 +20,10 @@ from desloppify.engine.policy.zones import adjust_potential, filter_entries
 from desloppify.languages._framework.base.shared_phases import (
     run_structural_phase,
 )
-from desloppify.languages._framework.base.types import DetectorPhase, LangRuntimeContract
+from desloppify.languages._framework.base.types import (
+    DetectorPhase,
+    LangRuntimeContract,
+)
 from desloppify.languages._framework.issue_factories import (
     make_cycle_issues,
     make_orphaned_issues,
@@ -118,7 +121,9 @@ RUST_COMPLEXITY_SIGNALS = [
 ]
 
 
-def phase_structural(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_structural(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run structural detectors (large/complexity/flat directories)."""
     return run_structural_phase(
         path,
@@ -128,7 +133,9 @@ def phase_structural(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue]
     )
 
 
-def phase_coupling(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_coupling(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run coupling-oriented detectors against the Rust import graph."""
     graph = build_dep_graph(path)
     cycle_graph = build_dep_graph(path, include_mod_declarations=False)
@@ -208,7 +215,9 @@ def phase_custom_policy(
     return results, counts
 
 
-def phase_signature(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_signature(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run Rust-specific signature analysis with an idiomatic-name allowlist."""
     functions = [
         function
@@ -241,7 +250,9 @@ def phase_signature(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue],
 ToolResultRunner = Callable[[Path], ToolRunResult]
 
 
-def _make_rust_tool_phase(label: str, runner: ToolResultRunner, detector: str, tier: int):
+def _make_rust_tool_phase(
+    label: str, runner: ToolResultRunner, detector: str, tier: int
+):
     def run(path: Path, lang) -> tuple[list[dict], dict[str, int]]:
         result = runner(path)
         if result.status == "error":

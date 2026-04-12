@@ -679,9 +679,7 @@ class TestResolveAliasLongestPrefix:
     def test_longer_prefix_wins(self, tmp_path):
         """When aliases overlap, the longest matching prefix is used."""
         paths = {"@/": "app/", "@components/": "lib/components/"}
-        result = deps_resolve_mod.resolve_alias(
-            "@components/Button", paths, tmp_path
-        )
+        result = deps_resolve_mod.resolve_alias("@components/Button", paths, tmp_path)
         expected = (tmp_path / "lib/components/Button").resolve()
         assert result == expected
 

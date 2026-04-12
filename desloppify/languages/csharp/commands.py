@@ -89,7 +89,9 @@ def cmd_orphaned(args: argparse.Namespace) -> None:
         print(colorize("\nNo orphaned files found.", "green"))
         return
     total_loc = sum(e["loc"] for e in entries)
-    print(colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold"))
+    print(
+        colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold")
+    )
     top = getattr(args, "top", 20)
     rows = [[rel(e["file"]), str(e["loc"])] for e in entries[:top]]
     print_table(["File", "LOC"], rows, [80, 6])

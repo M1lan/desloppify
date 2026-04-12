@@ -37,7 +37,9 @@ def _state_with_issue(issue_id: str) -> dict:
     }
 
 
-def test_warn_uncommitted_changes_prints_git_checkpoint_hint(monkeypatch, capsys) -> None:
+def test_warn_uncommitted_changes_prints_git_checkpoint_hint(
+    monkeypatch, capsys
+) -> None:
     monkeypatch.setattr(retro_mod.shutil, "which", lambda _name: "/usr/bin/git")
     monkeypatch.setattr(
         retro_mod.subprocess,
@@ -87,7 +89,9 @@ def test_cascade_unused_import_cleanup_handles_no_detected_entries(capsys) -> No
     assert "no orphaned imports found" in out
 
 
-def test_cascade_unused_import_cleanup_resolves_cascade_issues(monkeypatch, capsys) -> None:
+def test_cascade_unused_import_cleanup_resolves_cascade_issues(
+    monkeypatch, capsys
+) -> None:
     monkeypatch.setattr(retro_mod, "rel", lambda value: str(value))
 
     results = FixResult(
@@ -144,8 +148,12 @@ def test_generic_fixer_total_items_count() -> None:
     # This reproduces the exact pattern from cmd.py line 40:
     #   sum(len(r["removed"]) if "removed" in r else 1 for r in results)
     results = [
-        {"file": "a.ts", "fixed": True},                          # generic: no "removed"
-        {"file": "b.ts", "removed": ["x", "y"], "lines_removed": 3},  # native: has "removed"
+        {"file": "a.ts", "fixed": True},  # generic: no "removed"
+        {
+            "file": "b.ts",
+            "removed": ["x", "y"],
+            "lines_removed": 3,
+        },  # native: has "removed"
     ]
     total = sum(len(r["removed"]) if "removed" in r else 1 for r in results)
     assert total == 3  # 1 (generic) + 2 (native)

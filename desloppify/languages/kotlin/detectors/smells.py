@@ -60,8 +60,13 @@ KOTLIN_SMELL_CHECKS: list[dict] = [
 # ---------------------------------------------------------------------------
 
 _TEST_PATH_MARKERS = (
-    "/test/", "/tests/", "/androidTest/", "/commonTest/",
-    "/jvmTest/", "/iosTest/", "/jsTest/",
+    "/test/",
+    "/tests/",
+    "/androidTest/",
+    "/commonTest/",
+    "/jvmTest/",
+    "/iosTest/",
+    "/jsTest/",
 )
 
 
@@ -229,7 +234,7 @@ def _detect_empty_catch(
 ) -> None:
     for m in _CATCH_RE.finditer(stripped):
         # Check if the block body is empty (only whitespace before closing brace)
-        after = stripped[m.end():]
+        after = stripped[m.end() :]
         rest = after.lstrip()
         if rest.startswith("}"):
             line = _line_number(stripped, m.start())
@@ -265,8 +270,14 @@ def _scan_pattern_smells(
         per_file: list[dict] = []
         for match in re.finditer(pattern, stripped):
             line = _line_number(stripped, match.start())
-            line_text = stripped.splitlines()[line - 1] if line <= len(stripped.splitlines()) else ""
-            if _match_in_string(line_text, match.start() - stripped.rfind("\n", 0, match.start()) - 1):
+            line_text = (
+                stripped.splitlines()[line - 1]
+                if line <= len(stripped.splitlines())
+                else ""
+            )
+            if _match_in_string(
+                line_text, match.start() - stripped.rfind("\n", 0, match.start()) - 1
+            ):
                 continue
             per_file.append(
                 {
@@ -289,7 +300,9 @@ def _scan_pattern_smells(
 
 def detect_smells(path: Path) -> tuple[list[dict], int]:
     """Detect Kotlin-specific code smell patterns across source files."""
-    smell_counts: dict[str, list[dict]] = {check["id"]: [] for check in KOTLIN_SMELL_CHECKS}
+    smell_counts: dict[str, list[dict]] = {
+        check["id"]: [] for check in KOTLIN_SMELL_CHECKS
+    }
     total_files = 0
 
     for filepath in find_kotlin_files(path):
@@ -305,7 +318,9 @@ def detect_smells(path: Path) -> tuple[list[dict], int]:
         stripped = _strip_kotlin_comments(content)
         normalized_file = rel(absolute)
 
-        _scan_pattern_smells(normalized_file, content, stripped, smell_counts, is_test=is_test)
+        _scan_pattern_smells(
+            normalized_file, content, stripped, smell_counts, is_test=is_test
+        )
         _detect_mutable_data_classes(normalized_file, content, stripped, smell_counts)
         _detect_empty_catch(normalized_file, content, stripped, smell_counts)
 

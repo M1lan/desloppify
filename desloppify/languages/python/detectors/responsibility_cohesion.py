@@ -9,7 +9,9 @@ from desloppify.base.discovery.source import find_py_files
 from desloppify.base.discovery.paths import get_project_root
 
 
-def _extract_top_level_functions(tree: ast.Module) -> list[ast.FunctionDef | ast.AsyncFunctionDef]:
+def _extract_top_level_functions(
+    tree: ast.Module,
+) -> list[ast.FunctionDef | ast.AsyncFunctionDef]:
     return [
         node
         for node in tree.body
@@ -32,7 +34,9 @@ def _collect_import_alias_roots(tree: ast.Module) -> dict[str, str]:
     return alias_roots
 
 
-def _function_calls(fn: ast.FunctionDef | ast.AsyncFunctionDef, function_names: set[str]) -> set[str]:
+def _function_calls(
+    fn: ast.FunctionDef | ast.AsyncFunctionDef, function_names: set[str]
+) -> set[str]:
     calls: set[str] = set()
     for node in ast.walk(fn):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
@@ -53,7 +57,9 @@ def _function_import_roots(
     return roots
 
 
-def _connected_components(function_names: list[str], adjacency: dict[str, set[str]]) -> list[list[str]]:
+def _connected_components(
+    function_names: list[str], adjacency: dict[str, set[str]]
+) -> list[list[str]]:
     unvisited = set(function_names)
     comps: list[list[str]] = []
     while unvisited:
@@ -89,7 +95,11 @@ def detect_responsibility_cohesion(
     candidates = 0
 
     for filepath in find_py_files(path):
-        full = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+        full = (
+            Path(filepath)
+            if Path(filepath).is_absolute()
+            else get_project_root() / filepath
+        )
         try:
             source = full.read_text()
             tree = ast.parse(source, filename=str(full))
@@ -141,15 +151,13 @@ def detect_responsibility_cohesion(
         # is a cohesive module with one utility, not mixed responsibilities.
         min_component_size = max(2, len(functions) // 10)
         significant_components = sum(1 for s in comp_sizes if s >= min_component_size)
-        has_mixed_families = (
-            family_count >= 5
-            and significant_components >= 3
-        )
+        has_mixed_families = family_count >= 5 and significant_components >= 3
         has_import_divergence = (
-            import_cluster_count >= 4
-            and significant_components >= 3
+            import_cluster_count >= 4 and significant_components >= 3
         )
-        if not (has_disconnected_clusters or has_mixed_families or has_import_divergence):
+        if not (
+            has_disconnected_clusters or has_mixed_families or has_import_divergence
+        ):
             continue
 
         entries.append(

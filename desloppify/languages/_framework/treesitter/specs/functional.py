@@ -37,9 +37,7 @@ ELIXIR_SPEC = TreeSitterLangSpec(
                 (alias) @name)
             (do_block) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:IO\.puts|IO\.inspect|IO\.warn|Logger\.|dbg\()",
-    ),
+    log_patterns=(r"^\s*(?:IO\.puts|IO\.inspect|IO\.warn|Logger\.|dbg\()",),
 )
 
 HASKELL_SPEC = TreeSitterLangSpec(
@@ -54,9 +52,7 @@ HASKELL_SPEC = TreeSitterLangSpec(
         (import module: (module) @path) @import
     """,
     resolve_import=resolve_haskell_import,
-    log_patterns=(
-        r"^\s*(?:putStrLn |print |hPutStrLn |traceShow)",
-    ),
+    log_patterns=(r"^\s*(?:putStrLn |print |hPutStrLn |traceShow)",),
 )
 
 ERLANG_SPEC = TreeSitterLangSpec(
@@ -72,9 +68,7 @@ ERLANG_SPEC = TreeSitterLangSpec(
         (pp_include (string) @path) @import
     """,
     resolve_import=resolve_erlang_include,
-    log_patterns=(
-        r"^\s*(?:io:format|error_logger:)",
-    ),
+    log_patterns=(r"^\s*(?:io:format|error_logger:)",),
 )
 
 OCAML_SPEC = TreeSitterLangSpec(
@@ -94,9 +88,7 @@ OCAML_SPEC = TreeSitterLangSpec(
             (module_binding
                 (module_name) @name)) @class
     """,
-    log_patterns=(
-        r"^\s*(?:Printf\.printf|print_endline|print_string|Format\.printf)",
-    ),
+    log_patterns=(r"^\s*(?:Printf\.printf|print_endline|print_string|Format\.printf)",),
 )
 
 FSHARP_SPEC = TreeSitterLangSpec(
@@ -111,9 +103,7 @@ FSHARP_SPEC = TreeSitterLangSpec(
         (import_decl (long_identifier) @path) @import
     """,
     resolve_import=resolve_fsharp_import,
-    log_patterns=(
-        r"^\s*(?:printfn |printf |eprintfn )",
-    ),
+    log_patterns=(r"^\s*(?:printfn |printf |eprintfn )",),
 )
 
 JULIA_SPEC = TreeSitterLangSpec(
@@ -139,9 +129,7 @@ JULIA_SPEC = TreeSitterLangSpec(
             (type_head (identifier) @name)
             (block) @body) @class
     """,
-    log_patterns=(
-        r"^\s*(?:println\(|print\(|@info |@warn |@error |@debug )",
-    ),
+    log_patterns=(r"^\s*(?:println\(|print\(|@info |@warn |@error |@debug )",),
 )
 
 CLOJURE_SPEC = TreeSitterLangSpec(
@@ -152,7 +140,5 @@ CLOJURE_SPEC = TreeSitterLangSpec(
             (sym_lit) @name) @func
     """,
     comment_node_types=frozenset({"comment"}),
-    log_patterns=(
-        r"^\s*\(println ",
-    ),
+    log_patterns=(r"^\s*\(println ",),
 )

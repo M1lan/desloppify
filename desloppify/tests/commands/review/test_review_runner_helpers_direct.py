@@ -75,9 +75,7 @@ def test_collect_batch_results_recovers_from_log_stdout_payload(tmp_path: Path) 
     }
     log_path = logs_dir / "batch-1.log"
     log_path.write_text(
-        "STDOUT:\n"
-        + json.dumps(payload)
-        + "\n\nSTDERR:\nrunner transient error\n"
+        "STDOUT:\n" + json.dumps(payload) + "\n\nSTDERR:\nrunner transient error\n"
     )
 
     batch_results, failures = runner_helpers_mod.collect_batch_results(
@@ -107,7 +105,9 @@ def test_collect_batch_results_recovers_from_log_stdout_payload(tmp_path: Path) 
 
 def test_collect_batch_results_marks_failure_on_normalize_error(tmp_path: Path) -> None:
     raw_path = tmp_path / "batch-1.raw.txt"
-    raw_path.write_text(json.dumps({"assessments": {"logic_clarity": 50.0}, "issues": []}))
+    raw_path.write_text(
+        json.dumps({"assessments": {"logic_clarity": 50.0}, "issues": []})
+    )
 
     batch_results, failures = runner_helpers_mod.collect_batch_results(
         request=CollectBatchResultsRequest(
@@ -152,26 +152,52 @@ def _safe_write_text(path: Path, text: str) -> None:
     path.write_text(text)
 
 
-def test_run_opencode_batch_recovers_timeout_from_stdout_payload(tmp_path: Path) -> None:
+def test_run_opencode_batch_recovers_timeout_from_stdout_payload(
+    tmp_path: Path,
+) -> None:
     log_file = tmp_path / "batch.log"
     output_file = tmp_path / "out.json"
     stale_payload = {"assessments": {"logic_clarity": 12}, "issues": []}
     payload = {"assessments": {"logic_clarity": 88}, "issues": []}
-    stdout_text = "\n".join([
-        json.dumps({"type": "step_start", "part": {"type": "step-start"}}),
-        json.dumps({"type": "text", "part": {"type": "text", "text": f"planning {json.dumps(stale_payload)}"}}),
-        json.dumps({"type": "step_finish", "part": {"type": "step-finish", "reason": "tool-calls"}}),
-        json.dumps({"type": "step_start", "part": {"type": "step-start"}}),
-        json.dumps({"type": "text", "part": {"type": "text", "text": json.dumps(payload)}}),
-        json.dumps({"type": "step_finish", "part": {"type": "step-finish", "reason": "stop"}}),
-        "",
-    ])
+    stdout_text = "\n".join(
+        [
+            json.dumps({"type": "step_start", "part": {"type": "step-start"}}),
+            json.dumps(
+                {
+                    "type": "text",
+                    "part": {
+                        "type": "text",
+                        "text": f"planning {json.dumps(stale_payload)}",
+                    },
+                }
+            ),
+            json.dumps(
+                {
+                    "type": "step_finish",
+                    "part": {"type": "step-finish", "reason": "tool-calls"},
+                }
+            ),
+            json.dumps({"type": "step_start", "part": {"type": "step-start"}}),
+            json.dumps(
+                {"type": "text", "part": {"type": "text", "text": json.dumps(payload)}}
+            ),
+            json.dumps(
+                {
+                    "type": "step_finish",
+                    "part": {"type": "step-finish", "reason": "stop"},
+                }
+            ),
+            "",
+        ]
+    )
 
     with patch(
         "desloppify.app.commands.review.runner_opencode._run_batch_attempt",
         return_value=(
             "ATTEMPT 1/1",
-            _ExecutionResult(code=1, stdout_text=stdout_text, stderr_text="", timed_out=True),
+            _ExecutionResult(
+                code=1, stdout_text=stdout_text, stderr_text="", timed_out=True
+            ),
         ),
     ):
         code = runner_opencode_mod.run_opencode_batch(
@@ -193,17 +219,39 @@ def test_run_opencode_batch_recovers_timeout_from_stdout_payload(tmp_path: Path)
     assert "Recovered timed-out batch from JSON output file" in log_file.read_text()
 
 
-def test_run_opencode_batch_restores_valid_output_after_retry_failure(tmp_path: Path) -> None:
+def test_run_opencode_batch_restores_valid_output_after_retry_failure(
+    tmp_path: Path,
+) -> None:
     output_file = tmp_path / "batch-1.raw.txt"
     log_file = tmp_path / "batch-1.log"
     first_payload = {"assessments": {"logic_clarity": 10}, "issues": []}
-    first_stdout = json.dumps({"type": "text", "part": {"type": "text", "text": json.dumps(first_payload)}}) + "\n"
+    first_stdout = (
+        json.dumps(
+            {
+                "type": "text",
+                "part": {"type": "text", "text": json.dumps(first_payload)},
+            }
+        )
+        + "\n"
+    )
 
     with patch(
         "desloppify.app.commands.review.runner_opencode._run_batch_attempt",
         side_effect=[
-            ("ATTEMPT 1/2", _ExecutionResult(code=1, stdout_text=first_stdout, stderr_text="stream disconnected before completion")),
-            ("ATTEMPT 2/2", _ExecutionResult(code=1, stdout_text="", stderr_text="fatal auth error")),
+            (
+                "ATTEMPT 1/2",
+                _ExecutionResult(
+                    code=1,
+                    stdout_text=first_stdout,
+                    stderr_text="stream disconnected before completion",
+                ),
+            ),
+            (
+                "ATTEMPT 2/2",
+                _ExecutionResult(
+                    code=1, stdout_text="", stderr_text="fatal auth error"
+                ),
+            ),
         ],
     ):
         code = runner_opencode_mod.run_opencode_batch(
@@ -233,7 +281,14 @@ def test_run_opencode_batch_restores_valid_output_after_retry_failure(tmp_path: 
             allowed_dims={"logic_clarity"},
         ),
         extract_payload_fn=lambda raw: json.loads(raw),
-        normalize_result_fn=lambda payload, _dims: (payload.get("assessments", {}), payload.get("issues", []), {}, {}, {}, {}),
+        normalize_result_fn=lambda payload, _dims: (
+            payload.get("assessments", {}),
+            payload.get("issues", []),
+            {},
+            {},
+            {},
+            {},
+        ),
     )
 
     assert len(batch_results) == 1

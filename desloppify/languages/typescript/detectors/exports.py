@@ -35,7 +35,11 @@ def cmd_exports(args: argparse.Namespace) -> None:
     for e in entries:
         by_file[e["file"]].append(e)
 
-    print(colorize(f"\nDead exports: {len(entries)} across {len(by_file)} files\n", "bold"))
+    print(
+        colorize(
+            f"\nDead exports: {len(entries)} across {len(by_file)} files\n", "bold"
+        )
+    )
 
     sorted_files = sorted(by_file.items(), key=lambda x: -len(x[1]))
     rows = []

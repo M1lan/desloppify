@@ -414,8 +414,7 @@ class TestDetectOrphanedFiles:
         """Files defining __all__ are public API surfaces and not orphaned."""
         api_file = tmp_path / "api.py"
         api_file.write_text(
-            "__all__ = ['Foo', 'Bar']\n"
-            + "\n".join(f"line {i}" for i in range(30))
+            "__all__ = ['Foo', 'Bar']\n" + "\n".join(f"line {i}" for i in range(30))
         )
         orphan_file = _write_file(tmp_path / "orphan.py", lines=30)
 
@@ -438,8 +437,7 @@ class TestDetectOrphanedFiles:
         """Files using ``__all__: list[str] = [...]`` syntax are also excluded."""
         api_file = tmp_path / "api.py"
         api_file.write_text(
-            "__all__: list[str] = ['Foo']\n"
-            + "\n".join(f"line {i}" for i in range(30))
+            "__all__: list[str] = ['Foo']\n" + "\n".join(f"line {i}" for i in range(30))
         )
 
         graph = {

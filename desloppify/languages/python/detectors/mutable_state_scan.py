@@ -28,13 +28,17 @@ def _parse_python_file(filepath: str, *, log_context: str) -> ast.Module | None:
     try:
         content = _resolve_python_path(filepath).read_text()
     except (OSError, UnicodeDecodeError) as exc:
-        logger.debug("Skipping unreadable python file %s in %s: %s", filepath, log_context, exc)
+        logger.debug(
+            "Skipping unreadable python file %s in %s: %s", filepath, log_context, exc
+        )
         return None
 
     try:
         return ast.parse(content, filename=filepath)
     except SyntaxError as exc:
-        logger.debug("Skipping unparseable python file %s in %s: %s", filepath, log_context, exc)
+        logger.debug(
+            "Skipping unparseable python file %s in %s: %s", filepath, log_context, exc
+        )
         return None
 
 

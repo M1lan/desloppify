@@ -19,6 +19,7 @@ from desloppify.app.output.scorecard_parts.theme import (
     scale,
 )
 
+
 def _left_panel_measurements(
     draw,
     *,
@@ -218,4 +219,6 @@ def draw_left_panel(
         project_bbox=project_bbox,
         font_project=font_project,
     )
+
+
 __all__ = ["draw_left_panel"]

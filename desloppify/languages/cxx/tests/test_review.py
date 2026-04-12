@@ -26,6 +26,7 @@ int BuildWidget();
     assert "BuildWidget" in surface["public_functions"]
     assert "Run" in surface["public_functions"]
 
+
 def test_api_surface_ignores_cpp_implementation_symbols():
     header = """
 namespace app::core {

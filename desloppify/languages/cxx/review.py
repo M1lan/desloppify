@@ -43,7 +43,17 @@ _FUNCTION_RE = re.compile(
 _CONTROL_KEYWORDS = {"if", "for", "while", "switch", "catch", "return"}
 
 
-_HEADER_LIKE_EXTENSIONS = (".h", ".hh", ".hpp", ".hxx", ".ipp", ".inl", ".tpp", ".txx", ".tcc")
+_HEADER_LIKE_EXTENSIONS = (
+    ".h",
+    ".hh",
+    ".hpp",
+    ".hxx",
+    ".ipp",
+    ".inl",
+    ".tpp",
+    ".txx",
+    ".tcc",
+)
 
 
 def _public_function_names(content: str) -> list[str]:

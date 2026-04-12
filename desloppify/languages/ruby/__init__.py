@@ -25,12 +25,12 @@ generic_lang(
         },
     ],
     exclude=[
-        "vendor",    # Bundled third-party gems (vendored dependencies)
-        ".bundle",   # Bundler cache directory — not project source
+        "vendor",  # Bundled third-party gems (vendored dependencies)
+        ".bundle",  # Bundler cache directory — not project source
         "coverage",  # SimpleCov / test coverage output
-        "tmp",       # Rails/Rack temp files (cache, pids, sockets)
-        "log",       # Application log files
-        "bin",       # Binstubs and shims
+        "tmp",  # Rails/Rack temp files (cache, pids, sockets)
+        "log",  # Application log files
+        "bin",  # Binstubs and shims
     ],
     # "shallow" depth is upgraded to "standard" automatically when tree-sitter
     # is available (generic_support/core.py:131).  No need to set "full" here.
@@ -40,10 +40,10 @@ generic_lang(
     # Ruby convention: tests live in spec/ (RSpec) or test/ (Minitest).
     external_test_dirs=["spec", "test"],
     detect_markers=[
-        "Gemfile",       # Bundler dependency manifest — most Ruby projects
-        "Rakefile",      # Build/task file — present even without Bundler
-        ".ruby-version", # rbenv/rvm version pin — reliable project marker
-        "*.gemspec",     # Gem specification — present in library/gem projects
+        "Gemfile",  # Bundler dependency manifest — most Ruby projects
+        "Rakefile",  # Build/task file — present even without Bundler
+        ".ruby-version",  # rbenv/rvm version pin — reliable project marker
+        "*.gemspec",  # Gem specification — present in library/gem projects
     ],
     treesitter_spec=RUBY_SPEC,
 )

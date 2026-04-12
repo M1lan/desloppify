@@ -52,7 +52,9 @@ def load_lang_config_metadata(lang_name: str) -> LangConfig | None:
     try:
         return load_lang_config(lang_name)
     except LangResolutionError as exc:
-        logger.warning("Skipping broken language plugin metadata for %s: %s", lang_name, exc)
+        logger.warning(
+            "Skipping broken language plugin metadata for %s: %s", lang_name, exc
+        )
         return None
 
 
@@ -92,9 +94,7 @@ def resolve_detection_root(
     """Best root to auto-detect language from."""
     marker_provider = marker_provider or _lang_config_markers
     markers = marker_provider()
-    project_root_path = (
-        project_root if project_root is not None else get_project_root()
-    )
+    project_root_path = project_root if project_root is not None else get_project_root()
 
     raw_path = getattr(args, "path", None)
     if not raw_path:

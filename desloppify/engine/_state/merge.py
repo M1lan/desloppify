@@ -103,9 +103,7 @@ def _mark_stale_on_mechanical_change(
         # Safety fallback for newly added "marks_dims_stale" detectors that
         # have not declared fine-grained dimension mappings yet.
         affected_dims.update(
-            dim
-            for dim in assessments
-            if isinstance(dim, str) and dim.strip()
+            dim for dim in assessments if isinstance(dim, str) and dim.strip()
         )
 
     if not affected_dims:
@@ -185,14 +183,19 @@ def merge_scan(
         if resolved_options.ignore is not None
         else state.get("config", {}).get("ignore", [])
     )
-    current_ids, new_count, reopened_count, current_by_detector, ignored_count, upsert_changed = (
-        upsert_issues(
-            existing,
-            current_issues,
-            ignore_patterns,
-            now,
-            lang=resolved_options.lang,
-        )
+    (
+        current_ids,
+        new_count,
+        reopened_count,
+        current_by_detector,
+        ignored_count,
+        upsert_changed,
+    ) = upsert_issues(
+        existing,
+        current_issues,
+        ignore_patterns,
+        now,
+        lang=resolved_options.lang,
     )
 
     raw_issues = len(current_issues)
@@ -209,16 +212,18 @@ def merge_scan(
         resolved_options.force_resolve,
         ran_detectors,
     )
-    auto_resolved, skipped_other_lang, resolved_out_of_scope, resolve_changed = verify_disappeared(
-        existing,
-        current_ids,
-        suspect_detectors,
-        now,
-        lang=resolved_options.lang,
-        scan_path=resolved_options.scan_path,
-        exclude=resolved_options.exclude,
-        project_root=resolved_options.project_root,
-        zone_map=resolved_options.zone_map,
+    auto_resolved, skipped_other_lang, resolved_out_of_scope, resolve_changed = (
+        verify_disappeared(
+            existing,
+            current_ids,
+            suspect_detectors,
+            now,
+            lang=resolved_options.lang,
+            scan_path=resolved_options.scan_path,
+            exclude=resolved_options.exclude,
+            project_root=resolved_options.project_root,
+            zone_map=resolved_options.zone_map,
+        )
     )
 
     # Mark subjective assessments stale when mechanical issues changed.

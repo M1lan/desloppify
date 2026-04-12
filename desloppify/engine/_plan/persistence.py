@@ -153,8 +153,13 @@ def resolve_plan_load_status(path: Path | None = None) -> PlanLoadStatus:
                     backup_exc,
                 )
 
-        logger.warning("Plan file load degraded for %s (%s); starting fresh.", plan_path, exc)
-        print(f"  Warning: Plan file load degraded ({exc}); starting fresh.", file=sys.stderr)
+        logger.warning(
+            "Plan file load degraded for %s (%s); starting fresh.", plan_path, exc
+        )
+        print(
+            f"  Warning: Plan file load degraded ({exc}); starting fresh.",
+            file=sys.stderr,
+        )
         return PlanLoadStatus(
             plan=empty_plan(),
             degraded=True,
@@ -206,9 +211,7 @@ def has_living_plan(path: Path | None = None) -> bool:
         return False
     plan = load_plan(plan_path)
     return bool(
-        plan.get("queue_order")
-        or plan.get("overrides")
-        or plan.get("clusters")
+        plan.get("queue_order") or plan.get("overrides") or plan.get("clusters")
     )
 
 

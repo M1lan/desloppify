@@ -228,7 +228,9 @@ def detect_with_bandit(
             timeout=timeout,
         )  # nosec B603
     except FileNotFoundError:
-        logger.debug("bandit: not installed — Python-specific security checks will be skipped")
+        logger.debug(
+            "bandit: not installed — Python-specific security checks will be skipped"
+        )
         return BanditScanResult(
             entries=[],
             files_scanned=0,
@@ -273,9 +275,7 @@ def detect_with_bandit(
 
     # Count scanned files from metrics (bandit reports per-file stats).
     files_scanned = sum(
-        1
-        for key in metrics
-        if key != "_totals" and not key.endswith("_totals")
+        1 for key in metrics if key != "_totals" and not key.endswith("_totals")
     )
 
     entries: list[dict] = []

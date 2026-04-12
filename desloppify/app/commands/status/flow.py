@@ -53,11 +53,13 @@ _logger = logging.getLogger(__name__)
 
 def _print_status_warnings(config: dict) -> None:
     if config.get("hermes_enabled"):
-        print(colorize(
-            '  ⚕ Hermes agent mode — model switching, autoreply, task handoff active'
-            '\n    To disable: set "hermes_enabled": false in config.json',
-            "cyan",
-        ))
+        print(
+            colorize(
+                "  ⚕ Hermes agent mode — model switching, autoreply, task handoff active"
+                '\n    To disable: set "hermes_enabled": false in config.json',
+                "cyan",
+            )
+        )
     skill_warning = check_skill_version()
     if skill_warning:
         print(colorize(f"  {skill_warning}", "yellow"))
@@ -106,7 +108,9 @@ def _show_status_progress(
 ) -> None:
     if dim_scores:
         show_dimension_table(state, dim_scores, objective_backlog=objective_backlog)
-        reporting_dimensions_mod.show_score_model_breakdown(state, dim_scores=dim_scores)
+        reporting_dimensions_mod.show_score_model_breakdown(
+            state, dim_scores=dim_scores
+        )
         show_focus_suggestion(dim_scores, state, plan=plan)
         show_subjective_followup(
             state,
@@ -173,7 +177,9 @@ def print_score_section(
             for text, style in block:
                 print(colorize(text, style))
         if mode is ScoreDisplayMode.PHASE_TRANSITION:
-            print_objective_drained_banner(plan_start_strict, breakdown.queue_total, breakdown)
+            print_objective_drained_banner(
+                plan_start_strict, breakdown.queue_total, breakdown
+            )
     return breakdown
 
 

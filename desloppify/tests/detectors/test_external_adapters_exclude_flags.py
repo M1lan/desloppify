@@ -27,9 +27,12 @@ class TestRuffSmellsExcludeFlag:
             return mock_result
 
         fake_dirs = [str(tmp_path / ".venv"), str(tmp_path / "node_modules")]
-        with patch("subprocess.run", side_effect=_capture_run), patch(
-            "desloppify.languages.python.detectors.ruff_smells._collect_exclude_dirs",
-            return_value=fake_dirs,
+        with (
+            patch("subprocess.run", side_effect=_capture_run),
+            patch(
+                "desloppify.languages.python.detectors.ruff_smells._collect_exclude_dirs",
+                return_value=fake_dirs,
+            ),
         ):
             detect_with_ruff_smells(tmp_path)
 
@@ -48,9 +51,12 @@ class TestRuffSmellsExcludeFlag:
             mock_result.stdout = "[]"
             return mock_result
 
-        with patch("subprocess.run", side_effect=_capture_run), patch(
-            "desloppify.languages.python.detectors.ruff_smells._collect_exclude_dirs",
-            return_value=[],
+        with (
+            patch("subprocess.run", side_effect=_capture_run),
+            patch(
+                "desloppify.languages.python.detectors.ruff_smells._collect_exclude_dirs",
+                return_value=[],
+            ),
         ):
             detect_with_ruff_smells(tmp_path)
 
@@ -70,12 +76,16 @@ class TestRuffUnusedExcludeFlag:
             return mock_result
 
         fake_dirs = [str(tmp_path / ".venv"), str(tmp_path / "__pycache__")]
-        with patch("subprocess.run", side_effect=_capture_run), patch(
-            "desloppify.languages.python.detectors.unused._collect_exclude_dirs",
-            return_value=fake_dirs,
-        ), patch(
-            "desloppify.languages.python.detectors.unused.find_py_files",
-            return_value=[],
+        with (
+            patch("subprocess.run", side_effect=_capture_run),
+            patch(
+                "desloppify.languages.python.detectors.unused._collect_exclude_dirs",
+                return_value=fake_dirs,
+            ),
+            patch(
+                "desloppify.languages.python.detectors.unused.find_py_files",
+                return_value=[],
+            ),
         ):
             detect_unused(tmp_path)
 
@@ -94,12 +104,16 @@ class TestRuffUnusedExcludeFlag:
             mock_result.stdout = "[]"
             return mock_result
 
-        with patch("subprocess.run", side_effect=_capture_run), patch(
-            "desloppify.languages.python.detectors.unused._collect_exclude_dirs",
-            return_value=[],
-        ), patch(
-            "desloppify.languages.python.detectors.unused.find_py_files",
-            return_value=[],
+        with (
+            patch("subprocess.run", side_effect=_capture_run),
+            patch(
+                "desloppify.languages.python.detectors.unused._collect_exclude_dirs",
+                return_value=[],
+            ),
+            patch(
+                "desloppify.languages.python.detectors.unused.find_py_files",
+                return_value=[],
+            ),
         ):
             detect_unused(tmp_path)
 

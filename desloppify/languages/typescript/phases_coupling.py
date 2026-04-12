@@ -32,8 +32,10 @@ def detect_single_use(
     path: Path, graph: dict, lang: LangRuntimeContract
 ) -> tuple[list[Issue], list[dict], int]:
     """Detect single-use abstractions."""
-    single_entries, single_candidates = single_use_detector_mod.detect_single_use_abstractions(
-        path, graph, barrel_names=lang.barrel_names
+    single_entries, single_candidates = (
+        single_use_detector_mod.detect_single_use_abstractions(
+            path, graph, barrel_names=lang.barrel_names
+        )
     )
     single_entries = filter_entries(lang.zone_map, single_entries, "single_use")
     issues = make_single_use_issues(
@@ -50,8 +52,10 @@ def detect_coupling_violations(
     tools_prefix: str,
 ) -> tuple[list[Issue], int]:
     """Detect backwards coupling violations."""
-    coupling_entries, coupling_edge_counts = coupling_detector_mod.detect_coupling_violations(
-        path, graph, shared_prefix=shared_prefix, tools_prefix=tools_prefix
+    coupling_entries, coupling_edge_counts = (
+        coupling_detector_mod.detect_coupling_violations(
+            path, graph, shared_prefix=shared_prefix, tools_prefix=tools_prefix
+        )
     )
     coupling_entries = filter_entries(lang.zone_map, coupling_entries, "coupling")
     results: list[Issue] = []
@@ -117,7 +121,9 @@ def detect_cycles_and_orphans(
     """Detect import cycles and orphaned files."""
     results: list[Issue] = []
     cycle_entries, _ = graph_detector_mod.detect_cycles(graph)
-    cycle_entries = filter_entries(lang.zone_map, cycle_entries, "cycles", file_key="files")
+    cycle_entries = filter_entries(
+        lang.zone_map, cycle_entries, "cycles", file_key="files"
+    )
     results.extend(make_cycle_issues(cycle_entries, log))
 
     orphan_entries, total_graph_files = orphaned_detector_mod.detect_orphaned_files(
@@ -254,9 +260,7 @@ def make_boundary_issues(
             )
         )
     if deduped:
-        log(
-            f"         ({deduped} boundary candidates skipped — covered by single_use)"
-        )
+        log(f"         ({deduped} boundary candidates skipped — covered by single_use)")
     return results, total_shared
 
 
@@ -294,7 +298,9 @@ def phase_coupling(
     )
     results.extend(cross_tool_issues)
 
-    cycle_orphan_issues, total_graph_files = detect_cycles_and_orphans(path, graph, lang)
+    cycle_orphan_issues, total_graph_files = detect_cycles_and_orphans(
+        path, graph, lang
+    )
     results.extend(cycle_orphan_issues)
 
     results.extend(detect_facades(graph, lang))

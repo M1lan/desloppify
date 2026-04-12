@@ -28,7 +28,9 @@ def _bootstrap_language_module(module: object) -> None:
     register_hooks_fn = getattr(module, "register_hooks", None)
     if register_hooks_fn is not None:
         if not callable(register_hooks_fn):
-            raise TypeError("Language module register_hooks entrypoint must be callable")
+            raise TypeError(
+                "Language module register_hooks entrypoint must be callable"
+            )
         register_hooks_fn()
         return
     register_fn = getattr(module, "register", None)

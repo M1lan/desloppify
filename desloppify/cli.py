@@ -99,9 +99,7 @@ def _apply_persisted_exclusions(
         )
         return
     print(
-        colorize(
-            f"  Excluding (from config): {', '.join(combined)}", "dim"
-        ),
+        colorize(f"  Excluding (from config): {', '.join(combined)}", "dim"),
         file=sys.stderr,
     )
 
@@ -145,7 +143,9 @@ def _resolve_default_path(args: argparse.Namespace) -> None:
                     args.path = str((runtime_root / saved_path).resolve())
                     return
         except (OSError, KeyError, ValueError, TypeError, AttributeError) as exc:
-            log_best_effort_failure(logger, "resolve default review path from saved state", exc)
+            log_best_effort_failure(
+                logger, "resolve default review path from saved state", exc
+            )
     lang = resolve_lang(args)
     args.path = str(
         get_default_scan_path(

@@ -14,15 +14,15 @@ from desloppify.languages.r.test_coverage import (
 
 class TestHasTestableLogic:
     def test_function_definition_is_testable(self):
-        content = 'my_func <- function(x) { x + 1 }'
+        content = "my_func <- function(x) { x + 1 }"
         assert has_testable_logic("R/my_func.R", content) is True
 
     def test_pure_script_is_not_testable(self):
-        content = 'x <- 1\ny <- 2\nprint(x + y)\n'
+        content = "x <- 1\ny <- 2\nprint(x + y)\n"
         assert has_testable_logic("R/script.R", content) is False
 
     def test_rmd_files_are_not_testable(self):
-        content = '```{r}\nmy_func <- function(x) x\n```\n'
+        content = "```{r}\nmy_func <- function(x) x\n```\n"
         assert has_testable_logic("analysis.Rmd", content) is False
 
 
@@ -58,19 +58,19 @@ class TestStripTestMarkers:
 
 class TestParseTestImportSpecs:
     def test_extracts_library_names(self):
-        content = 'library(dplyr)\nlibrary(testthat)\nx <- 1'
+        content = "library(dplyr)\nlibrary(testthat)\nx <- 1"
         specs = parse_test_import_specs(content)
         assert "dplyr" in specs
         assert "testthat" in specs
 
     def test_extracts_require_names(self):
-        content = 'require(data.table)\nrequire(ggplot2)'
+        content = "require(data.table)\nrequire(ggplot2)"
         specs = parse_test_import_specs(content)
         assert "data.table" in specs
         assert "ggplot2" in specs
 
     def test_ignores_base_packages(self):
-        content = 'library(base)\nlibrary(dplyr)'
+        content = "library(base)\nlibrary(dplyr)"
         specs = parse_test_import_specs(content)
         assert "dplyr" in specs
 

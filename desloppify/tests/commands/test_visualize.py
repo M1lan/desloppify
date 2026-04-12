@@ -70,7 +70,9 @@ class TestCollectFileData:
             "desloppify.languages.framework.get_lang",
             lambda _name: (_ for _ in ()).throw(RuntimeError("plugin load failed")),
         )
-        monkeypatch.setattr("desloppify.languages.framework.available_langs", lambda: ["python"])
+        monkeypatch.setattr(
+            "desloppify.languages.framework.available_langs", lambda: ["python"]
+        )
 
         rows = _collect_file_data(scan_root, lang=None)
         assert rows == []
@@ -87,7 +89,9 @@ class TestCollectFileData:
         )
         monkeypatch.setattr(
             "desloppify.languages.framework.get_lang",
-            lambda _name: (_ for _ in ()).throw(LookupError("unexpected resolution bug")),
+            lambda _name: (_ for _ in ()).throw(
+                LookupError("unexpected resolution bug")
+            ),
         )
 
         with pytest.raises(LookupError):

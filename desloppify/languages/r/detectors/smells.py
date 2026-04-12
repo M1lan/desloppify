@@ -27,8 +27,13 @@ _UNNECESSARY_RETURN_CHECK_ID = "unnecessary_return"
 _TS_AVAILABLE = False
 try:
     from desloppify.languages._framework.treesitter import R_SPEC, is_available
-    from desloppify.languages._framework.treesitter.analysis.extractors import _get_parser
-    from desloppify.languages._framework.treesitter.imports.cache import get_or_parse_tree
+    from desloppify.languages._framework.treesitter.analysis.extractors import (
+        _get_parser,
+    )
+    from desloppify.languages._framework.treesitter.imports.cache import (
+        get_or_parse_tree,
+    )
+
     _TS_AVAILABLE = is_available()
 except ImportError:
     pass
@@ -36,21 +41,21 @@ except ImportError:
 
 def _strip_r_comments(content: str) -> str:
     """Remove R comments while preserving string literals.
-    
+
     Replaces string contents with placeholders, strips comments, then restores strings.
     """
     strings: list[str] = []
-    
+
     def replace_string(match: re.Match) -> str:
         strings.append(match.group(0))
         return f"__STRING_{len(strings) - 1}__"
-    
+
     content = _R_STRING_RE.sub(replace_string, content)
     content = _R_COMMENT_RE.sub("", content)
-    
+
     for i, s in enumerate(strings):
         content = content.replace(f"__STRING_{i}__", s)
-    
+
     return content
 
 
@@ -72,9 +77,7 @@ def detect_smells(path: Path) -> tuple[list[dict], int]:
 
     Returns (entries, total_files_checked).
     """
-    smell_counts: dict[str, list[dict]] = {
-        check["id"]: [] for check in R_SMELL_CHECKS
-    }
+    smell_counts: dict[str, list[dict]] = {check["id"]: [] for check in R_SMELL_CHECKS}
     total_files = 0
 
     for filepath in _find_r_files(path):
@@ -104,9 +107,7 @@ def detect_smells(path: Path) -> tuple[list[dict], int]:
                 "matches": matches[:50],
             }
         )
-    entries.sort(
-        key=lambda e: (SEVERITY_ORDER.get(e["severity"], 9), -e["count"])
-    )
+    entries.sort(key=lambda e: (SEVERITY_ORDER.get(e["severity"], 9), -e["count"]))
     return entries, total_files
 
 
@@ -143,7 +144,9 @@ def _detect_library_in_function(
         return
 
     if not _TS_AVAILABLE:
-        _detect_library_in_function_fallback(filepath, raw_content, stripped_content, smell_counts)
+        _detect_library_in_function_fallback(
+            filepath, raw_content, stripped_content, smell_counts
+        )
         return
 
     try:
@@ -155,6 +158,7 @@ def _detect_library_in_function(
 
         # R function query captures function body as @body
         from tree_sitter import Query, QueryCursor
+
         fn_query = Query(language, R_SPEC.function_query)
         cursor = QueryCursor(fn_query)
         fn_matches = cursor.matches(tree.root_node)
@@ -169,24 +173,35 @@ def _detect_library_in_function(
             body_node = body_node[0] if isinstance(body_node, list) else body_node
 
             # Walk the function body looking for library/require calls
-            _find_library_calls_in_node(body_node, source, filepath, raw_content, smell_counts, seen_lines)
+            _find_library_calls_in_node(
+                body_node, source, filepath, raw_content, smell_counts, seen_lines
+            )
 
     except Exception as exc:
         logger.debug("tree-sitter parse failed for %s: %s", filepath, exc)
-        _detect_library_in_function_fallback(filepath, raw_content, stripped_content, smell_counts)
+        _detect_library_in_function_fallback(
+            filepath, raw_content, stripped_content, smell_counts
+        )
 
 
-def _find_library_calls_in_node(node, source: bytes, filepath: str, raw_content: str, smell_counts: dict[str, list[dict]], seen_lines: set[int]) -> None:
+def _find_library_calls_in_node(
+    node,
+    source: bytes,
+    filepath: str,
+    raw_content: str,
+    smell_counts: dict[str, list[dict]],
+    seen_lines: set[int],
+) -> None:
     """Recursively find library()/require() calls inside a node."""
     stack = [node]
     while stack:
         current = stack.pop()
-        
+
         # Check if this is a call to library() or require()
         if current.type == "call":
             fn_child = current.child_by_field_name("function")
             if fn_child and fn_child.type == "identifier":
-                fn_name = source[fn_child.start_byte:fn_child.end_byte]
+                fn_name = source[fn_child.start_byte : fn_child.end_byte]
                 if isinstance(fn_name, bytes):
                     fn_name = fn_name.decode("utf-8", errors="replace")
                 if fn_name in ("library", "require"):
@@ -201,7 +216,7 @@ def _find_library_calls_in_node(node, source: bytes, filepath: str, raw_content:
                                 "content": _line_preview(raw_content, line),
                             }
                         )
-        
+
         # Recurse into children
         for child in current.children:
             stack.append(child)
@@ -214,24 +229,24 @@ def _detect_library_in_function_fallback(
     smell_counts: dict[str, list[dict]],
 ) -> None:
     """Fallback regex-based detection when tree-sitter is unavailable.
-    
+
     Uses a simple heuristic: track function definitions and their brace depth.
     Only braces that appear after 'function(' on the same line or shortly after
     are considered function body braces.
     """
     # Join content to handle multi-line function definitions
     content = stripped_content
-    
+
     # Find all function definitions and their brace scopes
     fn_ranges: list[tuple[int, int]] = []  # (start_pos, end_pos) in content
-    
+
     for match in _FUNCTION_DEF_RE.finditer(content):
         start = match.start()
         # Find the opening brace of the function body
         brace_start = content.find("{", start)
         if brace_start == -1:
             continue
-        
+
         # Find matching closing brace
         depth = 1
         pos = brace_start + 1
@@ -241,9 +256,9 @@ def _detect_library_in_function_fallback(
             elif content[pos] == "}":
                 depth -= 1
             pos += 1
-        
+
         fn_ranges.append((brace_start, pos))
-    
+
     # Check each library/require call to see if it's inside a function
     for match in _LIBRARY_IN_FN_RE.finditer(content):
         pos = match.start()
@@ -310,12 +325,16 @@ def _detect_unnecessary_return(
                     last_line = last_non_empty.get(fn_depth, -1)
                     if last_line >= 0:
                         last_stripped = lines[last_line].strip()
-                        if last_stripped.startswith("return(") and last_stripped.endswith(")"):
+                        if last_stripped.startswith(
+                            "return("
+                        ) and last_stripped.endswith(")"):
                             smell_counts[_UNNECESSARY_RETURN_CHECK_ID].append(
                                 {
                                     "file": filepath,
                                     "line": last_line + 1,
-                                    "content": _line_preview(raw_content, last_line + 1),
+                                    "content": _line_preview(
+                                        raw_content, last_line + 1
+                                    ),
                                 }
                             )
                     del last_non_empty[fn_depth]
@@ -327,7 +346,7 @@ def _detect_unnecessary_return(
 
 def _find_r_files(path: Path) -> list[str]:
     """Find R source files using the framework's discovery system.
-    
+
     Respects project-configured exclusion patterns.
     """
     return find_source_files(str(path), [".R", ".r"])

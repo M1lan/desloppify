@@ -55,7 +55,9 @@ def _detect_async_no_await(ctx, smell_counts: dict[str, list[dict]]) -> None:
             )
 
 
-def _scan_single_line_chain(ctx, index: int, smell_counts: dict[str, list[dict]]) -> int:
+def _scan_single_line_chain(
+    ctx, index: int, smell_counts: dict[str, list[dict]]
+) -> int:
     """Consume a single-line empty if/else-if chain and return next index."""
     cursor = index + 1
     while cursor < len(ctx.lines):
@@ -67,7 +69,9 @@ def _scan_single_line_chain(ctx, index: int, smell_counts: dict[str, list[dict]]
             cursor += 1
             continue
         break
-    _emit(smell_counts, "empty_if_chain", ctx, index + 1, ctx.lines[index].strip()[:100])
+    _emit(
+        smell_counts, "empty_if_chain", ctx, index + 1, ctx.lines[index].strip()[:100]
+    )
     return cursor
 
 
@@ -101,7 +105,13 @@ def _scan_multi_line_chain(ctx, index: int, smell_counts: dict[str, list[dict]])
         cursor += 1
 
     if chain_all_empty and cursor > index + 1:
-        _emit(smell_counts, "empty_if_chain", ctx, index + 1, ctx.lines[index].strip()[:100])
+        _emit(
+            smell_counts,
+            "empty_if_chain",
+            ctx,
+            index + 1,
+            ctx.lines[index].strip()[:100],
+        )
     return max(index + 1, cursor)
 
 
@@ -137,10 +147,18 @@ def _detect_error_no_throw(ctx, smell_counts: dict[str, list[dict]]) -> None:
             continue
         following = "\n".join(ctx.lines[index + 1 : index + 4])
         if not _HANDLED_RE.search(following):
-            _emit(smell_counts, "console_error_no_throw", ctx, index + 1, line.strip()[:100])
+            _emit(
+                smell_counts,
+                "console_error_no_throw",
+                ctx,
+                index + 1,
+                line.strip()[:100],
+            )
 
 
-def _detect_high_cyclomatic_complexity(ctx, smell_counts: dict[str, list[dict]]) -> None:
+def _detect_high_cyclomatic_complexity(
+    ctx, smell_counts: dict[str, list[dict]]
+) -> None:
     """Flag functions with cyclomatic complexity > 15."""
     for index, line in enumerate(ctx.lines):
         name = _find_function_start(line, ctx.lines[index + 1 : index + 3])
@@ -174,7 +192,13 @@ def _detect_monster_functions(ctx, smell_counts: dict[str, list[dict]]) -> None:
             continue
         loc = end_line - index + 1
         if loc > _MONSTER_FUNCTION_LOC:
-            _emit(smell_counts, "monster_function", ctx, index + 1, f"{name}() — {loc} LOC")
+            _emit(
+                smell_counts,
+                "monster_function",
+                ctx,
+                index + 1,
+                f"{name}() — {loc} LOC",
+            )
 
 
 def _detect_nested_closures(ctx, smell_counts: dict[str, list[dict]]) -> None:
@@ -214,7 +238,13 @@ def _detect_stub_functions(ctx, smell_counts: dict[str, list[dict]]) -> None:
         body_clean = _strip_ts_comments(body).strip().rstrip(";")
         if body_clean in ("", "return", "return null", "return undefined"):
             label = body_clean or "empty"
-            _emit(smell_counts, "stub_function", ctx, index + 1, f"{name}() — body is {label}")
+            _emit(
+                smell_counts,
+                "stub_function",
+                ctx,
+                index + 1,
+                f"{name}() — body is {label}",
+            )
 
 
 __all__ = [

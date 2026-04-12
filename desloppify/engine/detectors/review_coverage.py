@@ -12,11 +12,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from desloppify.base.discovery.file_paths import (
-
     rel,
-
     resolve_path,
-
 )
 
 from desloppify.base.discovery.source import read_file_text
@@ -55,6 +52,7 @@ def _is_low_value_file(
     if isinstance(pattern, re.Pattern):
         return bool(pattern.search(filepath))
     return bool(_LOW_VALUE_NAMES.search(filepath))
+
 
 def _check_file_review_status(
     abs_path: str,
@@ -192,7 +190,12 @@ def detect_review_coverage(
     for abs_path, rpath, loc in candidates:
         cached = review_cache.get(rpath)
         entry = _check_file_review_status(
-            abs_path, cached, loc, now, max_age_days, holistic_fresh,
+            abs_path,
+            cached,
+            loc,
+            now,
+            max_age_days,
+            holistic_fresh,
         )
         if entry is not None:
             entries.append(entry)

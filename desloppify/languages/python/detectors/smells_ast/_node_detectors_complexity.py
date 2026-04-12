@@ -6,8 +6,15 @@ import ast
 
 # Node types that contribute to cyclomatic complexity.
 _DECISION_TYPES = (
-    ast.If, ast.IfExp, ast.For, ast.AsyncFor, ast.While,
-    ast.ExceptHandler, ast.With, ast.AsyncWith, ast.Assert,
+    ast.If,
+    ast.IfExp,
+    ast.For,
+    ast.AsyncFor,
+    ast.While,
+    ast.ExceptHandler,
+    ast.With,
+    ast.AsyncWith,
+    ast.Assert,
 )
 
 

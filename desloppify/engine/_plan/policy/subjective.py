@@ -12,7 +12,9 @@ from dataclasses import dataclass
 from desloppify.base.config import DEFAULT_TARGET_STRICT_SCORE
 from desloppify.base.enums import Status
 from desloppify.base.registry import DETECTORS
-from desloppify.engine._plan.schema import executable_objective_ids as _executable_objective_ids
+from desloppify.engine._plan.schema import (
+    executable_objective_ids as _executable_objective_ids,
+)
 from desloppify.engine._state.filtering import issue_in_scan_scope
 from desloppify.engine._state.issue_semantics import counts_toward_objective_backlog
 from desloppify.engine._state.schema import StateModel
@@ -20,9 +22,14 @@ from desloppify.engine.planning.helpers import CONFIDENCE_ORDER
 
 # Legacy export for modules that still need detector-name display behavior.
 # Objective/non-objective semantics should flow through issue_kind helpers.
-NON_OBJECTIVE_DETECTORS: frozenset[str] = frozenset({
-    "review", "concerns", "subjective_review", "subjective_assessment",
-})
+NON_OBJECTIVE_DETECTORS: frozenset[str] = frozenset(
+    {
+        "review",
+        "concerns",
+        "subjective_review",
+        "subjective_assessment",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -108,7 +115,7 @@ def compute_subjective_visibility(
         else scan_path
     )
 
-    issues = (state.get("work_items") or state.get("issues", {}))
+    issues = state.get("work_items") or state.get("issues", {})
     skipped_ids = set((plan or {}).get("skipped", {}).keys())
 
     # Count open, non-suppressed, objective issues.

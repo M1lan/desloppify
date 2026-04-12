@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any
 
 from desloppify.base.output.terminal import log as _log
-from desloppify.languages._framework.base.types import DetectorPhase, LangRuntimeContract
+from desloppify.languages._framework.base.types import (
+    DetectorPhase,
+    LangRuntimeContract,
+)
 from desloppify.languages._framework.generic_support.core import make_tool_phase
 from desloppify.state_io import Issue
 
@@ -38,9 +41,7 @@ def _record_capability_degradation(
     """Record reduced coverage metadata when a framework rule cannot run."""
     if not missing:
         return
-    summary = (
-        f"Skipped {detector} framework rule '{rule_id}' (missing: {', '.join(missing)})."
-    )
+    summary = f"Skipped {detector} framework rule '{rule_id}' (missing: {', '.join(missing)})."
     record = {
         "detector": detector,
         "status": "reduced",
@@ -70,7 +71,8 @@ def _record_capability_degradation(
     coverage_warnings = getattr(lang, "coverage_warnings", None)
     if isinstance(coverage_warnings, list):
         if not any(
-            isinstance(entry, dict) and entry.get("detector") == detector for entry in coverage_warnings
+            isinstance(entry, dict) and entry.get("detector") == detector
+            for entry in coverage_warnings
         ):
             coverage_warnings.append(dict(record))
 
@@ -114,7 +116,9 @@ def _run_scanner_rules(
 def _framework_smells_phase(spec: FrameworkSpec) -> DetectorPhase:
     label = f"{spec.label} framework smells"
 
-    def run(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+    def run(
+        path: Path, lang: LangRuntimeContract
+    ) -> tuple[list[Issue], dict[str, int]]:
         detection = detect_ecosystem_frameworks(path, lang, spec.ecosystem)
         if spec.id not in detection.present:
             return [], {}
@@ -142,7 +146,9 @@ def _framework_tool_phase(spec: FrameworkSpec, tool: ToolIntegration) -> Detecto
     )
     tool_phase.slow = bool(tool.slow)
 
-    def run(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+    def run(
+        path: Path, lang: LangRuntimeContract
+    ) -> tuple[list[Issue], dict[str, int]]:
         detection = detect_ecosystem_frameworks(path, lang, spec.ecosystem)
         if spec.id not in detection.present:
             return [], {}

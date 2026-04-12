@@ -161,7 +161,7 @@ class TestDenoFallback:
             "--project",
             str(tsconfig),
             "--noEmit",
-            ]
+        ]
         assert recorded["cwd"] == tmp_path
         assert recorded["timeout"] == 120
 
@@ -171,7 +171,9 @@ class TestDenoFallback:
         with pytest.raises(OSError, match="TypeScript compiler not found"):
             ts_unused_mod._run_tsc_unused_check(tmp_path, tmp_path / "tsconfig.json")
 
-    def test_detect_unused_uses_deno_fallback_for_url_imports(self, tmp_path, monkeypatch):
+    def test_detect_unused_uses_deno_fallback_for_url_imports(
+        self, tmp_path, monkeypatch
+    ):
         """Deno-style URL imports should bypass tsc and use source-based fallback."""
         _write(
             tmp_path,
@@ -227,9 +229,7 @@ class TestDenoFallback:
         _write(tmp_path, "src/app.ts", "const x = 1;\n")
 
         class _Result:
-            stdout = (
-                "src/app.ts(1,7): error TS6133: 'x' is declared but its value is never read.\n"
-            )
+            stdout = "src/app.ts(1,7): error TS6133: 'x' is declared but its value is never read.\n"
             stderr = ""
 
         calls = {"count": 0}
@@ -257,9 +257,7 @@ class TestDenoFallback:
         _write(tmp_path, "src/app.ts", "const x = 1;\n")
 
         class _Result:
-            stdout = (
-                "src/app.ts(1,7): error TS6133: 'x' is declared but its value is never read.\n"
-            )
+            stdout = "src/app.ts(1,7): error TS6133: 'x' is declared but its value is never read.\n"
             stderr = ""
 
         calls = {"count": 0}

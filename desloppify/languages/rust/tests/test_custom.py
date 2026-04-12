@@ -96,7 +96,7 @@ def test_detect_import_hygiene_ignores_doctest_imports(tmp_path):
     _write(
         tmp_path,
         "src/lib.rs",
-        '/// ```rust\n/// use demo_app::support::Thing;\n/// ```\npub fn run() {}\n',
+        "/// ```rust\n/// use demo_app::support::Thing;\n/// ```\npub fn run() {}\n",
     )
 
     with runtime_scope(RuntimeContext(project_root=tmp_path)):
@@ -186,7 +186,7 @@ def test_detect_doctest_hygiene_and_fix_adds_readme_harness(tmp_path):
         result = fix_readme_doctests(entries, dry_run=False)
 
     assert result.entries[0]["file"] == "src/lib.rs"
-    assert "include_str!(\"../README.md\")" in lib_rs.read_text()
+    assert 'include_str!("../README.md")' in lib_rs.read_text()
 
 
 def test_detect_doctest_hygiene_skips_when_lib_already_has_examples(tmp_path):
@@ -198,7 +198,7 @@ def test_detect_doctest_hygiene_skips_when_lib_already_has_examples(tmp_path):
     _write(
         tmp_path,
         "src/lib.rs",
-        '//! ```rust\n//! use demo_app::run;\n//! ```\npub fn run() {}\n',
+        "//! ```rust\n//! use demo_app::run;\n//! ```\npub fn run() {}\n",
     )
     _write(tmp_path, "README.md", "```rust\nuse demo_app::run;\n```\n")
 
@@ -217,7 +217,7 @@ def test_detect_doctest_hygiene_treats_plain_doc_fences_as_rust_examples(tmp_pat
     _write(
         tmp_path,
         "src/lib.rs",
-        '//! ```\n//! let answer = 42;\n//! assert_eq!(answer, 42);\n//! ```\npub fn run() {}\n',
+        "//! ```\n//! let answer = 42;\n//! assert_eq!(answer, 42);\n//! ```\npub fn run() {}\n",
     )
     _write(tmp_path, "README.md", "```rust\nuse demo_app::run;\n```\n")
 
@@ -249,7 +249,10 @@ impl User {
     with runtime_scope(RuntimeContext(project_root=tmp_path)):
         entries, _ = detect_public_api_conventions(tmp_path)
 
-    assert {entry["name"] for entry in entries} == {"getter::get_name", "into_ref::into_name"}
+    assert {entry["name"] for entry in entries} == {
+        "getter::get_name",
+        "into_ref::into_name",
+    }
 
 
 def test_detect_public_api_convention_ignores_lookup_methods_and_pyo3_getters(tmp_path):
@@ -325,7 +328,10 @@ pub fn parse() -> anyhow::Result<()> {
     with runtime_scope(RuntimeContext(project_root=tmp_path)):
         entries, _ = detect_error_boundaries(tmp_path)
 
-    assert {entry["name"] for entry in entries} == {"error_type::parse", "panic_path::parse"}
+    assert {entry["name"] for entry in entries} == {
+        "error_type::parse",
+        "panic_path::parse",
+    }
 
 
 def test_detect_error_boundaries_ignores_infallible_write_unwrap(tmp_path):

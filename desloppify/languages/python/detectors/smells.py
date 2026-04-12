@@ -21,7 +21,9 @@ def _is_test_path(filepath: str) -> bool:
     return normalized.startswith("tests/") or "/tests/" in normalized
 
 
-def _smell(smell_id: str, label: str, severity: str, pattern: str | None = None) -> dict:
+def _smell(
+    smell_id: str, label: str, severity: str, pattern: str | None = None
+) -> dict:
     return {"id": smell_id, "label": label, "pattern": pattern, "severity": severity}
 
 
@@ -38,7 +40,9 @@ SMELL_CHECKS = [
         "low",
         r"(?:==|!=|>=?|<=?|[+\-*/])\s*\d{4,}",
     ),
-    _smell("todo_fixme", "TODO/FIXME/HACK comments", "low", r"#\s*(?:TODO|FIXME|HACK|XXX)"),
+    _smell(
+        "todo_fixme", "TODO/FIXME/HACK comments", "low", r"#\s*(?:TODO|FIXME|HACK|XXX)"
+    ),
     _smell(
         "hardcoded_url",
         "Hardcoded URL in source code",
@@ -97,7 +101,9 @@ SMELL_CHECKS = [
         "Code after unconditional return/raise/break/continue",
         "high",
     ),
-    _smell("constant_return", "Function always returns the same constant value", "medium"),
+    _smell(
+        "constant_return", "Function always returns the same constant value", "medium"
+    ),
     _smell("regex_backtrack", "Regex with nested quantifiers (ReDoS risk)", "high"),
     _smell(
         "naive_comment_strip",
@@ -156,7 +162,9 @@ SMELL_CHECKS = [
         "Too many optional params — consider a config object",
         "medium",
     ),
-    _smell("annotation_quality", "Loose type annotation — use specific types", "medium"),
+    _smell(
+        "annotation_quality", "Loose type annotation — use specific types", "medium"
+    ),
     _smell(
         "nested_closure",
         "Deeply nested inner functions — extract to module level",

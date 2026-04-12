@@ -9,13 +9,16 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from desloppify.languages._framework.treesitter import TreeSitterLangSpec
 
+
 @lru_cache(maxsize=256)
 def _get_log_patterns(patterns: tuple[str, ...]) -> tuple[re.Pattern[str], ...]:
     """Compile log patterns once per unique frozen pattern tuple."""
     return tuple(re.compile(p) for p in patterns)
 
 
-def _collect_comment_ranges(node, comment_types: frozenset[str]) -> list[tuple[int, int]]:
+def _collect_comment_ranges(
+    node, comment_types: frozenset[str]
+) -> list[tuple[int, int]]:
     """Walk the AST and collect byte ranges of all comment nodes."""
     ranges: list[tuple[int, int]] = []
     stack = [node]

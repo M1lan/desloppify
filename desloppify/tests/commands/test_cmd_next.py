@@ -418,10 +418,7 @@ class TestCmdNextOutput:
         out = capsys.readouterr().out
         assert "were reset to 0.0 this scan" in out
         assert "Anti-gaming safeguard applied" in out
-        assert (
-            "review --prepare --force-review-rerun --dimensions"
-            in out
-        )
+        assert "review --prepare --force-review-rerun --dimensions" in out
         assert "naming_quality" in out
         assert "logic_clarity" in out
 
@@ -472,7 +469,6 @@ class TestCmdNextOutput:
         assert written[0]["items"][0]["explain"] == {
             "policy": "Subjective dimensions are always queued as T4."
         }
-
 
     def test_score_impact_shown_when_potentials_available(self, monkeypatch, capsys):
         _patch_common(
@@ -549,7 +545,10 @@ class TestCmdNextOutput:
                         "detector": "subjective_assessment",
                         "file": ".",
                         "summary": "Subjective dimension below target: Naming quality (94.0%)",
-                        "detail": {"dimension_name": "Naming quality", "strict_score": 94.0},
+                        "detail": {
+                            "dimension_name": "Naming quality",
+                            "strict_score": 94.0,
+                        },
                         "status": "open",
                         "subjective_score": 94.0,
                         "primary_command": "desloppify review --prepare",
@@ -596,7 +595,9 @@ class TestLowSubjectiveDimensions:
                 "detectors": {"subjective_assessment": {}},
             },
         }
-        low = _low_subjective_dimensions({"dimension_scores": dim_scores}, dim_scores, threshold=95.0)
+        low = _low_subjective_dimensions(
+            {"dimension_scores": dim_scores}, dim_scores, threshold=95.0
+        )
         assert low == [
             ("Custom Subjective", 91.0, 1),
             ("Naming quality", 94.0, 2),

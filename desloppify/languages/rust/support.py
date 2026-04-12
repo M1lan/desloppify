@@ -12,6 +12,7 @@ from typing import Any
 from desloppify.base.discovery.file_paths import rel, resolve_path
 from desloppify.base.discovery.paths import get_project_root
 from desloppify.base.discovery.source import SourceDiscoveryOptions, find_source_files
+
 RUST_FILE_EXCLUSIONS = ["target", ".git", "node_modules", "vendor"]
 USE_STATEMENT_RE = re.compile(r"(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?use\s+([^;]+);")
 PUB_USE_STATEMENT_RE = re.compile(r"(?m)^\s*pub(?:\([^)]*\))?\s+use\s+([^;]+);")
@@ -75,7 +76,9 @@ def build_production_file_index(
     for production_file in production_files:
         prod_path = Path(production_file)
         resolved = (
-            prod_path.resolve() if prod_path.is_absolute() else (root / prod_path).resolve()
+            prod_path.resolve()
+            if prod_path.is_absolute()
+            else (root / prod_path).resolve()
         )
         resolved_str = str(resolved)
         by_absolute.setdefault(resolved_str, production_file)
@@ -375,7 +378,9 @@ def _read_manifest_data(manifest_dir: Path) -> dict[str, Any]:
 
 def build_workspace_package_index(scan_root: Path | None = None) -> dict[str, Path]:
     """Return local crate-name -> Cargo manifest dir for the active project root."""
-    root = find_workspace_root(scan_root) if scan_root is not None else get_project_root()
+    root = (
+        find_workspace_root(scan_root) if scan_root is not None else get_project_root()
+    )
     return _build_workspace_package_index_cached(root)
 
 
@@ -409,8 +414,7 @@ def _build_local_dependency_alias_index_cached(
     package_index state for correctness.
     """
     package_index: dict[str, Path] = {
-        name: Path(manifest_dir)
-        for name, manifest_dir in package_index_items
+        name: Path(manifest_dir) for name, manifest_dir in package_index_items
     }
     workspace_aliases = _workspace_dependency_alias_index(workspace_root, package_index)
     aliases: dict[str, Path] = {}
@@ -489,10 +493,16 @@ def _iter_dependency_entries(data: dict[str, Any]) -> list[tuple[str, Any]]:
         for target_section in target.values():
             if not isinstance(target_section, dict):
                 continue
-            for section_name in ("dependencies", "dev-dependencies", "build-dependencies"):
+            for section_name in (
+                "dependencies",
+                "dev-dependencies",
+                "build-dependencies",
+            ):
                 section = target_section.get(section_name)
                 if isinstance(section, dict):
-                    entries.extend((str(name), value) for name, value in section.items())
+                    entries.extend(
+                        (str(name), value) for name, value in section.items()
+                    )
     return entries
 
 
@@ -517,7 +527,11 @@ def _resolve_local_dependency_entry(
         return workspace_aliases.get(alias_name)
 
     package_name = normalize_crate_name(dependency.get("package"))
-    if package_name and package_name in package_index and dependency.get("path") is not None:
+    if (
+        package_name
+        and package_name in package_index
+        and dependency.get("path") is not None
+    ):
         return package_index[package_name]
     return None
 
@@ -591,7 +605,11 @@ def describe_rust_file(source_file: str | Path) -> RustFileContext:
         )
 
     if parts[:1] == ("src",):
-        crate_name = package_name if rel_to_manifest == Path("src/main.rs") else library_crate_name
+        crate_name = (
+            package_name
+            if rel_to_manifest == Path("src/main.rs")
+            else library_crate_name
+        )
         return RustFileContext(
             source_file=source,
             manifest_dir=manifest_dir,
@@ -619,7 +637,9 @@ def describe_rust_file(source_file: str | Path) -> RustFileContext:
                 manifest_dir / bucket / f"{root_name}.rs",
                 root_dir / "main.rs",
             ),
-            module_segments=() if len(parts) == 2 else _module_segments_from_rel(Path(*parts[2:])),
+            module_segments=()
+            if len(parts) == 2
+            else _module_segments_from_rel(Path(*parts[2:])),
         )
 
     return RustFileContext(
@@ -651,7 +671,9 @@ def resolve_mod_declaration(
     candidates: list[Path] = []
     if declared_path:
         candidates.append(source.parent / declared_path)
-    candidates.extend((base_dir / f"{module_name}.rs", base_dir / module_name / "mod.rs"))
+    candidates.extend(
+        (base_dir / f"{module_name}.rs", base_dir / module_name / "mod.rs")
+    )
     for candidate in candidates:
         matched = _candidate_matches(
             candidate,
@@ -700,7 +722,9 @@ def resolve_use_spec(
             )
         )
     elif segments[0] in {"self", "super"}:
-        resolved_segments = _resolve_relative_segments(context.module_segments, segments)
+        resolved_segments = _resolve_relative_segments(
+            context.module_segments, segments
+        )
         candidates.append(
             _resolve_from_source_root(
                 context.source_root,
@@ -899,7 +923,9 @@ def _candidate_matches(
     return None
 
 
-def match_production_candidate(candidate: Path, production_files: set[str]) -> str | None:
+def match_production_candidate(
+    candidate: Path, production_files: set[str]
+) -> str | None:
     """Public wrapper for matching a resolved candidate to the production-file set."""
     return _candidate_matches(candidate, production_files)
 

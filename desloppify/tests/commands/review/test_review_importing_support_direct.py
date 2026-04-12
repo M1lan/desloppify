@@ -13,7 +13,10 @@ import desloppify.app.commands.review.importing.output as import_output_mod
 import desloppify.app.commands.review.importing.plan_sync as plan_sync_mod
 import desloppify.app.commands.review.importing.results as results_mod
 import desloppify.engine._plan.constants as plan_constants_mod
-from desloppify.engine._state.progression import append_progression_event, load_progression
+from desloppify.engine._state.progression import (
+    append_progression_event,
+    load_progression,
+)
 import desloppify.intelligence.review.importing.holistic as holistic_import_mod
 from desloppify.state import empty_state as build_empty_state
 
@@ -102,7 +105,9 @@ def test_flags_validation_and_assessment_state_helpers() -> None:
         assessment_keys={"naming_quality"},
     )
     assert marked == 1
-    assert state["subjective_assessments"]["naming_quality"]["provisional_until_scan"] == 5
+    assert (
+        state["subjective_assessments"]["naming_quality"]["provisional_until_scan"] == 5
+    )
 
     cleared = flags_mod.clear_provisional_override_flags(
         state,
@@ -195,7 +200,9 @@ def test_print_open_review_summary_avoids_duplicate_count_phrase(capsys) -> None
     assert next_command == "desloppify show review --status open"
 
 
-def test_sync_plan_after_import_scopes_living_plan_to_state_file(monkeypatch, tmp_path) -> None:
+def test_sync_plan_after_import_scopes_living_plan_to_state_file(
+    monkeypatch, tmp_path
+) -> None:
     seen: dict[str, object] = {}
 
     def fake_plan_path_for_state(state_path):
@@ -332,9 +339,7 @@ def test_sync_plan_after_import_emits_plan_checkpoint_when_subjective_review_cle
             "overall_score": 76.0,
             "objective_score": 90.0,
             "verified_strict_score": 73.5,
-            "dimension_scores": {
-                "Naming quality": {"score": 82.0, "strict": 82.0}
-            },
+            "dimension_scores": {"Naming quality": {"score": 82.0, "strict": 82.0}},
         },
         diff={"new": 0, "reopened": 0, "auto_resolved": 0},
         assessment_mode="trusted_internal",
@@ -495,20 +500,28 @@ def test_sync_plan_after_import_handles_plan_exceptions(monkeypatch, capsys) -> 
     assert outcome.status == "degraded"
 
 
-def test_sync_plan_after_import_runs_review_sync_for_auto_resolved_deltas(monkeypatch) -> None:
+def test_sync_plan_after_import_runs_review_sync_for_auto_resolved_deltas(
+    monkeypatch,
+) -> None:
     plan: dict = {"queue_order": []}
     seen = {"import_called": False, "reconcile_called": False}
 
     _patch_basic_plan_sync_runtime(monkeypatch, plan=plan)
+
     def fake_import_sync(_plan, _state, inject_triage=False):
         seen["import_called"] = True
         return None
 
-    monkeypatch.setattr(plan_sync_mod, "sync_plan_after_review_import", fake_import_sync)
+    monkeypatch.setattr(
+        plan_sync_mod, "sync_plan_after_review_import", fake_import_sync
+    )
     monkeypatch.setattr(
         plan_sync_mod,
         "reconcile_plan",
-        lambda *_a, **_k: seen.__setitem__("reconcile_called", True) or plan_sync_mod.ReconcileResult(),
+        lambda *_a, **_k: (
+            seen.__setitem__("reconcile_called", True)
+            or plan_sync_mod.ReconcileResult()
+        ),
     )
 
     plan_sync_mod.sync_plan_after_import(
@@ -606,13 +619,19 @@ def test_sync_plan_after_import_logs_triage_provenance(monkeypatch) -> None:
 def test_sync_plan_after_import_keeps_workflow_before_triage(monkeypatch) -> None:
     plan: dict = {
         "queue_order": [],
-        "plan_start_scores": {"strict": 70.0, "overall": 70.0, "objective": 80.0, "verified": 80.0},
+        "plan_start_scores": {
+            "strict": 70.0,
+            "overall": 70.0,
+            "objective": 80.0,
+            "verified": 80.0,
+        },
     }
     entries: list[tuple[str, dict]] = []
 
     monkeypatch.setattr(plan_sync_mod, "has_living_plan", lambda _path=None: True)
     monkeypatch.setattr(plan_sync_mod, "load_plan", lambda _path=None: plan)
     monkeypatch.setattr(plan_sync_mod, "save_plan", lambda _plan, _path=None: None)
+
     def fake_review_import(_plan, _state, inject_triage=False):
         _plan["queue_order"].append("review::x")
         return SimpleNamespace(
@@ -627,14 +646,19 @@ def test_sync_plan_after_import_keeps_workflow_before_triage(monkeypatch) -> Non
     monkeypatch.setattr(
         plan_sync_mod,
         "sync_import_scores_needed",
-        lambda _plan, _state, assessment_mode, **_kwargs: SimpleNamespace(changes=False),
+        lambda _plan, _state, assessment_mode, **_kwargs: SimpleNamespace(
+            changes=False
+        ),
     )
-    monkeypatch.setattr(plan_sync_mod, "sync_plan_after_review_import", fake_review_import)
+    monkeypatch.setattr(
+        plan_sync_mod, "sync_plan_after_review_import", fake_review_import
+    )
+
     def fake_reconcile(_plan, _state, target_strict):
-        _plan["queue_order"].extend(
-            ["workflow::create-plan", "triage::observe"]
+        _plan["queue_order"].extend(["workflow::create-plan", "triage::observe"])
+        plan_constants_mod.normalize_queue_workflow_and_triage_prefix(
+            _plan["queue_order"]
         )
-        plan_constants_mod.normalize_queue_workflow_and_triage_prefix(_plan["queue_order"])
         _plan["previous_plan_start_scores"] = {}
         return plan_sync_mod.ReconcileResult(
             communicate_score=plan_constants_mod.QueueSyncResult(
@@ -645,6 +669,7 @@ def test_sync_plan_after_import_keeps_workflow_before_triage(monkeypatch) -> Non
             ),
             triage=plan_constants_mod.QueueSyncResult(injected=["triage::observe"]),
         )
+
     monkeypatch.setattr(plan_sync_mod, "reconcile_plan", fake_reconcile)
     monkeypatch.setattr(plan_sync_mod, "live_planned_queue_empty", lambda _plan: True)
     monkeypatch.setattr(
@@ -663,7 +688,9 @@ def test_sync_plan_after_import_keeps_workflow_before_triage(monkeypatch) -> Non
         "workflow::create-plan",
         "triage::observe",
     ]
-    assert plan["queue_order"].index("workflow::create-plan") < plan["queue_order"].index("triage::observe")
+    assert plan["queue_order"].index("workflow::create-plan") < plan[
+        "queue_order"
+    ].index("triage::observe")
     assert plan["previous_plan_start_scores"] == {}
     action, detail = entries[-1]
     assert action == "review_import_sync"
@@ -710,7 +737,11 @@ def test_sync_plan_after_import_preserves_scan_phase_for_temporary_skips(
     saved: list[dict] = []
 
     _patch_basic_plan_sync_runtime(monkeypatch, plan=plan)
-    monkeypatch.setattr(plan_sync_mod, "save_plan", lambda current_plan, _path=None: saved.append(dict(current_plan)))
+    monkeypatch.setattr(
+        plan_sync_mod,
+        "save_plan",
+        lambda current_plan, _path=None: saved.append(dict(current_plan)),
+    )
     monkeypatch.setattr(
         plan_sync_mod,
         "sync_plan_after_review_import",
@@ -726,8 +757,12 @@ def test_sync_plan_after_import_preserves_scan_phase_for_temporary_skips(
     monkeypatch.setattr(
         plan_sync_mod,
         "reconcile_plan",
-        lambda _plan, _state, target_strict: _plan["refresh_state"].__setitem__("lifecycle_phase", "plan")
-        or plan_sync_mod.ReconcileResult(lifecycle_phase="scan", lifecycle_phase_changed=True),
+        lambda _plan, _state, target_strict: (
+            _plan["refresh_state"].__setitem__("lifecycle_phase", "plan")
+            or plan_sync_mod.ReconcileResult(
+                lifecycle_phase="scan", lifecycle_phase_changed=True
+            )
+        ),
     )
 
     plan_sync_mod.sync_plan_after_import(
@@ -770,7 +805,9 @@ def test_sync_plan_after_import_prunes_covered_subjective_ids(monkeypatch) -> No
     assert "subjective::naming_quality" not in plan["queue_order"]
 
 
-def test_sync_plan_after_import_uses_pre_import_boundary_for_reconcile(monkeypatch) -> None:
+def test_sync_plan_after_import_uses_pre_import_boundary_for_reconcile(
+    monkeypatch,
+) -> None:
     plan: dict = {"queue_order": []}
     seen = {"reconcile_called": False}
 
@@ -794,8 +831,10 @@ def test_sync_plan_after_import_uses_pre_import_boundary_for_reconcile(monkeypat
     monkeypatch.setattr(
         plan_sync_mod,
         "reconcile_plan",
-        lambda *_a, **_k: seen.__setitem__("reconcile_called", True)
-        or plan_sync_mod.ReconcileResult(),
+        lambda *_a, **_k: (
+            seen.__setitem__("reconcile_called", True)
+            or plan_sync_mod.ReconcileResult()
+        ),
     )
 
     plan_sync_mod.sync_plan_after_import(
@@ -891,8 +930,10 @@ def test_sync_plan_after_import_skips_mid_cycle_reconcile_for_assessment_only_im
     monkeypatch.setattr(
         plan_sync_mod,
         "reconcile_plan",
-        lambda _plan, _state, target_strict: reconcile_calls.append((_plan, _state, target_strict))
-        or plan_sync_mod.ReconcileResult(),
+        lambda _plan, _state, target_strict: (
+            reconcile_calls.append((_plan, _state, target_strict))
+            or plan_sync_mod.ReconcileResult()
+        ),
     )
     monkeypatch.setattr(plan_sync_mod, "live_planned_queue_empty", lambda _plan: False)
     monkeypatch.setattr(
@@ -921,12 +962,16 @@ def test_sync_plan_after_import_skips_mid_cycle_reconcile_for_assessment_only_im
     assert plan["clusters"]["auto/initial-review"]["issue_ids"] == []
 
 
-def test_refresh_scorecard_after_import_only_for_trusted_assessments(monkeypatch) -> None:
+def test_refresh_scorecard_after_import_only_for_trusted_assessments(
+    monkeypatch,
+) -> None:
     calls: list[tuple[object, dict, dict]] = []
     monkeypatch.setattr(
         import_cmd_mod,
         "emit_scorecard_badge",
-        lambda args, config, state: (calls.append((args, config, state)), (None, None))[1],
+        lambda args, config, state: (calls.append((args, config, state)), (None, None))[
+            1
+        ],
     )
 
     trusted = SimpleNamespace(assessments_present=True, trusted=True)
@@ -951,34 +996,47 @@ def test_refresh_scorecard_after_import_only_for_trusted_assessments(monkeypatch
         },
     }
 
-    assert import_cmd_mod._refresh_scorecard_after_import(
-        state=scan_state,
-        config={"badge_path": "scorecard.png"},
-        assessment_policy=trusted,
-    ) is True
+    assert (
+        import_cmd_mod._refresh_scorecard_after_import(
+            state=scan_state,
+            config={"badge_path": "scorecard.png"},
+            assessment_policy=trusted,
+        )
+        is True
+    )
     assert len(calls) == 1
 
-    assert import_cmd_mod._refresh_scorecard_after_import(
-        state=scan_state,
-        config={"badge_path": "scorecard.png"},
-        assessment_policy=skipped,
-    ) is False
+    assert (
+        import_cmd_mod._refresh_scorecard_after_import(
+            state=scan_state,
+            config={"badge_path": "scorecard.png"},
+            assessment_policy=skipped,
+        )
+        is False
+    )
     assert len(calls) == 1
 
-    assert import_cmd_mod._refresh_scorecard_after_import(
-        state={"strict_score": 74.5},
-        config={"badge_path": "scorecard.png"},
-        assessment_policy=trusted,
-    ) is False
+    assert (
+        import_cmd_mod._refresh_scorecard_after_import(
+            state={"strict_score": 74.5},
+            config={"badge_path": "scorecard.png"},
+            assessment_policy=trusted,
+        )
+        is False
+    )
     assert len(calls) == 1
 
 
-def test_refresh_scorecard_after_import_skips_subjective_only_state(monkeypatch) -> None:
+def test_refresh_scorecard_after_import_skips_subjective_only_state(
+    monkeypatch,
+) -> None:
     calls: list[tuple[object, dict, dict]] = []
     monkeypatch.setattr(
         import_cmd_mod,
         "emit_scorecard_badge",
-        lambda args, config, state: (calls.append((args, config, state)), (None, None))[1],
+        lambda args, config, state: (calls.append((args, config, state)), (None, None))[
+            1
+        ],
     )
     trusted = SimpleNamespace(assessments_present=True, trusted=True)
     subjective_only_state = {
@@ -995,19 +1053,30 @@ def test_refresh_scorecard_after_import_skips_subjective_only_state(monkeypatch)
         },
     }
 
-    assert import_cmd_mod._refresh_scorecard_after_import(
-        state=subjective_only_state,
-        config={"badge_path": "scorecard.png"},
-        assessment_policy=trusted,
-    ) is False
+    assert (
+        import_cmd_mod._refresh_scorecard_after_import(
+            state=subjective_only_state,
+            config={"badge_path": "scorecard.png"},
+            assessment_policy=trusted,
+        )
+        is False
+    )
     assert calls == []
 
 
 def test_report_review_import_outcome_writes_query_payload(monkeypatch) -> None:
     captured: list[dict] = []
-    monkeypatch.setattr(results_mod.narrative_core, "compute_narrative", lambda *_a, **_k: {"summary": "ok"})
-    monkeypatch.setattr(results_mod, "print_skipped_validation_details", lambda *_a, **_k: None)
-    monkeypatch.setattr(results_mod, "print_assessments_summary", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        results_mod.narrative_core,
+        "compute_narrative",
+        lambda *_a, **_k: {"summary": "ok"},
+    )
+    monkeypatch.setattr(
+        results_mod, "print_skipped_validation_details", lambda *_a, **_k: None
+    )
+    monkeypatch.setattr(
+        results_mod, "print_assessments_summary", lambda *_a, **_k: None
+    )
     monkeypatch.setattr(
         results_mod,
         "print_open_review_summary",
@@ -1018,8 +1087,12 @@ def test_report_review_import_outcome_writes_query_payload(monkeypatch) -> None:
         "print_review_import_scores_and_integrity",
         lambda *_a, **_k: [{"name": "Design coherence", "score": 95.0}],
     )
-    monkeypatch.setattr(results_mod, "show_score_with_plan_context", lambda *_a, **_k: None)
-    monkeypatch.setattr(results_mod, "write_query", lambda payload: captured.append(payload))
+    monkeypatch.setattr(
+        results_mod, "show_score_with_plan_context", lambda *_a, **_k: None
+    )
+    monkeypatch.setattr(
+        results_mod, "write_query", lambda payload: captured.append(payload)
+    )
 
     results_mod.report_review_import_outcome(
         state={"issues": {}},
@@ -1029,7 +1102,9 @@ def test_report_review_import_outcome_writes_query_payload(monkeypatch) -> None:
         prev=SimpleNamespace(overall=0),
         label="Holistic review",
         provisional_count=0,
-        assessment_policy=SimpleNamespace(mode="issues_only", trusted=False, reason="untrusted"),
+        assessment_policy=SimpleNamespace(
+            mode="issues_only", trusted=False, reason="untrusted"
+        ),
         scorecard_subjective_at_target_fn=lambda *_a, **_k: [],
     )
 
@@ -1041,10 +1116,18 @@ def test_report_review_import_outcome_writes_query_payload(monkeypatch) -> None:
     assert payload["assessment_import"]["mode"] == "issues_only"
 
 
-def test_report_review_import_outcome_reports_provisional_warning(capsys, monkeypatch) -> None:
-    monkeypatch.setattr(results_mod.narrative_core, "compute_narrative", lambda *_a, **_k: {})
-    monkeypatch.setattr(results_mod, "print_skipped_validation_details", lambda *_a, **_k: None)
-    monkeypatch.setattr(results_mod, "print_assessments_summary", lambda *_a, **_k: None)
+def test_report_review_import_outcome_reports_provisional_warning(
+    capsys, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        results_mod.narrative_core, "compute_narrative", lambda *_a, **_k: {}
+    )
+    monkeypatch.setattr(
+        results_mod, "print_skipped_validation_details", lambda *_a, **_k: None
+    )
+    monkeypatch.setattr(
+        results_mod, "print_assessments_summary", lambda *_a, **_k: None
+    )
     monkeypatch.setattr(
         results_mod,
         "print_open_review_summary",
@@ -1055,7 +1138,9 @@ def test_report_review_import_outcome_reports_provisional_warning(capsys, monkey
         "print_review_import_scores_and_integrity",
         lambda *_a, **_k: [],
     )
-    monkeypatch.setattr(results_mod, "show_score_with_plan_context", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        results_mod, "show_score_with_plan_context", lambda *_a, **_k: None
+    )
     monkeypatch.setattr(results_mod, "write_query", lambda _payload: None)
 
     results_mod.report_review_import_outcome(
@@ -1066,7 +1151,9 @@ def test_report_review_import_outcome_reports_provisional_warning(capsys, monkey
         prev=SimpleNamespace(overall=0),
         label="Holistic review",
         provisional_count=2,
-        assessment_policy=SimpleNamespace(mode="manual_override", trusted=False, reason="manual"),
+        assessment_policy=SimpleNamespace(
+            mode="manual_override", trusted=False, reason="manual"
+        ),
         scorecard_subjective_at_target_fn=lambda *_a, **_k: [],
     )
 
@@ -1083,7 +1170,9 @@ def test_plan_sync_source_preserves_scoped_sync_pipeline_contract() -> None:
     assert "if not has_living_plan(plan_path):" in src
     assert 'return PlanImportSyncOutcome(status="skipped")' in src
     assert "plan = load_plan(plan_path)" in src
-    assert 'trusted = assessment_mode in {"trusted_internal", "attested_external"}' in src
+    assert (
+        'trusted = assessment_mode in {"trusted_internal", "attested_external"}' in src
+    )
     assert "sync_inputs = _build_import_sync_inputs(diff, import_payload)" in src
     assert "was_boundary_ready = live_planned_queue_empty(plan)" in src
     assert "transition = _apply_import_plan_transitions(" in src

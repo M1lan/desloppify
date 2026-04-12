@@ -27,7 +27,9 @@ def resolve_go_import(import_text: str, source_file: str, scan_path: str) -> str
     return None
 
 
-def resolve_rust_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_rust_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Rust use declarations to local files."""
     del source_file
     if not import_text.startswith("crate::"):
@@ -56,7 +58,9 @@ def resolve_rust_import(import_text: str, source_file: str, scan_path: str) -> s
     return None
 
 
-def resolve_java_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_java_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Java imports to local files."""
     del source_file
     if import_text.endswith(".*"):
@@ -74,7 +78,9 @@ def resolve_java_import(import_text: str, source_file: str, scan_path: str) -> s
     return None
 
 
-def resolve_kotlin_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_kotlin_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Kotlin imports (same structure as Java)."""
     del source_file
     if import_text.endswith(".*"):
@@ -107,7 +113,9 @@ def resolve_kotlin_import(import_text: str, source_file: str, scan_path: str) ->
     return None
 
 
-def resolve_cxx_include(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_cxx_include(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve C/C++ quoted includes to local files."""
     if not import_text:
         return None
@@ -124,7 +132,9 @@ def resolve_cxx_include(import_text: str, source_file: str, scan_path: str) -> s
     return None
 
 
-def resolve_csharp_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_csharp_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve C# using statements to local files."""
     del source_file
     parts = import_text.split(".")
@@ -143,7 +153,9 @@ def resolve_csharp_import(import_text: str, source_file: str, scan_path: str) ->
     return None
 
 
-def resolve_dart_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_dart_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Dart imports to local files."""
     if import_text.startswith("dart:"):
         return None
@@ -159,7 +171,9 @@ def resolve_dart_import(import_text: str, source_file: str, scan_path: str) -> s
     return candidate if os.path.isfile(candidate) else None
 
 
-def resolve_scala_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_scala_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Resolve Scala imports to local files."""
     del source_file
     if import_text.endswith("._") or import_text.endswith(".{"):
@@ -177,7 +191,9 @@ def resolve_scala_import(import_text: str, source_file: str, scan_path: str) -> 
     return None
 
 
-def resolve_swift_import(import_text: str, source_file: str, scan_path: str) -> str | None:
+def resolve_swift_import(
+    import_text: str, source_file: str, scan_path: str
+) -> str | None:
     """Best-effort local Swift import resolution."""
     text = import_text.strip()
     if not text:

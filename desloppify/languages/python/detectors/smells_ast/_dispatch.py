@@ -90,7 +90,9 @@ TREE_DETECTORS: tuple[_TreeDetectorSpec, ...] = (
     _TreeDetectorSpec("sys_exit_in_library", _detect_sys_exit_in_library),
     _TreeDetectorSpec(
         "import_path_mutation",
-        partial(_detect_import_time_boundary_mutations, smell_id="import_path_mutation"),
+        partial(
+            _detect_import_time_boundary_mutations, smell_id="import_path_mutation"
+        ),
     ),
     _TreeDetectorSpec(
         "import_env_mutation",

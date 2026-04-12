@@ -11,4 +11,3 @@ def test_has_module_handles_blank_name() -> None:
 
 def test_has_module_detects_stdlib_module() -> None:
     assert has_module("json") is True
-

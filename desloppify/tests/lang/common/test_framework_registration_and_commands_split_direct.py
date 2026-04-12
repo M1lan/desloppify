@@ -87,7 +87,10 @@ def test_public_framework_facade_exposes_operational_accessors() -> None:
 
 def test_languages_registry_surface_keeps_legacy_exports_compat_only() -> None:
     source = inspect.getsource(languages_mod)
-    assert "language registration api focused on canonical framework boundaries" in source.lower()
+    assert (
+        "language registration api focused on canonical framework boundaries"
+        in source.lower()
+    )
     assert "desloppify.languages.framework" in source
     assert "__getattr__" not in source
     assert "registry_state" not in languages_mod.__all__
@@ -134,14 +137,18 @@ def test_treesitter_grouped_namespaces_are_canonical() -> None:
     assert "Compatibility bridge to grouped tree-sitter namespace module." in source
     assert "load_compat_exports" in source
 
-    package_root = Path(__file__).resolve().parents[3] / "languages/_framework/treesitter"
+    package_root = (
+        Path(__file__).resolve().parents[3] / "languages/_framework/treesitter"
+    )
     assert not (package_root / "_cache.py").exists()
     assert not (package_root / "_cohesion.py").exists()
     assert not (package_root / "compat").exists()
 
 
 def test_treesitter_grouped_modules_avoid_legacy_module_path_imports() -> None:
-    package_root = Path(__file__).resolve().parents[3] / "languages/_framework/treesitter"
+    package_root = (
+        Path(__file__).resolve().parents[3] / "languages/_framework/treesitter"
+    )
     for group in ("analysis", "imports", "specs"):
         for module_path in (package_root / group).rglob("*.py"):
             source = module_path.read_text(encoding="utf-8")
@@ -212,9 +219,14 @@ def test_make_cmd_deps_json_and_text_paths(monkeypatch, tmp_path) -> None:
     )
 
     printed: list[str] = []
-    monkeypatch.setattr("builtins.print", lambda *args, **kwargs: printed.append(" ".join(str(a) for a in args)))
+    monkeypatch.setattr(
+        "builtins.print",
+        lambda *args, **kwargs: printed.append(" ".join(str(a) for a in args)),
+    )
     monkeypatch.setattr(registry_cmd_mod, "colorize", lambda text, _style: text)
-    monkeypatch.setattr(registry_cmd_mod, "print_table", lambda *args, **kwargs: printed.append("TABLE"))
+    monkeypatch.setattr(
+        registry_cmd_mod, "print_table", lambda *args, **kwargs: printed.append("TABLE")
+    )
 
     cmd(SimpleNamespace(path=str(tmp_path), json=True, top=5))
     payload = json.loads(printed[-1])
@@ -241,18 +253,37 @@ def test_make_cmd_cycles_orphaned_and_dupes(monkeypatch, tmp_path) -> None:
     file_a = str((tmp_path / "a.py").resolve())
     file_b = str((tmp_path / "b.py").resolve())
     graph = {
-        file_a: {"imports": {file_b}, "importers": set(), "import_count": 1, "importer_count": 0},
-        file_b: {"imports": set(), "importers": {file_a}, "import_count": 0, "importer_count": 1},
+        file_a: {
+            "imports": {file_b},
+            "importers": set(),
+            "import_count": 1,
+            "importer_count": 0,
+        },
+        file_b: {
+            "imports": set(),
+            "importers": {file_a},
+            "import_count": 0,
+            "importer_count": 1,
+        },
     }
 
     printed: list[str] = []
-    monkeypatch.setattr("builtins.print", lambda *args, **kwargs: printed.append(" ".join(str(a) for a in args)))
+    monkeypatch.setattr(
+        "builtins.print",
+        lambda *args, **kwargs: printed.append(" ".join(str(a) for a in args)),
+    )
     monkeypatch.setattr(registry_cmd_mod, "colorize", lambda text, _style: text)
-    monkeypatch.setattr(registry_cmd_mod, "print_table", lambda *args, **kwargs: printed.append("TABLE"))
+    monkeypatch.setattr(
+        registry_cmd_mod, "print_table", lambda *args, **kwargs: printed.append("TABLE")
+    )
 
     cycle_entries = [{"length": 2, "files": [file_a, file_b]}]
-    monkeypatch.setattr(registry_cmd_mod, "detect_cycles", lambda _graph: (cycle_entries, 2))
-    cmd_cycles = registry_cmd_mod.make_cmd_cycles(build_dep_graph_fn=lambda _path: graph)
+    monkeypatch.setattr(
+        registry_cmd_mod, "detect_cycles", lambda _graph: (cycle_entries, 2)
+    )
+    cmd_cycles = registry_cmd_mod.make_cmd_cycles(
+        build_dep_graph_fn=lambda _path: graph
+    )
 
     cmd_cycles(SimpleNamespace(path=str(tmp_path), json=True, top=5))
     payload = json.loads(printed[-1])
@@ -264,7 +295,11 @@ def test_make_cmd_cycles_orphaned_and_dupes(monkeypatch, tmp_path) -> None:
     assert any("No dependency cycles" in line for line in printed)
 
     orphan_entries = [{"file": file_a, "loc": 12}]
-    monkeypatch.setattr(registry_cmd_mod, "detect_orphaned_files", lambda *_args, **_kwargs: (orphan_entries, 1))
+    monkeypatch.setattr(
+        registry_cmd_mod,
+        "detect_orphaned_files",
+        lambda *_args, **_kwargs: (orphan_entries, 1),
+    )
     cmd_orphaned = registry_cmd_mod.make_cmd_orphaned(
         build_dep_graph_fn=lambda _path: graph,
         extensions=[".py"],
@@ -278,16 +313,26 @@ def test_make_cmd_cycles_orphaned_and_dupes(monkeypatch, tmp_path) -> None:
     assert payload["count"] == 1
     assert payload["entries"][0]["loc"] == 12
 
-    monkeypatch.setattr(registry_cmd_mod, "detect_duplicates", lambda *_args, **_kwargs: ([
-        {
-            "fn_a": {"name": "a", "file": file_a, "line": 1},
-            "fn_b": {"name": "b", "file": file_b, "line": 2},
-            "similarity": 0.91,
-            "kind": "exact",
-        }
-    ], 1))
+    monkeypatch.setattr(
+        registry_cmd_mod,
+        "detect_duplicates",
+        lambda *_args, **_kwargs: (
+            [
+                {
+                    "fn_a": {"name": "a", "file": file_a, "line": 1},
+                    "fn_b": {"name": "b", "file": file_b, "line": 2},
+                    "similarity": 0.91,
+                    "kind": "exact",
+                }
+            ],
+            1,
+        ),
+    )
     cmd_dupes = registry_cmd_mod.make_cmd_dupes(
-        extract_functions_fn=lambda _path: [SimpleNamespace(name="a"), SimpleNamespace(name="b")]
+        extract_functions_fn=lambda _path: [
+            SimpleNamespace(name="a"),
+            SimpleNamespace(name="b"),
+        ]
     )
 
     printed.clear()
@@ -300,7 +345,11 @@ def test_generic_capabilities_helpers_and_report(monkeypatch) -> None:
     monkeypatch.setattr(
         capabilities_mod,
         "find_source_files",
-        lambda path, exts, excl: [f"{Path(path)}/main{exts[0]}", f"{Path(path)}/util{exts[0]}"] if excl else [],
+        lambda path, exts, excl: (
+            [f"{Path(path)}/main{exts[0]}", f"{Path(path)}/util{exts[0]}"]
+            if excl
+            else []
+        ),
     )
 
     finder = capabilities_mod.make_file_finder([".py"], exclusions=["vendor"])
@@ -318,7 +367,10 @@ def test_generic_capabilities_helpers_and_report(monkeypatch) -> None:
 
     shallow_cfg = SimpleNamespace(
         integration_depth="shallow",
-        phases=[DetectorPhase("Custom lint", lambda *_args: ([], {})), DetectorPhase("Security", lambda *_args: ([], {}))],
+        phases=[
+            DetectorPhase("Custom lint", lambda *_args: ([], {})),
+            DetectorPhase("Security", lambda *_args: ([], {})),
+        ],
         fixers={"lint-fix": object()},
         build_dep_graph=lambda _path: {"a": {}},
         extract_functions=lambda _path: [],
@@ -334,9 +386,19 @@ def test_generic_registration_helpers(monkeypatch) -> None:
     detector_calls: list[str] = []
     scoring_calls: list[str] = []
 
-    monkeypatch.setattr(registration_mod, "register_detector", lambda meta: detector_calls.append(meta.name))
-    monkeypatch.setattr(registration_mod, "register_scoring_policy", lambda policy: scoring_calls.append(policy.detector))
-    monkeypatch.setattr(registration_mod, "make_generic_fixer", lambda tool: {"tool": tool["id"]})
+    monkeypatch.setattr(
+        registration_mod,
+        "register_detector",
+        lambda meta: detector_calls.append(meta.name),
+    )
+    monkeypatch.setattr(
+        registration_mod,
+        "register_scoring_policy",
+        lambda policy: scoring_calls.append(policy.detector),
+    )
+    monkeypatch.setattr(
+        registration_mod, "make_generic_fixer", lambda tool: {"tool": tool["id"]}
+    )
 
     tool_specs = [
         {
@@ -363,9 +425,11 @@ def test_generic_registration_helpers(monkeypatch) -> None:
     assert set(fixers.keys()) == {"lint-errors"}
 
     opts = registration_mod.GenericLangOptions(exclude=["vendor"], treesitter_spec=None)
-    finder, extract_fn, dep_graph_fn, has_ts, ts_spec = registration_mod._resolve_generic_extractors(
-        path_extensions=[".py"],
-        opts=opts,
+    finder, extract_fn, dep_graph_fn, has_ts, ts_spec = (
+        registration_mod._resolve_generic_extractors(
+            path_extensions=[".py"],
+            opts=opts,
+        )
     )
     assert callable(finder)
     assert extract_fn is capabilities_mod.noop_extract_functions
@@ -374,9 +438,13 @@ def test_generic_registration_helpers(monkeypatch) -> None:
     assert ts_spec is None
 
     ts_opts = registration_mod.GenericLangOptions(
-        treesitter_spec=SimpleNamespace(import_query="(import)", resolve_import=lambda *_args: None),
+        treesitter_spec=SimpleNamespace(
+            import_query="(import)", resolve_import=lambda *_args: None
+        ),
     )
-    monkeypatch.setattr("desloppify.languages._framework.treesitter.is_available", lambda: True)
+    monkeypatch.setattr(
+        "desloppify.languages._framework.treesitter.is_available", lambda: True
+    )
     monkeypatch.setattr(
         "desloppify.languages._framework.treesitter.analysis.extractors.make_ts_extractor",
         lambda _spec, _finder: "ts-extractor",
@@ -386,9 +454,11 @@ def test_generic_registration_helpers(monkeypatch) -> None:
         lambda _spec, _finder: "ts-dep-builder",
     )
 
-    _, extract_fn, dep_graph_fn, has_ts, ts_spec = registration_mod._resolve_generic_extractors(
-        path_extensions=[".py"],
-        opts=ts_opts,
+    _, extract_fn, dep_graph_fn, has_ts, ts_spec = (
+        registration_mod._resolve_generic_extractors(
+            path_extensions=[".py"],
+            opts=ts_opts,
+        )
     )
     assert extract_fn == "ts-extractor"
     assert dep_graph_fn == "ts-dep-builder"
@@ -397,8 +467,20 @@ def test_generic_registration_helpers(monkeypatch) -> None:
 
 
 def test_build_generic_phases_includes_expected_phase_sets(monkeypatch) -> None:
-    monkeypatch.setattr(registration_mod, "_make_structural_phase", lambda _spec=None: DetectorPhase("Structural analysis", lambda *_args: ([], {})))
-    monkeypatch.setattr(registration_mod, "_make_coupling_phase", lambda _fn: DetectorPhase("Coupling + cycles + orphaned", lambda *_args: ([], {})))
+    monkeypatch.setattr(
+        registration_mod,
+        "_make_structural_phase",
+        lambda _spec=None: DetectorPhase(
+            "Structural analysis", lambda *_args: ([], {})
+        ),
+    )
+    monkeypatch.setattr(
+        registration_mod,
+        "_make_coupling_phase",
+        lambda _fn: DetectorPhase(
+            "Coupling + cycles + orphaned", lambda *_args: ([], {})
+        ),
+    )
 
     monkeypatch.setattr(
         "desloppify.languages._framework.base.phase_builders.detector_phase_security",

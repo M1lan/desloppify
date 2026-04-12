@@ -344,9 +344,7 @@ class TestDynamicImportFinder:
         assert len(targets) >= 1
         # The raw specifier should match if resolution fails,
         # or a resolved path ending in auth.py if it succeeds
-        found = any(
-            "auth" in t for t in targets
-        )
+        found = any("auth" in t for t in targets)
         assert found, f"Expected 'auth' in targets, got {targets}"
 
     def test_ignores_non_string_args(self, tmp_path):

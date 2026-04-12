@@ -24,6 +24,7 @@ _BASE_JUDGMENT_DETECTORS: frozenset[str] = frozenset(
     name for name, meta in _BASE_DETECTORS.items() if meta.needs_judgment
 )
 
+
 @dataclass
 class _DetectorRegistryState:
     detectors: dict[str, DetectorMeta] = field(default_factory=dict)
@@ -77,9 +78,7 @@ JUDGMENT_DETECTORS: Set[str] = _JudgmentDetectorsView()
 def _rebuild_judgment_detectors() -> None:
     _REGISTRY.judgment_detectors.clear()
     _REGISTRY.judgment_detectors.update(
-        name
-        for name, meta in _REGISTRY.detectors.items()
-        if meta.needs_judgment
+        name for name, meta in _REGISTRY.detectors.items() if meta.needs_judgment
     )
 
 

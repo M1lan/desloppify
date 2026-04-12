@@ -63,9 +63,9 @@ def test_ci_workflow_jobs_are_bound_to_make_targets() -> None:
         assert any(expected_cmd in run for run in runs), (
             f"{job_name} must execute `{expected_cmd}` for local/CI parity."
         )
-        assert any(step.get("uses") == "actions/setup-python@v5" for step in job["steps"]), (
-            f"{job_name} should use actions/setup-python@v5."
-        )
+        assert any(
+            step.get("uses") == "actions/setup-python@v5" for step in job["steps"]
+        ), f"{job_name} should use actions/setup-python@v5."
 
 
 def test_ci_workflow_has_expected_triggers() -> None:
@@ -125,7 +125,7 @@ def test_makefile_contains_ci_gate_targets() -> None:
 def test_ci_contracts_target_includes_phase_order_invariant() -> None:
     text = MAKEFILE.read_text()
     assert (
-        'pytest -q desloppify/tests/commands/test_lifecycle_transitions.py '
+        "pytest -q desloppify/tests/commands/test_lifecycle_transitions.py "
         '-k "assessment_then_score_when_no_review_followup"'
     ) in text
 
@@ -174,7 +174,9 @@ def test_ci_plan_required_checks_match_ci_workflow() -> None:
     ]
 
     doc = CI_PLAN.read_text()
-    section = doc.split("Required status checks:", 1)[1].split("Pull request policy:", 1)[0]
+    section = doc.split("Required status checks:", 1)[1].split(
+        "Pull request policy:", 1
+    )[0]
     documented = re.findall(r"- `([^`]+)`", section)
 
     assert documented == expected_contexts

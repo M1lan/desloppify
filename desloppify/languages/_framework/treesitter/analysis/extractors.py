@@ -19,40 +19,66 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # Parameter list node types across languages.
-_PARAM_NODE_TYPES = frozenset({
-    "parameters",
-    "parameter_list",
-    "formal_parameters",
-    "formal_parameter_list",
-    "function_type_parameters",
-    "lambda_parameters",
-    "method_parameters",
-    "params",
-})
+_PARAM_NODE_TYPES = frozenset(
+    {
+        "parameters",
+        "parameter_list",
+        "formal_parameters",
+        "formal_parameter_list",
+        "function_type_parameters",
+        "lambda_parameters",
+        "method_parameters",
+        "params",
+    }
+)
 
 # Identifier-like node types for parameter names.
-_IDENT_NODE_TYPES = frozenset({
-    "identifier",
-    "name",
-    "simple_identifier",
-    "word",
-    "pattern",
-    "shorthand_field_identifier",
-})
+_IDENT_NODE_TYPES = frozenset(
+    {
+        "identifier",
+        "name",
+        "simple_identifier",
+        "word",
+        "pattern",
+        "shorthand_field_identifier",
+    }
+)
 
 # Node types to skip when walking parameter lists (type annotations, etc.).
-_PARAM_SKIP_TYPES = frozenset({
-    "type", "type_identifier", "type_annotation", "return_type",
-    "default_value", "generic_type", "scoped_type_identifier",
-    "constrained_type_parameter", "lifetime", "attribute",
-    ":", "=", ",", "(", ")", "[", "]",
-})
+_PARAM_SKIP_TYPES = frozenset(
+    {
+        "type",
+        "type_identifier",
+        "type_annotation",
+        "return_type",
+        "default_value",
+        "generic_type",
+        "scoped_type_identifier",
+        "constrained_type_parameter",
+        "lifetime",
+        "attribute",
+        ":",
+        "=",
+        ",",
+        "(",
+        ")",
+        "[",
+        "]",
+    }
+)
 
 # Node types whose parent indicates the identifier is a type, not a param name.
-_TYPE_PARENT_TYPES = frozenset({
-    "type", "type_identifier", "type_annotation", "return_type",
-    "generic_type", "scoped_type_identifier", "constrained_type_parameter",
-})
+_TYPE_PARENT_TYPES = frozenset(
+    {
+        "type",
+        "type_identifier",
+        "type_annotation",
+        "return_type",
+        "generic_type",
+        "scoped_type_identifier",
+        "constrained_type_parameter",
+    }
+)
 
 
 def _extract_param_names(func_node) -> list[str]:
@@ -87,12 +113,14 @@ def _walk_params(node, params: list[str]) -> None:
 def _make_query(language, source: str):
     """Create a tree-sitter Query."""
     from tree_sitter import Query
+
     return Query(language, source)
 
 
 def _run_query(query, root_node) -> list[tuple[int, dict]]:
     """Run a query and return matches."""
     from tree_sitter import QueryCursor
+
     cursor = QueryCursor(query)
     return cursor.matches(root_node)
 

@@ -53,12 +53,16 @@ def test_nextjs_smells_phase_emits_smells_when_next_is_present(tmp_path: Path):
     )
 
     cfg = get_lang("javascript")
-    phase = next(p for p in cfg.phases if getattr(p, "label", "") == "Next.js framework smells")
+    phase = next(
+        p for p in cfg.phases if getattr(p, "label", "") == "Next.js framework smells"
+    )
     issues, potentials = phase.run(tmp_path, _FakeLang())
     detectors = {issue.get("detector") for issue in issues}
     assert "nextjs" in detectors
     assert potentials.get("nextjs", 0) >= 1
-    assert any("server_import_in_client" in str(issue.get("id", "")) for issue in issues)
+    assert any(
+        "server_import_in_client" in str(issue.get("id", "")) for issue in issues
+    )
 
 
 def test_nextjs_smells_phase_scans_jsx_error_and_js_middleware(tmp_path: Path):
@@ -67,7 +71,9 @@ def test_nextjs_smells_phase_scans_jsx_error_and_js_middleware(tmp_path: Path):
         "package.json",
         '{"dependencies": {"next": "14.0.0", "react": "18.3.0"}}\n',
     )
-    _write(tmp_path, "app/error.jsx", "export default function Error(){ return null }\n")
+    _write(
+        tmp_path, "app/error.jsx", "export default function Error(){ return null }\n"
+    )
     _write(
         tmp_path,
         "middleware.js",
@@ -75,7 +81,9 @@ def test_nextjs_smells_phase_scans_jsx_error_and_js_middleware(tmp_path: Path):
     )
 
     cfg = get_lang("javascript")
-    phase = next(p for p in cfg.phases if getattr(p, "label", "") == "Next.js framework smells")
+    phase = next(
+        p for p in cfg.phases if getattr(p, "label", "") == "Next.js framework smells"
+    )
     issues, potentials = phase.run(tmp_path, _FakeLang())
     ids = {issue["id"] for issue in issues}
     assert any("error_file_missing_use_client" in issue_id for issue_id in ids)

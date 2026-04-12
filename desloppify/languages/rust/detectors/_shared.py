@@ -16,25 +16,30 @@ from desloppify.languages.rust.support import (
     strip_rust_comments,
 )
 
-_USE_STATEMENT_RE = re.compile(
-    r"(?ms)^\s*(?:pub(?:\([^)]*\))?\s+)?use\s+(.+?);"
-)
+_USE_STATEMENT_RE = re.compile(r"(?ms)^\s*(?:pub(?:\([^)]*\))?\s+)?use\s+(.+?);")
 _PUB_FN_RE = re.compile(
     r'(?m)^\s*pub\s+(?:(?:async|const|unsafe)\s+)*(?:extern\s+"[^"]+"\s+)?fn\s+([A-Za-z_]\w*)\b'
 )
 _ASYNC_FN_RE = re.compile(
     r'(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?(?:(?:const|unsafe)\s+)*(?:extern\s+"[^"]+"\s+)?async\s+fn\s+([A-Za-z_]\w*)\b'
 )
-_PUBLIC_TYPE_RE = re.compile(
-    r"(?m)^\s*pub\s+(struct|enum)\s+([A-Za-z_]\w*)\b"
+_PUBLIC_TYPE_RE = re.compile(r"(?m)^\s*pub\s+(struct|enum)\s+([A-Za-z_]\w*)\b")
+_DROP_IMPL_RE = re.compile(
+    r"(?m)^\s*impl(?:\s*<[^>{}]+>)?\s+Drop\s+for\s+([A-Za-z_]\w*)\b"
 )
-_DROP_IMPL_RE = re.compile(r"(?m)^\s*impl(?:\s*<[^>{}]+>)?\s+Drop\s+for\s+([A-Za-z_]\w*)\b")
 _DROP_FN_RE = re.compile(r"(?m)^\s*fn\s+drop\s*\(\s*&mut\s+self\b")
 _FEATURE_REF_RE = re.compile(r'feature\s*=\s*"([^"\n]+)"')
 _README_RUST_FENCE_RE = re.compile(
     r"(?ms)^```(?:rust|no_run|ignore|compile_fail|should_panic)\b.*?^```"
 )
-_RUST_DOC_FENCE_ALLOWED_TAGS = {"", "rust", "no_run", "ignore", "compile_fail", "should_panic"}
+_RUST_DOC_FENCE_ALLOWED_TAGS = {
+    "",
+    "rust",
+    "no_run",
+    "ignore",
+    "compile_fail",
+    "should_panic",
+}
 _GETTER_RE = re.compile(r"^get_[A-Za-z_]\w*$")
 _INTO_RE = re.compile(r"^into_[A-Za-z_]\w*$")
 _WRAPPER_GETTER_NAMES = {"get_ref", "get_mut"}
@@ -221,7 +226,9 @@ def _declared_features(manifest_path: Path) -> set[str]:
             if not isinstance(section, dict):
                 continue
             for dependency_group in ("dependencies", "build-dependencies"):
-                declared.update(_optional_dependency_features(section, dependency_group))
+                declared.update(
+                    _optional_dependency_features(section, dependency_group)
+                )
     return declared
 
 
@@ -243,7 +250,10 @@ def _is_internal_module(context) -> bool:
 
 
 def _is_library_api_file(context) -> bool:
-    return _is_internal_module(context) and (context.manifest_dir / "src" / "lib.rs").is_file()
+    return (
+        _is_internal_module(context)
+        and (context.manifest_dir / "src" / "lib.rs").is_file()
+    )
 
 
 def _is_runtime_source_file(context) -> bool:
@@ -382,7 +392,11 @@ def _has_inline_rust_doc_examples(content: str) -> bool:
 
 def _is_test_content(filepath: Path, content: str) -> bool:
     normalized = rel(filepath)
-    return normalized.startswith("tests/") or "#[cfg(test)]" in content or "#[test]" in content
+    return (
+        normalized.startswith("tests/")
+        or "#[cfg(test)]" in content
+        or "#[test]" in content
+    )
 
 
 def _receiver_from_signature(signature: str) -> str | None:
@@ -457,7 +471,9 @@ def _find_matching_brace(text: str, start_index: int) -> int | None:
     return None
 
 
-def _find_matching_delimiter(text: str, start_index: int, opening: str, closing: str) -> int | None:
+def _find_matching_delimiter(
+    text: str, start_index: int, opening: str, closing: str
+) -> int | None:
     depth = 0
     for index in range(start_index, len(text)):
         char = text[index]
@@ -489,7 +505,11 @@ def _preceding_metadata(content: str, start: int) -> str:
                 break
             index -= 1
             continue
-        if stripped.startswith("#[") or stripped.startswith("///") or stripped.startswith("//!"):
+        if (
+            stripped.startswith("#[")
+            or stripped.startswith("///")
+            or stripped.startswith("//!")
+        ):
             attrs.append(stripped)
             index -= 1
             continue
@@ -509,7 +529,10 @@ def _optional_dependency_features(data: dict, section_name: str) -> set[str]:
 
 
 def _has_python_binding_attrs(attrs: str) -> bool:
-    return any(token in attrs for token in ("#[getter", "#[setter", "#[pymethods", "#[pyfunction"))
+    return any(
+        token in attrs
+        for token in ("#[getter", "#[setter", "#[pymethods", "#[pyfunction")
+    )
 
 
 def _argument_count(signature: str) -> int:
@@ -519,27 +542,42 @@ def _argument_count(signature: str) -> int:
     close_index = _find_matching_delimiter(signature, open_index, "(", ")")
     if close_index is None:
         return 0
-    params = [chunk.strip() for chunk in signature[open_index + 1 : close_index].split(",")]
+    params = [
+        chunk.strip() for chunk in signature[open_index + 1 : close_index].split(",")
+    ]
     return len([param for param in params if param])
 
 
 def _looks_like_plain_getter(block: PublicFnBlock) -> bool:
-    return block.receiver in {"&self", "&mut self"} and _argument_count(block.signature) == 1
+    return (
+        block.receiver in {"&self", "&mut self"}
+        and _argument_count(block.signature) == 1
+    )
 
 
 def _has_public_panic_path(body: str) -> bool:
     stripped = strip_rust_comments(body)
     if re.search(r"\b(?:panic|todo|unimplemented)!\s*\(", stripped):
         return True
-    return bool(re.search(r"\.\s*(?:lock|read|write)\s*\(\)\s*\.\s*(?:unwrap|expect)\s*\(", stripped))
+    return bool(
+        re.search(
+            r"\.\s*(?:lock|read|write)\s*\(\)\s*\.\s*(?:unwrap|expect)\s*\(", stripped
+        )
+    )
 
 
 def _should_skip_future_proofing(content: str, block: PublicTypeBlock) -> bool:
     preamble = block.preamble.lower()
     attrs = block.attrs.lower()
-    if any(token in attrs for token in ("repr(c)", "non_exhaustive", "pyclass", "doc(hidden)")):
+    if any(
+        token in attrs
+        for token in ("repr(c)", "non_exhaustive", "pyclass", "doc(hidden)")
+    ):
         return True
-    if any(token in preamble for token in ("unstable", "internal", "not part of the stable api")):
+    if any(
+        token in preamble
+        for token in ("unstable", "internal", "not part of the stable api")
+    ):
         return True
     if _looks_like_public_error_type(content, block.name):
         return True
@@ -571,7 +609,9 @@ def _has_thread_assertion(corpus: str, type_name: str) -> bool:
         return False
     return bool(
         re.search(rf"\b{re.escape(type_name)}\b.*\b(?:Send|Sync)\b", corpus, re.DOTALL)
-        or re.search(rf"\b(?:Send|Sync)\b.*\b{re.escape(type_name)}\b", corpus, re.DOTALL)
+        or re.search(
+            rf"\b(?:Send|Sync)\b.*\b{re.escape(type_name)}\b", corpus, re.DOTALL
+        )
     )
 
 
@@ -640,16 +680,24 @@ def _has_doc_comments(metadata: str) -> bool:
     return "///" in metadata or "//!" in metadata
 
 
-def _should_skip_unsafe_api_match(detector_name: str, content: str, offset: int) -> bool:
+def _should_skip_unsafe_api_match(
+    detector_name: str, content: str, offset: int
+) -> bool:
     if _looks_like_function_definition_token(content, offset):
         return True
     if _has_local_safety_rationale(content, offset):
         return True
-    if detector_name == "transmute" and _looks_like_repr_transparent_cast(content, offset):
+    if detector_name == "transmute" and _looks_like_repr_transparent_cast(
+        content, offset
+    ):
         return True
-    if detector_name == "from_raw_parts" and _looks_like_from_raw_parts_wrapper_impl(content, offset):
+    if detector_name == "from_raw_parts" and _looks_like_from_raw_parts_wrapper_impl(
+        content, offset
+    ):
         return True
-    if detector_name == "from_raw_parts" and _looks_like_documented_vec_rebuild(content, offset):
+    if detector_name == "from_raw_parts" and _looks_like_documented_vec_rebuild(
+        content, offset
+    ):
         return True
     return False
 
@@ -659,7 +707,9 @@ def _has_local_safety_rationale(content: str, offset: int) -> bool:
     comments = _preceding_comment_block(content[:line_start])
     if not comments:
         return False
-    return bool(_SAFETY_COMMENT_RE.search(comments) or _UTF8_RATIONALE_RE.search(comments))
+    return bool(
+        _SAFETY_COMMENT_RE.search(comments) or _UTF8_RATIONALE_RE.search(comments)
+    )
 
 
 def _preceding_comment_block(prefix: str) -> str:

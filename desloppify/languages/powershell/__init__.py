@@ -10,7 +10,7 @@ generic_lang(
         {
             "label": "PSScriptAnalyzer",
             "cmd": (
-                "pwsh -Command \"Invoke-ScriptAnalyzer -Path . -Recurse"
+                'pwsh -Command "Invoke-ScriptAnalyzer -Path . -Recurse'
                 " | ForEach-Object { '{0}:{1}: {2}' -f $_.ScriptName,$_.Line,$_.Message }\""
             ),
             "fmt": "gnu",

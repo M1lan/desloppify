@@ -12,10 +12,12 @@ from desloppify.engine._state.filtering import make_issue
 from desloppify.languages._framework.base.shared_phases import (
     run_coupling_phase,
     run_structural_phase,
- )
+)
 from desloppify.languages._framework.base.types import LangRuntimeContract
 from desloppify.languages._framework.generic_parts.parsers import PARSERS
-from desloppify.languages._framework.generic_parts.tool_factories import _record_tool_failure_coverage
+from desloppify.languages._framework.generic_parts.tool_factories import (
+    _record_tool_failure_coverage,
+)
 from desloppify.languages._framework.generic_parts.tool_runner import run_tool_result
 from desloppify.languages.cxx._helpers import build_cxx_dep_graph
 from desloppify.languages.cxx.extractors import find_cxx_files
@@ -23,24 +25,30 @@ from desloppify.state_io import Issue
 
 CXX_COMPLEXITY_SIGNALS = [
     ComplexitySignal("includes", r"(?m)^\s*#include\s+", weight=1, threshold=20),
-    ComplexitySignal("TODOs", r"(?m)//\s*(?:TODO|FIXME|HACK|XXX)", weight=2, threshold=0),
+    ComplexitySignal(
+        "TODOs", r"(?m)//\s*(?:TODO|FIXME|HACK|XXX)", weight=2, threshold=0
+    ),
     ComplexitySignal(
         "types",
         r"(?m)^\s*(?:class|struct|enum)\s+[A-Za-z_]\w*",
         weight=2,
         threshold=6,
     ),
-    ComplexitySignal("namespaces", r"(?m)^\s*namespace\s+[A-Za-z_]\w*", weight=1, threshold=4),
+    ComplexitySignal(
+        "namespaces", r"(?m)^\s*namespace\s+[A-Za-z_]\w*", weight=1, threshold=4
+    ),
 ]
 
 
 _CPPCHECK_BATCH_SIZE = 25
 _CPPCHECK_SMELL_ID = "cppcheck_issue"
-_CPPCHECK_CMD_PREFIX = "cppcheck --template='{file}:{line}: {severity}: {message}' --enable=all --quiet"
+_CPPCHECK_CMD_PREFIX = (
+    "cppcheck --template='{file}:{line}: {severity}: {message}' --enable=all --quiet"
+)
 
 
 def _cppcheck_file_args(files: list[str]) -> str:
-    return " ".join(shlex.quote(filepath.replace('\\', '/')) for filepath in files)
+    return " ".join(shlex.quote(filepath.replace("\\", "/")) for filepath in files)
 
 
 def _run_cppcheck_batch(scan_root: Path, files: list[str]):
@@ -54,7 +62,7 @@ def _run_cppcheck_batch(scan_root: Path, files: list[str]):
 def phase_cppcheck_issue(
     path: Path,
     lang: LangRuntimeContract,
- ) -> tuple[list[Issue], dict[str, int]]:
+) -> tuple[list[Issue], dict[str, int]]:
     """Run cppcheck in batches with per-file retry on timeout/error."""
     files = find_cxx_files(path)
     if not files:

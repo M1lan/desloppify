@@ -85,7 +85,9 @@ def parse_json(output: str, scan_path: Path) -> list[dict]:
         if not isinstance(item, dict):
             continue
         filename = item.get("file") or item.get("filename") or item.get("path") or ""
-        line = _coerce_line(item.get("line") or item.get("line_no") or item.get("row") or 0)
+        line = _coerce_line(
+            item.get("line") or item.get("line_no") or item.get("row") or 0
+        )
         message = item.get("message") or item.get("text") or item.get("reason") or ""
         if filename and message and line is not None:
             entries.append(
@@ -111,7 +113,9 @@ def parse_rubocop(output: str, scan_path: Path) -> list[dict]:
             line = _coerce_line(loc.get("line", 0))
             message = offense.get("message", "")
             if filepath and message and line is not None:
-                entries.append({"file": str(filepath), "line": line, "message": str(message)})
+                entries.append(
+                    {"file": str(filepath), "line": line, "message": str(message)}
+                )
     return entries
 
 
@@ -160,7 +164,9 @@ def parse_credo(output: str, scan_path: Path) -> list[dict]:
         if check:
             message = f"{message} ({check})"
         if filename and message and line is not None:
-            entries.append({"file": str(filename), "line": line, "message": str(message)})
+            entries.append(
+                {"file": str(filename), "line": line, "message": str(message)}
+            )
     return entries
 
 
@@ -177,7 +183,9 @@ def parse_eslint(output: str, scan_path: Path) -> list[dict]:
             line = _coerce_line(msg.get("line", 0))
             message = msg.get("message", "")
             if filepath and message and line is not None:
-                entries.append({"file": str(filepath), "line": line, "message": str(message)})
+                entries.append(
+                    {"file": str(filepath), "line": line, "message": str(message)}
+                )
     return entries
 
 
@@ -196,7 +204,9 @@ def parse_phpstan(output: str, scan_path: Path) -> list[dict]:
             line = _coerce_line(msg.get("line", 0))
             message = msg.get("message", "")
             if filepath and message and line is not None:
-                entries.append({"file": str(filepath), "line": line, "message": str(message)})
+                entries.append(
+                    {"file": str(filepath), "line": line, "message": str(message)}
+                )
     return entries
 
 
@@ -258,7 +268,11 @@ def parse_next_lint(output: str, scan_path: Path) -> tuple[list[dict], dict]:
         if first is None:
             continue
         line = _coerce_line(first.get("line", 0)) or 1
-        msg = first.get("message") if isinstance(first.get("message"), str) else "Lint issue"
+        msg = (
+            first.get("message")
+            if isinstance(first.get("message"), str)
+            else "Lint issue"
+        )
         entries.append(
             {
                 "file": rel,
@@ -271,8 +285,12 @@ def parse_next_lint(output: str, scan_path: Path) -> tuple[list[dict], dict]:
                         {
                             "line": _coerce_line(m.get("line", 0)) or 0,
                             "column": _coerce_line(m.get("column", 0)) or 0,
-                            "ruleId": m.get("ruleId", "") if isinstance(m.get("ruleId", ""), str) else "",
-                            "message": m.get("message", "") if isinstance(m.get("message", ""), str) else "",
+                            "ruleId": m.get("ruleId", "")
+                            if isinstance(m.get("ruleId", ""), str)
+                            else "",
+                            "message": m.get("message", "")
+                            if isinstance(m.get("message", ""), str)
+                            else "",
                             "severity": _coerce_line(m.get("severity", 0)) or 0,
                         }
                         for m in messages

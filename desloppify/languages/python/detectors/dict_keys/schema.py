@@ -24,7 +24,9 @@ def _jaccard(a: frozenset, b: frozenset) -> float:
 def _read_python_file(filepath: str) -> str | None:
     try:
         file_path = (
-            Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+            Path(filepath)
+            if Path(filepath).is_absolute()
+            else get_project_root() / filepath
         )
         return file_path.read_text()
     except (OSError, UnicodeDecodeError) as exc:
@@ -83,7 +85,9 @@ def _collect_schema_literals(files: list[str]) -> list[dict]:
     return literals
 
 
-def _cluster_by_jaccard(literals: list[dict], *, threshold: float = 0.8) -> list[list[dict]]:
+def _cluster_by_jaccard(
+    literals: list[dict], *, threshold: float = 0.8
+) -> list[list[dict]]:
     """Greedy single-linkage clustering by Jaccard similarity threshold."""
     clusters: list[list[dict]] = []
     assigned = [False] * len(literals)

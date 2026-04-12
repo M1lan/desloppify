@@ -41,9 +41,7 @@ SNAPSHOT_PATTERNS = [re.compile(r"\binsta::assert_")]
 TEST_FUNCTION_RE = re.compile(r"(?m)^\s*#\s*\[\s*test\s*\]")
 BARREL_BASENAMES: set[str] = {"lib.rs"}
 
-_INLINE_TEST_RE = re.compile(
-    r"(?m)#\s*\[\s*(?:cfg\s*\(\s*test\s*\)|test)\s*\]"
-)
+_INLINE_TEST_RE = re.compile(r"(?m)#\s*\[\s*(?:cfg\s*\(\s*test\s*\)|test)\s*\]")
 _LOGIC_RE = re.compile(
     r"(?m)^\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?"
     r"(?:fn|struct|enum|trait|impl)\b"

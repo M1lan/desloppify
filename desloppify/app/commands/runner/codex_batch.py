@@ -16,7 +16,9 @@ from desloppify.app.commands.review.runner_process_impl.attempts import (
     resolve_retry_config,
     run_batch_attempt,
 )
-from desloppify.app.commands.review.runner_process_impl.io import extract_payload_from_log
+from desloppify.app.commands.review.runner_process_impl.io import (
+    extract_payload_from_log,
+)
 from desloppify.app.commands.review.runner_process_impl.types import (
     CodexBatchRunnerDeps,
     FollowupScanDeps,
@@ -75,7 +77,9 @@ def _wrap_cmd_c(cmd: list[str]) -> list[str]:
     return cmd
 
 
-def codex_batch_command(*, prompt: str, repo_root: Path, output_file: Path) -> list[str]:
+def codex_batch_command(
+    *, prompt: str, repo_root: Path, output_file: Path
+) -> list[str]:
     """Build one codex exec command line for a batch prompt."""
     effort = os.environ.get("DESLOPPIFY_CODEX_REASONING_EFFORT", "low").strip().lower()
     if effort not in {"low", "medium", "high", "xhigh"}:

@@ -22,7 +22,11 @@ def detect_context_nesting(path: Path) -> tuple[list[dict], int]:
     for filepath in find_tsx_files(path):
         total_files += 1
         try:
-            p = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+            p = (
+                Path(filepath)
+                if Path(filepath).is_absolute()
+                else get_project_root() / filepath
+            )
             content = p.read_text()
             lines = content.splitlines()
         except (OSError, UnicodeDecodeError) as exc:
@@ -52,7 +56,9 @@ def detect_context_nesting(path: Path) -> tuple[list[dict], int]:
                     depth -= 1
 
         if max_depth > 5:
-            entries.append({"file": filepath, "depth": max_depth, "providers": providers_at_max})
+            entries.append(
+                {"file": filepath, "depth": max_depth, "providers": providers_at_max}
+            )
 
     return sorted(entries, key=lambda e: -e["depth"]), total_files
 

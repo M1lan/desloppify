@@ -95,9 +95,7 @@ def _apply_inline_removals(
             lines[line_idx] = new_line
 
 
-def fix_unused_vars(
-    entries: list[dict], *, dry_run: bool = False
-) -> FixResult:
+def fix_unused_vars(entries: list[dict], *, dry_run: bool = False) -> FixResult:
     """Remove unused names from destructuring patterns.
 
     Returns a FixResult with entries and skip_reasons.

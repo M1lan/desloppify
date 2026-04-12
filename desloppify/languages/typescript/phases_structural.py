@@ -42,7 +42,10 @@ def _detect_structural_signals(
     )
     for entry in large_entries:
         add_structural_signal(
-            structural, entry["file"], f"large ({entry['loc']} LOC)", {"loc": entry["loc"]}
+            structural,
+            entry["file"],
+            f"large ({entry['loc']} LOC)",
+            {"loc": entry["loc"]},
         )
 
     complexity_entries, _ = complexity_detector_mod.detect_complexity(
@@ -56,7 +59,10 @@ def _detect_structural_signals(
             structural,
             entry["file"],
             f"complexity score {entry['score']}",
-            {"complexity_score": entry["score"], "complexity_signals": entry["signals"]},
+            {
+                "complexity_score": entry["score"],
+                "complexity_signals": entry["signals"],
+            },
         )
         lang.complexity_map[entry["file"]] = entry["score"]
 
@@ -129,7 +135,9 @@ def _detect_flat_dirs(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue
     return results, dir_count
 
 
-def _detect_props_bloat(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], int]:
+def _detect_props_bloat(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], int]:
     """Detect bloated prop interfaces in TypeScript files."""
     results: list[Issue] = []
     props_thresh = lang.props_threshold
@@ -207,7 +215,9 @@ def phase_structural(
     potentials = {
         "structural": adjust_potential(lang.zone_map, file_count),
         "flat_dirs": dir_count,
-        "props": max(prop_count, len(passthrough_results)) if prop_count else len(passthrough_results),
+        "props": max(prop_count, len(passthrough_results))
+        if prop_count
+        else len(passthrough_results),
     }
     return results, potentials
 

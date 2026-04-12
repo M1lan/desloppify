@@ -38,9 +38,7 @@ from desloppify.languages.typescript.detectors.deps.runtime import (
 )
 
 _FRAMEWORK_EXTENSIONS = (".svelte", ".vue", ".astro")
-_IMPORT_SPEC_RE = re.compile(
-    r"""(?:from\s+|import\s+)(?:type\s+)?['"]([^'"]+)['"]"""
-)
+_IMPORT_SPEC_RE = re.compile(r"""(?:from\s+|import\s+)(?:type\s+)?['"]([^'"]+)['"]""")
 _DENO_EXTERNAL_PREFIXES = ("http://", "https://", "npm:", "jsr:")
 
 
@@ -159,7 +157,9 @@ def cmd_deps(args: Any) -> None:
         )
         return
 
-    print(colorize(f"\nMost coupled files: {len(scored)} with >5 connections\n", "bold"))
+    print(
+        colorize(f"\nMost coupled files: {len(scored)} with >5 connections\n", "bold")
+    )
     rows = []
     for s in scored[: args.top]:
         rows.append(

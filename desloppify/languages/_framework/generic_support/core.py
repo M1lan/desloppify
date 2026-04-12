@@ -94,9 +94,11 @@ def generic_lang(
 
     tool_specs = normalize_tool_specs(tools, supported_formats=set(_PARSERS))
     fixers = _register_generic_tool_specs(tool_specs)
-    file_finder, extract_fn, dep_graph_fn, has_treesitter, ts_spec = _resolve_generic_extractors(
-        path_extensions=extensions,
-        opts=opts,
+    file_finder, extract_fn, dep_graph_fn, has_treesitter, ts_spec = (
+        _resolve_generic_extractors(
+            path_extensions=extensions,
+            opts=opts,
+        )
     )
     phases = _build_generic_phases(
         tool_specs=tool_specs,
@@ -130,9 +132,15 @@ def generic_lang(
         complexity_threshold=15,
         default_scan_profile="objective",
         detect_markers=opts.detect_markers or [],
-        external_test_dirs=opts.external_test_dirs if opts.external_test_dirs is not None else ["tests", "test"],
-        test_file_extensions=opts.test_file_extensions if opts.test_file_extensions is not None else extensions,
-        zone_rules=opts.zone_rules if opts.zone_rules is not None else generic_zone_rules(extensions),
+        external_test_dirs=opts.external_test_dirs
+        if opts.external_test_dirs is not None
+        else ["tests", "test"],
+        test_file_extensions=opts.test_file_extensions
+        if opts.test_file_extensions is not None
+        else extensions,
+        zone_rules=opts.zone_rules
+        if opts.zone_rules is not None
+        else generic_zone_rules(extensions),
     )
 
     if frameworks:

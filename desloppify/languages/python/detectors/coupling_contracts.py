@@ -76,7 +76,11 @@ def detect_implicit_mixin_contracts(
     candidates = 0
 
     for filepath in find_py_files(path):
-        full = Path(filepath) if Path(filepath).is_absolute() else get_project_root() / filepath
+        full = (
+            Path(filepath)
+            if Path(filepath).is_absolute()
+            else get_project_root() / filepath
+        )
         try:
             content = full.read_text()
             tree = ast.parse(content, filename=str(full))
@@ -97,7 +101,9 @@ def detect_implicit_mixin_contracts(
             required = {
                 name
                 for name in (reads - writes - declared)
-                if name and not name.startswith("__") and name not in _IGNORED_SELF_ATTRS
+                if name
+                and not name.startswith("__")
+                and name not in _IGNORED_SELF_ATTRS
             }
             if len(required) < min_required_attrs:
                 continue
@@ -115,7 +121,9 @@ def detect_implicit_mixin_contracts(
                 }
             )
 
-    entries.sort(key=lambda item: (-item["required_count"], item["file"], item["class"]))
+    entries.sort(
+        key=lambda item: (-item["required_count"], item["file"], item["class"])
+    )
     return entries, candidates
 
 

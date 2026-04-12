@@ -76,7 +76,9 @@ def test_runtime_entrypoint_uses_hook_when_available(tmp_path, monkeypatch):
     assert heuristics_mod._is_runtime_entrypoint(str(source), "typescript") is True
 
 
-def test_runtime_entrypoint_uses_typescript_fallback_for_supabase(tmp_path, monkeypatch):
+def test_runtime_entrypoint_uses_typescript_fallback_for_supabase(
+    tmp_path, monkeypatch
+):
     source = tmp_path / "supabase" / "functions" / "create-user" / "index.ts"
     source.parent.mkdir(parents=True, exist_ok=True)
     source.write_text("export const handler = () => {};\n")

@@ -15,6 +15,7 @@ def _count_signature_params(params_blob: str) -> int:
     filtered = [part for part in parts if part not in {"self", "cls", "this"}]
     return len(filtered)
 
+
 def _extract_type_names(blob: str) -> list[str]:
     """Extract candidate type names from implements/inherits blobs."""
     names: list[str] = []
@@ -30,9 +31,11 @@ def _extract_type_names(blob: str) -> list[str]:
         names.append(token)
     return names
 
+
 def _score_clamped(raw: float) -> int:
     """Clamp score-like values to [0, 100]."""
     return int(max(0, min(100, round(raw))))
+
 
 def _strip_docstring(body: list[ast.stmt]) -> list[ast.stmt]:
     """Strip a leading docstring from a function/method body."""
@@ -44,6 +47,7 @@ def _strip_docstring(body: list[ast.stmt]) -> list[ast.stmt]:
     ):
         return body[1:]
     return body
+
 
 __all__ = [
     "_count_signature_params",

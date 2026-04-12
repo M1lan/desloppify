@@ -42,7 +42,9 @@ def test_detects_cross_module_private_import(tmp_path: Path):
 
 def test_skips_test_file_private_import(tmp_path: Path):
     target = _write(tmp_path / "pkg" / "helpers.py", "VALUE = 1\n")
-    source = _write(tmp_path / "tests" / "test_service.py", "from pkg.helpers import _secret\n")
+    source = _write(
+        tmp_path / "tests" / "test_service.py", "from pkg.helpers import _secret\n"
+    )
 
     dep_graph = {
         source: _graph_entry(imports={target}),

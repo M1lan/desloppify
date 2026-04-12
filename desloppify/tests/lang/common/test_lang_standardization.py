@@ -10,7 +10,10 @@ from desloppify.languages import available_langs, get_lang
 
 def _full_langs() -> list[str]:
     """Return only languages with full (non-generic) plugin structure."""
-    return [lang for lang in available_langs() if get_lang(lang).integration_depth == "full"]
+    return [
+        lang for lang in available_langs() if get_lang(lang).integration_depth == "full"
+    ]
+
 
 TOP_LEVEL_MODULES = (
     "extractors",
@@ -72,9 +75,7 @@ def test_each_language_has_review_data_payloads():
     for lang in _full_langs():
         review_mod = importlib.import_module(f"desloppify.languages.{lang}.review")
         lang_dir = Path(review_mod.__file__).resolve().parent
-        assert (
-            lang_dir / "review_data" / "dimensions.override.json"
-        ).is_file()
+        assert (lang_dir / "review_data" / "dimensions.override.json").is_file()
 
 
 def test_each_language_test_coverage_module_contract():

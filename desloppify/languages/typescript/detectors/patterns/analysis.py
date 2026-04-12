@@ -29,8 +29,7 @@ def _build_census(
 
     compiled: dict[str, dict[str, re.Pattern]] = {
         family_name: {
-            name: re.compile(regex)
-            for name, regex in family["patterns"].items()
+            name: re.compile(regex) for name, regex in family["patterns"].items()
         }
         for family_name, family in PATTERN_FAMILIES.items()
     }
@@ -38,10 +37,16 @@ def _build_census(
     for filepath in files:
         try:
             area = get_area(filepath)
-            p = Path(filepath) if Path(filepath).is_absolute() else Path(resolve_path(filepath))
+            p = (
+                Path(filepath)
+                if Path(filepath).is_absolute()
+                else Path(resolve_path(filepath))
+            )
             content = p.read_text()
         except (OSError, UnicodeDecodeError) as exc:
-            log_best_effort_failure(logger, f"read TypeScript pattern candidate {filepath}", exc)
+            log_best_effort_failure(
+                logger, f"read TypeScript pattern candidate {filepath}", exc
+            )
             continue
 
         for family_name, patterns in compiled.items():
@@ -50,7 +55,7 @@ def _build_census(
                 if not match:
                     continue
                 census[area][family_name].add(name)
-                line = content[:match.start()].count("\n") + 1
+                line = content[: match.start()].count("\n") + 1
                 evidence[area][family_name][name].append(
                     {"file": rel(filepath), "line": line}
                 )
@@ -72,7 +77,9 @@ def detect_pattern_anomalies(path: Path) -> DetectorResult[dict]:
 
     total_areas = len(census)
     if total_areas < 5:
-        return DetectorResult(entries=[], population_kind="areas", population_size=total_areas)
+        return DetectorResult(
+            entries=[], population_kind="areas", population_size=total_areas
+        )
 
     competing_families = {
         name: fam
@@ -139,7 +146,9 @@ def detect_pattern_anomalies(path: Path) -> DetectorResult[dict]:
             )
 
     return DetectorResult(
-        entries=sorted(anomalies, key=lambda a: (-a["pattern_count"], a["area"], a["family"])),
+        entries=sorted(
+            anomalies, key=lambda a: (-a["pattern_count"], a["area"], a["family"])
+        ),
         population_kind="areas",
         population_size=total_areas,
     )

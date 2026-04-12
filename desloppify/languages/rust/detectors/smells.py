@@ -34,7 +34,9 @@ _UNSAFE_SMELL_ID = "undocumented_unsafe"
 
 def detect_smells(path: Path) -> tuple[list[dict], int]:
     """Detect Rust-specific code smell patterns across runtime source files."""
-    smell_counts: dict[str, list[dict]] = {check["id"]: [] for check in RUST_SMELL_CHECKS}
+    smell_counts: dict[str, list[dict]] = {
+        check["id"]: [] for check in RUST_SMELL_CHECKS
+    }
     total_files = 0
 
     for filepath in find_rust_files(path):
@@ -69,7 +71,9 @@ def detect_smells(path: Path) -> tuple[list[dict], int]:
                 "matches": matches[:50],
             }
         )
-    entries.sort(key=lambda entry: (SEVERITY_ORDER.get(entry["severity"], 9), -entry["count"]))
+    entries.sort(
+        key=lambda entry: (SEVERITY_ORDER.get(entry["severity"], 9), -entry["count"])
+    )
     return entries, total_files
 
 

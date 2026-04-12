@@ -107,7 +107,11 @@ def detect_with_knip(path: Path) -> list[dict] | None:
             raw_pos = export.get("pos", {})
             if isinstance(raw_pos, dict):
                 start = raw_pos.get("start", {})
-                line = start.get("line", 0) if isinstance(start, dict) else (start if isinstance(start, int) else 0)
+                line = (
+                    start.get("line", 0)
+                    if isinstance(start, dict)
+                    else (start if isinstance(start, int) else 0)
+                )
             elif isinstance(raw_pos, int):
                 line = raw_pos
             else:
@@ -121,7 +125,11 @@ def detect_with_knip(path: Path) -> list[dict] | None:
             raw_pos = export.get("pos", {})
             if isinstance(raw_pos, dict):
                 start = raw_pos.get("start", {})
-                line = start.get("line", 0) if isinstance(start, dict) else (start if isinstance(start, int) else 0)
+                line = (
+                    start.get("line", 0)
+                    if isinstance(start, dict)
+                    else (start if isinstance(start, int) else 0)
+                )
             elif isinstance(raw_pos, int):
                 line = raw_pos
             else:

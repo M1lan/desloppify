@@ -654,7 +654,11 @@ def test_run_rustdoc_result_scans_each_workspace_library_package(tmp_path):
     commands: list[str] = []
 
     metadata = {
-        "workspace_members": ["pkg-a 0.1.0 (path+file:///workspace/pkg-a)", "pkg-b 0.1.0 (path+file:///workspace/pkg-b)", "pkg-c 0.1.0 (path+file:///workspace/pkg-c)"],
+        "workspace_members": [
+            "pkg-a 0.1.0 (path+file:///workspace/pkg-a)",
+            "pkg-b 0.1.0 (path+file:///workspace/pkg-b)",
+            "pkg-c 0.1.0 (path+file:///workspace/pkg-c)",
+        ],
         "packages": [
             {
                 "id": "pkg-a 0.1.0 (path+file:///workspace/pkg-a)",
@@ -673,6 +677,7 @@ def test_run_rustdoc_result_scans_each_workspace_library_package(tmp_path):
             },
         ],
     }
+
     def rustdoc_message(file_name: str, line_no: int) -> str:
         return json.dumps(
             {
@@ -695,7 +700,9 @@ def test_run_rustdoc_result_scans_each_workspace_library_package(tmp_path):
         command = args[2] if args[:2] == ["/bin/sh", "-lc"] else " ".join(args)
         commands.append(command)
         if command == "cargo metadata --format-version=1 --no-deps":
-            return subprocess.CompletedProcess(args=args, returncode=0, stdout=json.dumps(metadata), stderr="")
+            return subprocess.CompletedProcess(
+                args=args, returncode=0, stdout=json.dumps(metadata), stderr=""
+            )
         if "--package pkg-a" in command:
             return subprocess.CompletedProcess(
                 args=args,
@@ -742,9 +749,13 @@ def test_run_rustdoc_result_returns_error_for_unparsed_package_failure(tmp_path)
     def runner(args, **kwargs):
         command = args[2] if args[:2] == ["/bin/sh", "-lc"] else " ".join(args)
         if command == "cargo metadata --format-version=1 --no-deps":
-            return subprocess.CompletedProcess(args=args, returncode=0, stdout=json.dumps(metadata), stderr="")
+            return subprocess.CompletedProcess(
+                args=args, returncode=0, stdout=json.dumps(metadata), stderr=""
+            )
         if "--package pkg-a" in command:
-            return subprocess.CompletedProcess(args=args, returncode=2, stdout="not json", stderr="")
+            return subprocess.CompletedProcess(
+                args=args, returncode=2, stdout="not json", stderr=""
+            )
         raise AssertionError(f"unexpected command: {command}")
 
     result = run_rustdoc_result(workspace, run_subprocess=runner)

@@ -27,7 +27,9 @@ from desloppify.app.commands.review.importing.cmd import (
 )
 from desloppify.app.commands.review.importing.flags import ReviewImportConfig
 from desloppify.app.commands.review.prepare import do_prepare as _do_prepare
-from desloppify.app.commands.review.runtime.setup import setup_lang_concrete as _setup_lang
+from desloppify.app.commands.review.runtime.setup import (
+    setup_lang_concrete as _setup_lang,
+)
 from desloppify.base.exception_sets import CommandError
 from desloppify.engine.policy.zones import Zone, ZoneRule
 from desloppify.intelligence.review import (
@@ -169,13 +171,17 @@ class TestCmdReviewPrepare:
         lang = MagicMock()
         lang.name = "typescript"
 
-        with patch("desloppify.app.commands.review.importing.cmd.save_state", mock_save):
+        with patch(
+            "desloppify.app.commands.review.importing.cmd.save_state", mock_save
+        ):
             _do_import(str(issues_file), empty_state, lang, "fake_sp")
 
         assert saved["sp"] == "fake_sp"
         assert len(empty_state["work_items"]) == 1
 
-    def test_do_prepare_prints_narrative_reminders(self, mock_lang_with_zones, empty_state, tmp_path, capsys):
+    def test_do_prepare_prints_narrative_reminders(
+        self, mock_lang_with_zones, empty_state, tmp_path, capsys
+    ):
         from unittest.mock import MagicMock, patch
 
         from desloppify.app.commands.review.prepare import do_prepare as _do_prepare
@@ -197,14 +203,25 @@ class TestCmdReviewPrepare:
 
         def _fake_narrative(_state, **kwargs):
             captured_kwargs.update(kwargs)
-            return {"reminders": [{"type": "review_stale", "message": "Design review is stale."}]}
+            return {
+                "reminders": [
+                    {"type": "review_stale", "message": "Design review is stale."}
+                ]
+            }
 
-        with patch(
-            "desloppify.app.commands.review.prepare.setup_lang_concrete",
-            return_value=(mock_lang_with_zones, file_list),
-        ), \
-             patch("desloppify.app.commands.review.prepare.write_query", lambda _data: None), \
-             patch("desloppify.intelligence.narrative.core.compute_narrative", _fake_narrative):
+        with (
+            patch(
+                "desloppify.app.commands.review.prepare.setup_lang_concrete",
+                return_value=(mock_lang_with_zones, file_list),
+            ),
+            patch(
+                "desloppify.app.commands.review.prepare.write_query", lambda _data: None
+            ),
+            patch(
+                "desloppify.intelligence.narrative.core.compute_narrative",
+                _fake_narrative,
+            ),
+        ):
             _do_prepare(
                 args,
                 empty_state,
@@ -256,7 +273,9 @@ class TestCmdReviewPrepare:
                 "desloppify.app.commands.review.packet.build.prepare_holistic_review",
                 side_effect=_fake_prepare_holistic_review,
             ),
-            patch("desloppify.app.commands.review.prepare.write_query", lambda _data: None),
+            patch(
+                "desloppify.app.commands.review.prepare.write_query", lambda _data: None
+            ),
         ):
             _do_prepare(
                 args,
@@ -268,14 +287,24 @@ class TestCmdReviewPrepare:
 
         assert captured_limit["max_files_per_batch"] == 17
 
-    def test_do_import_untrusted_assessment_only_payload_imports_issues_only(self, empty_state, tmp_path):
+    def test_do_import_untrusted_assessment_only_payload_imports_issues_only(
+        self, empty_state, tmp_path
+    ):
         from unittest.mock import MagicMock
 
         from desloppify.app.commands.review.importing.cmd import do_import as _do_import
 
         empty_state["subjective_assessments"] = {
-            "naming_quality": {"score": 90, "source": "per_file", "assessed_at": "2026-02-01T00:00:00Z"},
-            "logic_clarity": {"score": 90, "source": "per_file", "assessed_at": "2026-02-01T00:00:00Z"},
+            "naming_quality": {
+                "score": 90,
+                "source": "per_file",
+                "assessed_at": "2026-02-01T00:00:00Z",
+            },
+            "logic_clarity": {
+                "score": 90,
+                "source": "per_file",
+                "assessed_at": "2026-02-01T00:00:00Z",
+            },
         }
         payload = {
             "assessments": {"naming_quality": 40, "logic_clarity": 40},
@@ -298,8 +327,16 @@ class TestCmdReviewPrepare:
         from desloppify.app.commands.review.importing.cmd import do_import as _do_import
 
         empty_state["subjective_assessments"] = {
-            "naming_quality": {"score": 90, "source": "per_file", "assessed_at": "2026-02-01T00:00:00Z"},
-            "logic_clarity": {"score": 90, "source": "per_file", "assessed_at": "2026-02-01T00:00:00Z"},
+            "naming_quality": {
+                "score": 90,
+                "source": "per_file",
+                "assessed_at": "2026-02-01T00:00:00Z",
+            },
+            "logic_clarity": {
+                "score": 90,
+                "source": "per_file",
+                "assessed_at": "2026-02-01T00:00:00Z",
+            },
         }
         payload = {
             "assessments": {"naming_quality": 40, "logic_clarity": 40},
@@ -317,7 +354,9 @@ class TestCmdReviewPrepare:
         lang = MagicMock()
         lang.name = "typescript"
 
-        with patch("desloppify.app.commands.review.importing.cmd.save_state", mock_save):
+        with patch(
+            "desloppify.app.commands.review.importing.cmd.save_state", mock_save
+        ):
             _do_import(
                 str(issues_file),
                 empty_state,
@@ -331,13 +370,22 @@ class TestCmdReviewPrepare:
 
         assert saved["sp"] == "fake_sp"
         assert empty_state["subjective_assessments"]["naming_quality"]["score"] == 40
-        assert empty_state["subjective_assessments"]["naming_quality"]["source"] == "manual_override"
         assert (
-            empty_state["subjective_assessments"]["naming_quality"]["provisional_override"]
+            empty_state["subjective_assessments"]["naming_quality"]["source"]
+            == "manual_override"
+        )
+        assert (
+            empty_state["subjective_assessments"]["naming_quality"][
+                "provisional_override"
+            ]
             is True
         )
         assert (
-            int(empty_state["subjective_assessments"]["naming_quality"]["provisional_until_scan"])
+            int(
+                empty_state["subjective_assessments"]["naming_quality"][
+                    "provisional_until_scan"
+                ]
+            )
             == int(empty_state.get("scan_count", 0)) + 1
         )
         audit = empty_state.get("assessment_import_audit", [])
@@ -379,7 +427,9 @@ class TestCmdReviewPrepare:
         self, empty_state, tmp_path
     ):
         blind_packet = tmp_path / "review_packet_blind.json"
-        blind_packet.write_text(json.dumps({"command": "review", "dimensions": ["naming_quality"]}))
+        blind_packet.write_text(
+            json.dumps({"command": "review", "dimensions": ["naming_quality"]})
+        )
         packet_hash = hashlib.sha256(blind_packet.read_bytes()).hexdigest()
 
         payload = {
@@ -404,15 +454,23 @@ class TestCmdReviewPrepare:
                 "pending_import_scores": {
                     "timestamp": "2026-03-10T10:00:00+00:00",
                     "import_file": str(tmp_path / "expected_scores.json"),
-                    "normalized_import_file": str((tmp_path / "expected_scores.json").resolve()),
+                    "normalized_import_file": str(
+                        (tmp_path / "expected_scores.json").resolve()
+                    ),
                     "packet_sha256": "expected-sha",
                 }
             },
         }
 
         with (
-            patch("desloppify.app.commands.review.importing.cmd.has_living_plan", lambda _path=None: True),
-            patch("desloppify.app.commands.review.importing.cmd.load_plan", lambda _path=None: pending_plan),
+            patch(
+                "desloppify.app.commands.review.importing.cmd.has_living_plan",
+                lambda _path=None: True,
+            ),
+            patch(
+                "desloppify.app.commands.review.importing.cmd.load_plan",
+                lambda _path=None: pending_plan,
+            ),
         ):
             with pytest.raises(CommandError) as exc:
                 _do_import(
@@ -432,7 +490,9 @@ class TestCmdReviewPrepare:
         assert "different review batch" in str(exc.value)
         assert "expected packet_sha256" in str(exc.value)
 
-    def test_trusted_internal_import_clears_provisional_flags(self, empty_state, tmp_path):
+    def test_trusted_internal_import_clears_provisional_flags(
+        self, empty_state, tmp_path
+    ):
         from unittest.mock import MagicMock
 
         from desloppify.app.commands.review.importing.cmd import do_import as _do_import
@@ -706,7 +766,9 @@ class TestCmdReviewPrepare:
         lang = MagicMock()
         lang.name = "typescript"
 
-        with patch("desloppify.app.commands.review.importing.cmd.save_state") as mock_save:
+        with patch(
+            "desloppify.app.commands.review.importing.cmd.save_state"
+        ) as mock_save:
             with pytest.raises(CommandError):
                 _do_import(str(issues_file), empty_state, lang, "sp")
         assert mock_save.called is False
@@ -736,7 +798,9 @@ class TestCmdReviewPrepare:
         lang = MagicMock()
         lang.name = "typescript"
 
-        with patch("desloppify.app.commands.review.importing.cmd.save_state") as mock_save:
+        with patch(
+            "desloppify.app.commands.review.importing.cmd.save_state"
+        ) as mock_save:
             _do_import(
                 str(issues_file),
                 empty_state,
@@ -1043,7 +1107,9 @@ class TestCmdReviewPrepare:
                             "identifier": "dup",
                             "summary": "shared",
                             "related_files": ["src/c.ts", "src/d.ts"],
-                            "evidence": ["seam handling differs between sibling modules"],
+                            "evidence": [
+                                "seam handling differs between sibling modules"
+                            ],
                             "suggestion": "standardize orchestration seams through shared adapter",
                             "confidence": "high",
                             "impact_scope": "module",
@@ -1075,7 +1141,9 @@ class TestCmdReviewPrepare:
                             "identifier": "new",
                             "summary": "unique",
                             "related_files": ["src/c.ts", "src/d.ts"],
-                            "evidence": ["local flow uses repetitive branching boilerplate"],
+                            "evidence": [
+                                "local flow uses repetitive branching boilerplate"
+                            ],
                             "suggestion": "extract one local helper to remove repeated branches",
                             "confidence": "medium",
                             "impact_scope": "local",
@@ -1090,7 +1158,9 @@ class TestCmdReviewPrepare:
 
         captured: dict[str, object] = {}
 
-        def fake_import(import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs):
+        def fake_import(
+            import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs
+        ):
             captured["holistic"] = holistic
             captured["config"] = config
             captured["kwargs"] = kwargs
@@ -1142,7 +1212,10 @@ class TestCmdReviewPrepare:
         import_config = captured["kwargs"]["import_config"]
         assert isinstance(import_config, ReviewImportConfig)
         assert import_config.trusted_assessment_source is True
-        assert import_config.trusted_assessment_label == "trusted internal run-batches import"
+        assert (
+            import_config.trusted_assessment_label
+            == "trusted internal run-batches import"
+        )
         assert import_config.allow_partial is True
         summary_files = sorted(runs_dir.glob("*/run_summary.json"))
         assert len(summary_files) == 1
@@ -1218,7 +1291,9 @@ class TestCmdReviewPrepare:
                         "identifier": "seam_style_drift",
                         "summary": "Seam style drifts across adjacent modules",
                         "related_files": ["src/a.ts"],
-                        "evidence": ["adjacent modules use incompatible seam conventions"],
+                        "evidence": [
+                            "adjacent modules use incompatible seam conventions"
+                        ],
                         "suggestion": "standardize one seam pattern for sibling modules",
                         "confidence": "medium",
                         "impact_scope": "module",
@@ -1231,7 +1306,9 @@ class TestCmdReviewPrepare:
 
         captured: dict[str, object] = {}
 
-        def fake_import(import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs):
+        def fake_import(
+            import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs
+        ):
             captured["holistic"] = holistic
             captured["config"] = config
             captured["kwargs"] = kwargs
@@ -1451,7 +1528,9 @@ class TestCmdReviewPrepare:
                     "identifier": "seam_split_between_siblings",
                     "summary": "Sibling hooks own overlapping orchestration seams",
                     "related_files": ["src/a.ts", "src/b.ts"],
-                    "evidence": ["sibling hooks both coordinate the same operation sequence"],
+                    "evidence": [
+                        "sibling hooks both coordinate the same operation sequence"
+                    ],
                     "suggestion": "extract one seam coordinator and reuse it across siblings",
                     "confidence": "high",
                     "impact_scope": "module",
@@ -1475,7 +1554,9 @@ class TestCmdReviewPrepare:
 
         captured: dict[str, object] = {}
 
-        def fake_import(import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs):
+        def fake_import(
+            import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs
+        ):
             captured["holistic"] = holistic
             captured["config"] = config
             captured["kwargs"] = kwargs
@@ -1521,8 +1602,13 @@ class TestCmdReviewPrepare:
         recovered_results = sorted(runs_dir.glob("*/results/batch-1.raw.txt"))
         assert len(recovered_results) == 1
         recovered_payload = json.loads(recovered_results[0].read_text())
-        assert recovered_payload["assessments"]["mid_level_elegance"] == pytest.approx(72.0)
-        assert recovered_payload["issues"][0]["identifier"] == "seam_split_between_siblings"
+        assert recovered_payload["assessments"]["mid_level_elegance"] == pytest.approx(
+            72.0
+        )
+        assert (
+            recovered_payload["issues"][0]["identifier"]
+            == "seam_split_between_siblings"
+        )
 
         summary_files = sorted(runs_dir.glob("*/run_summary.json"))
         assert len(summary_files) == 1
@@ -1607,7 +1693,9 @@ class TestCmdReviewPrepare:
                                     "identifier": "seam_style",
                                     "summary": "Seams drift slightly",
                                     "related_files": ["src/a.ts"],
-                                    "evidence": ["interface seam style differs across nearby modules"],
+                                    "evidence": [
+                                        "interface seam style differs across nearby modules"
+                                    ],
                                     "suggestion": "normalize seam style to one interface pattern",
                                     "confidence": "medium",
                                     "impact_scope": "module",
@@ -1622,7 +1710,9 @@ class TestCmdReviewPrepare:
 
         captured: dict[str, object] = {}
 
-        def fake_import(import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs):
+        def fake_import(
+            import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs
+        ):
             captured["holistic"] = holistic
             captured["config"] = config
             captured["kwargs"] = kwargs
@@ -1656,7 +1746,9 @@ class TestCmdReviewPrepare:
             do_run_batches(args, empty_state, lang, "fake_sp", config={})
 
         payload = captured["payload"]
-        assert payload["assessments"]["mid_level_elegance"] == pytest.approx(77.0, abs=0.1)
+        assert payload["assessments"]["mid_level_elegance"] == pytest.approx(
+            77.0, abs=0.1
+        )
         assert "reviewed_files" not in payload
         import_config = captured["kwargs"]["import_config"]
         assert isinstance(import_config, ReviewImportConfig)
@@ -1797,7 +1889,9 @@ class TestCmdReviewPrepare:
                 },
                 "dimension_judgment": {
                     "abstraction_fitness": {
-                        "strengths": ["interfaces are mostly honest about their contracts"],
+                        "strengths": [
+                            "interfaces are mostly honest about their contracts"
+                        ],
                         "dimension_character": "excessive wrapper indirection before reaching domain logic",
                         "score_rationale": "Three wrapper layers before domain calls add significant indirection cost that outweighs abstraction leverage.",
                     },
@@ -1808,7 +1902,9 @@ class TestCmdReviewPrepare:
                         "identifier": "wrapper_chain",
                         "summary": "Wrapper stack adds indirection cost",
                         "related_files": ["src/a.py", "src/b.py"],
-                        "evidence": ["3 wrapper layers before reaching domain behavior"],
+                        "evidence": [
+                            "3 wrapper layers before reaching domain behavior"
+                        ],
                         "suggestion": "collapse wrapper chain and expose one direct boundary",
                         "confidence": "high",
                         "impact_scope": "subsystem",
@@ -1821,7 +1917,9 @@ class TestCmdReviewPrepare:
 
         captured: dict[str, object] = {}
 
-        def fake_import(import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs):
+        def fake_import(
+            import_file, _state, _lang, _sp, holistic=True, config=None, **kwargs
+        ):
             captured["holistic"] = holistic
             captured["config"] = config
             captured["kwargs"] = kwargs
@@ -1971,7 +2069,7 @@ class TestCmdReviewPrepare:
             (
                 "import pathlib,sys,time;"
                 "path=pathlib.Path(sys.argv[1]);"
-                "path.write_text('{\"assessments\":{\"logic_clarity\":91.0},\"issues\":[]}');"
+                'path.write_text(\'{"assessments":{"logic_clarity":91.0},"issues":[]}\');'
                 "print('written', flush=True);"
                 "time.sleep(5)"
             ),
@@ -2046,6 +2144,7 @@ class TestCmdReviewPrepare:
         assert code == 1  # process exited 0 but output file missing
         log_text = log_file.read_text()
         assert "STALL RECOVERY" not in log_text
+
 
 class TestSetupLang:
     def test_setup_builds_zone_map(self, tmp_path):
@@ -2229,10 +2328,7 @@ class TestSkippedIssues:
         assert diff["new"] == 1
         assert diff["skipped"] == 1
         missing_text = " ".join(diff["skipped_details"][0]["missing"])
-        assert any(
-            f in missing_text
-            for f in ("summary", "suggestion")
-        )
+        assert any(f in missing_text for f in ("summary", "suggestion"))
 
     def test_no_skipped_when_all_valid(self):
         state = build_empty_state()

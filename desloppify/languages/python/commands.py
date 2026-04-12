@@ -53,7 +53,9 @@ cmd_complexity = make_cmd_complexity(
     find_py_files, PY_COMPLEXITY_SIGNALS, default_threshold=25, module_name=__name__
 )
 cmd_single_use = make_cmd_single_use(
-    deps_detector_mod.build_dep_graph, barrel_names={"__init__.py"}, module_name=__name__
+    deps_detector_mod.build_dep_graph,
+    barrel_names={"__init__.py"},
+    module_name=__name__,
 )
 cmd_passthrough = make_cmd_passthrough(
     detect_passthrough_functions,
@@ -62,7 +64,9 @@ cmd_passthrough = make_cmd_passthrough(
     total_key="total_params",
     module_name=__name__,
 )
-cmd_naming = make_cmd_naming(find_py_files, skip_names=PY_SKIP_NAMES, module_name=__name__)
+cmd_naming = make_cmd_naming(
+    find_py_files, skip_names=PY_SKIP_NAMES, module_name=__name__
+)
 
 
 def cmd_gods(args: argparse.Namespace) -> None:
@@ -113,7 +117,9 @@ def cmd_orphaned(args: argparse.Namespace) -> None:
         print(colorize("\nNo orphaned files found.", "green"))
         return
     total_loc = sum(e["loc"] for e in entries)
-    print(colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold"))
+    print(
+        colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold")
+    )
     top = getattr(args, "top", 20)
     rows = [[rel(e["file"]), str(e["loc"])] for e in entries[:top]]
     print_table(["File", "LOC"], rows, [80, 6])

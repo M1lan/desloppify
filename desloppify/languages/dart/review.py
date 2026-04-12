@@ -29,9 +29,7 @@ MIGRATION_PATTERN_PAIRS: list[tuple[str, object, object]] = []
 MIGRATION_MIXED_EXTENSIONS: set[str] = set()
 LOW_VALUE_PATTERN = re.compile(r"^\s*(?:part\s+of|export)\b", re.MULTILINE)
 
-_IMPORT_EXPORT_RE = re.compile(
-    r"""(?m)^\s*(?:import|export|part)\s+['"]([^'"]+)['"]"""
-)
+_IMPORT_EXPORT_RE = re.compile(r"""(?m)^\s*(?:import|export|part)\s+['"]([^'"]+)['"]""")
 _TYPE_RE = re.compile(
     r"(?m)^\s*(?:class|enum|mixin|extension|typedef)\s+([A-Za-z_]\w*)"
 )

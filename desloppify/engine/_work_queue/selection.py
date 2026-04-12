@@ -66,13 +66,14 @@ def filter_snapshot_items(
     filtered = items
     if not opts.include_subjective:
         filtered = [
-            item for item in filtered
-            if item.get("kind") != "subjective_dimension"
+            item for item in filtered if item.get("kind") != "subjective_dimension"
         ]
     if opts.scope:
         filtered = [
-            item for item in filtered
-            if item.get("kind") != "subjective_dimension" or scope_matches(item, opts.scope)
+            item
+            for item in filtered
+            if item.get("kind") != "subjective_dimension"
+            or scope_matches(item, opts.scope)
         ]
     return filtered
 

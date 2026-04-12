@@ -18,7 +18,9 @@ def merge_scan(state, current_issues, *args, **kwargs):
     options = kwargs.pop("options", None)
     if args:
         if len(args) != 1:
-            raise TypeError("merge_scan test helper accepts at most one positional option")
+            raise TypeError(
+                "merge_scan test helper accepts at most one positional option"
+            )
         options = args[0]
     if options is None:
         options = MergeScanOptions(**kwargs)
@@ -71,7 +73,9 @@ class TestSuppressionAccounting:
         ]
 
         diff = merge_scan(
-            st, issues, MergeScanOptions(lang="python", ignore=["smells::*"], force_resolve=True)
+            st,
+            issues,
+            MergeScanOptions(lang="python", ignore=["smells::*"], force_resolve=True),
         )
 
         assert diff["ignored"] == 2
@@ -123,7 +127,12 @@ class TestScoreAntiGaming:
         merge_scan(
             st,
             [],
-            MergeScanOptions(lang="python", potentials={"unused": 0}, force_resolve=True, subjective_integrity_target=95.0),
+            MergeScanOptions(
+                lang="python",
+                potentials={"unused": 0},
+                force_resolve=True,
+                subjective_integrity_target=95.0,
+            ),
         )
 
         hist = st["scan_history"][-1]
@@ -140,7 +149,12 @@ class TestScoreAntiGaming:
         merge_scan(
             st,
             [],
-            MergeScanOptions(lang="python", potentials={"unused": 0}, force_resolve=True, subjective_integrity_target=95.0),
+            MergeScanOptions(
+                lang="python",
+                potentials={"unused": 0},
+                force_resolve=True,
+                subjective_integrity_target=95.0,
+            ),
         )
 
         save_path = tmp_path / "state.json"
@@ -161,7 +175,9 @@ class TestScoreAntiGaming:
         merge_scan(
             st,
             [issue],
-            MergeScanOptions(lang="python", potentials={"unused": 1}, force_resolve=True),
+            MergeScanOptions(
+                lang="python", potentials={"unused": 1}, force_resolve=True
+            ),
         )
         before_strict = st["strict_score"]
         before_verified = st["verified_strict_score"]
@@ -185,7 +201,9 @@ class TestScoreAntiGaming:
         merge_scan(
             st,
             [],
-            MergeScanOptions(lang="python", potentials={"unused": 1}, force_resolve=True),
+            MergeScanOptions(
+                lang="python", potentials={"unused": 1}, force_resolve=True
+            ),
         )
         assert st["verified_strict_score"] == before_verified
         attestation = st["issues"]["unused::a.py::x"].get("resolution_attestation", {})
@@ -199,7 +217,9 @@ class TestScoreAntiGaming:
         merge_scan(
             st,
             [issue],
-            MergeScanOptions(lang="python", potentials={"unused": 1}, force_resolve=True),
+            MergeScanOptions(
+                lang="python", potentials={"unused": 1}, force_resolve=True
+            ),
         )
         strict_before = st["strict_score"]
 

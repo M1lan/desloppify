@@ -50,8 +50,14 @@ class TestElevatedSignals:
 
     def test_monster_function_flags(self):
         f = _make_issue(
-            "smells", "app/big.py", "monster",
-            detail={"smell_id": "monster_function", "function": "do_everything", "loc": 200},
+            "smells",
+            "app/big.py",
+            "monster",
+            detail={
+                "smell_id": "monster_function",
+                "function": "do_everything",
+                "loc": 200,
+            },
         )
         concerns = generate_concerns(_state_with_issues(f))
         assert len(concerns) == 1
@@ -63,7 +69,9 @@ class TestElevatedSignals:
 
     def test_high_params_flags(self):
         f = _make_issue(
-            "structural", "app/service.py", "struct",
+            "structural",
+            "app/service.py",
+            "struct",
             detail={"complexity_signals": ["12 params"]},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -73,7 +81,9 @@ class TestElevatedSignals:
 
     def test_deep_nesting_flags(self):
         f = _make_issue(
-            "structural", "app/nested.py", "struct",
+            "structural",
+            "app/nested.py",
+            "struct",
             detail={"complexity_signals": ["nesting depth 8"]},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -83,7 +93,9 @@ class TestElevatedSignals:
 
     def test_large_file_flags(self):
         f = _make_issue(
-            "structural", "app/huge.py", "struct",
+            "structural",
+            "app/huge.py",
+            "struct",
             detail={"loc": 500},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -124,14 +136,18 @@ class TestNonElevatedSkipped:
 
     def test_moderate_structural_not_flagged(self):
         f = _make_issue(
-            "structural", "app/ok.py", "struct",
+            "structural",
+            "app/ok.py",
+            "struct",
             detail={"loc": 150, "complexity_signals": ["5 params", "nesting depth 3"]},
         )
         assert generate_concerns(_state_with_issues(f)) == []
 
     def test_non_monster_smell_not_flagged(self):
         f = _make_issue(
-            "smells", "app/file.py", "smell",
+            "smells",
+            "app/file.py",
+            "smell",
             detail={"smell_id": "dead_useeffect"},
         )
         assert generate_concerns(_state_with_issues(f)) == []
@@ -220,7 +236,9 @@ class TestEvidenceAndQuestions:
 
     def test_evidence_includes_signals(self):
         f = _make_issue(
-            "structural", "app/f.py", "struct",
+            "structural",
+            "app/f.py",
+            "struct",
             detail={"loc": 400, "complexity_signals": ["15 params", "nesting depth 9"]},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -231,7 +249,9 @@ class TestEvidenceAndQuestions:
 
     def test_question_mentions_monster_function(self):
         f = _make_issue(
-            "smells", "app/f.py", "m",
+            "smells",
+            "app/f.py",
+            "m",
             detail={"smell_id": "monster_function", "function": "big_func", "loc": 200},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -239,7 +259,9 @@ class TestEvidenceAndQuestions:
 
     def test_question_mentions_params(self):
         f = _make_issue(
-            "structural", "app/f.py", "s",
+            "structural",
+            "app/f.py",
+            "s",
             detail={"complexity_signals": ["10 params"]},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -247,7 +269,9 @@ class TestEvidenceAndQuestions:
 
     def test_question_mentions_nesting(self):
         f = _make_issue(
-            "structural", "app/f.py", "s",
+            "structural",
+            "app/f.py",
+            "s",
             detail={"complexity_signals": ["nesting depth 7"]},
         )
         concerns = generate_concerns(_state_with_issues(f))
@@ -269,9 +293,11 @@ class TestEvidenceAndQuestions:
             _make_issue("naming", "app/f.py", "n"),
         ]
         concerns = generate_concerns(_state_with_issues(*issues))
-        assert any("dead" in concerns[0].question.lower() or
-                    "orphan" in concerns[0].question.lower()
-                    for _ in [1])
+        assert any(
+            "dead" in concerns[0].question.lower()
+            or "orphan" in concerns[0].question.lower()
+            for _ in [1]
+        )
 
 
 # ── Cross-file systemic patterns ─────────────────────────────────────
@@ -319,7 +345,9 @@ class TestSystemicPatterns:
 class TestDismissals:
     def test_dismissed_concern_suppressed(self):
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
         )
         state = _state_with_issues(f)
@@ -339,7 +367,9 @@ class TestDismissals:
     def test_dismissed_with_source_ids_suppresses(self):
         """Dismissals with matching source_issue_ids suppress the concern."""
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
         )
         state = _state_with_issues(f)
@@ -360,7 +390,9 @@ class TestDismissals:
     def test_stale_dismissal_cleaned_up(self):
         """Dismissals whose source issues are all gone get removed."""
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
         )
         state = _state_with_issues(f)
@@ -389,7 +421,9 @@ class TestDismissals:
     def test_stale_dismissal_without_source_ids_not_cleaned(self):
         """Dismissals without source_issue_ids are preserved (legacy)."""
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
         )
         state = _state_with_issues(f)
@@ -412,7 +446,9 @@ class TestDismissals:
     def test_generate_concerns_does_not_mutate_dismissals(self):
         """generate_concerns is a pure query — no side effects on state."""
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
         )
         state = _state_with_issues(f)
@@ -429,7 +465,9 @@ class TestDismissals:
 
     def test_dismissed_resurfaces_on_changed_issues(self):
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
         )
         state = _state_with_issues(f)
@@ -456,7 +494,9 @@ class TestEdgeCases:
 
     def test_non_open_issues_ignored(self):
         f = _make_issue(
-            "smells", "app/big.py", "monster",
+            "smells",
+            "app/big.py",
+            "monster",
             detail={"smell_id": "monster_function", "function": "f", "loc": 200},
             status="fixed",
         )
@@ -476,7 +516,9 @@ class TestEdgeCases:
         issues = [
             _make_issue("dupes", "z_file.py", "d"),
             _make_issue(
-                "smells", "a_file.py", "m",
+                "smells",
+                "a_file.py",
+                "m",
                 detail={"smell_id": "monster_function", "function": "f", "loc": 150},
             ),
         ]
@@ -520,18 +562,38 @@ class TestRegistryIntegration:
         assert "cycles" in JUDGMENT_DETECTORS
 
     def test_judgment_detectors_excludes_clearcut(self):
-        for det in ("unused", "logs", "exports", "deprecated", "security",
-                     "test_coverage", "stale_exclude"):
+        for det in (
+            "unused",
+            "logs",
+            "exports",
+            "deprecated",
+            "security",
+            "test_coverage",
+            "stale_exclude",
+        ):
             assert det not in JUDGMENT_DETECTORS
 
     def test_judgment_detectors_includes_expected(self):
         expected = {
-            "structural", "smells", "dupes", "boilerplate_duplication",
-            "coupling", "cycles", "props", "react", "orphaned", "naming",
-            "patterns", "facade", "single_use", "responsibility_cohesion",
-            "signature", "dict_keys", "flat_dirs", "global_mutable_config",
-            "private_imports", "layer_violation",
+            "structural",
+            "smells",
+            "dupes",
+            "boilerplate_duplication",
+            "coupling",
+            "cycles",
+            "props",
+            "react",
+            "orphaned",
+            "naming",
+            "patterns",
+            "facade",
+            "single_use",
+            "responsibility_cohesion",
+            "signature",
+            "dict_keys",
+            "flat_dirs",
+            "global_mutable_config",
+            "private_imports",
+            "layer_violation",
         }
         assert expected.issubset(JUDGMENT_DETECTORS)
-
-

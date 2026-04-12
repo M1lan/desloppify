@@ -13,10 +13,14 @@ class _FakeVisitor:
         self._issues: list[dict[str, object]] = []
 
     def visit(self, tree) -> None:
-        self._issues.append({"file": self.filepath, "nodes": len(getattr(tree, "body", []))})
+        self._issues.append(
+            {"file": self.filepath, "nodes": len(getattr(tree, "body", []))}
+        )
 
 
-def test_detect_dict_key_flow_handles_read_and_parse_failures(tmp_path: Path, monkeypatch) -> None:
+def test_detect_dict_key_flow_handles_read_and_parse_failures(
+    tmp_path: Path, monkeypatch
+) -> None:
     good = tmp_path / "good.py"
     good.write_text("x = {'a': 1}\n")
     bad_parse = tmp_path / "bad_parse.py"
@@ -36,7 +40,9 @@ def test_detect_dict_key_flow_handles_read_and_parse_failures(tmp_path: Path, mo
     assert issues[0]["file"] == "good.py"
 
 
-def test_detect_dict_key_flow_supports_absolute_file_paths(tmp_path: Path, monkeypatch) -> None:
+def test_detect_dict_key_flow_supports_absolute_file_paths(
+    tmp_path: Path, monkeypatch
+) -> None:
     source_path = tmp_path / "abs.py"
     source_path.write_text("value = {'k': 1}\n")
 

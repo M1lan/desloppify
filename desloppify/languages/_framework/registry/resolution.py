@@ -79,7 +79,9 @@ def auto_detect_lang(
         cfg = obj if isinstance(obj, LangConfig) else make_lang_config(lang_name, obj)
         configs[lang_name] = cfg
         markers = getattr(cfg, "detect_markers", []) or []
-        if markers and any(_detect_marker_exists(project_root, marker) for marker in markers):
+        if markers and any(
+            _detect_marker_exists(project_root, marker) for marker in markers
+        ):
             candidates.append(lang_name)
 
     if not candidates:

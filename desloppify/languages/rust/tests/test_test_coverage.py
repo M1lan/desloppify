@@ -55,7 +55,9 @@ def test_map_test_to_source_prefers_src_peer_for_integration_tests(tmp_path):
     source = _write(tmp_path, "src/service.rs", "pub fn run() {}\n")
     test_file = _write(tmp_path, "tests/service.rs", "use demo_app::service::run;\n")
 
-    mapped = rust_cov.map_test_to_source(str(test_file.resolve()), {str(source.resolve())})
+    mapped = rust_cov.map_test_to_source(
+        str(test_file.resolve()), {str(source.resolve())}
+    )
     assert mapped == str(source.resolve())
 
 
@@ -67,7 +69,9 @@ def test_resolve_import_spec_uses_local_crate_name(tmp_path):
     )
     _write(tmp_path, "src/lib.rs", "pub mod service;\n")
     source = _write(tmp_path, "src/service.rs", "pub struct Service;\n")
-    test_file = _write(tmp_path, "tests/service.rs", "use demo_app::service::Service;\n")
+    test_file = _write(
+        tmp_path, "tests/service.rs", "use demo_app::service::Service;\n"
+    )
 
     resolved = rust_cov.resolve_import_spec(
         "demo_app::service::Service",
@@ -93,7 +97,9 @@ name = "demo_core"
     )
     _write(tmp_path, "src/lib.rs", "pub mod service;\n")
     source = _write(tmp_path, "src/service.rs", "pub struct Service;\n")
-    test_file = _write(tmp_path, "tests/service.rs", "use demo_core::service::Service;\n")
+    test_file = _write(
+        tmp_path, "tests/service.rs", "use demo_core::service::Service;\n"
+    )
 
     resolved = rust_cov.resolve_import_spec(
         "demo_core::service::Service",

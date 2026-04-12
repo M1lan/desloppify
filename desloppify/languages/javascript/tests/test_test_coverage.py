@@ -97,7 +97,10 @@ PROD_FILES = {
         ("src/__tests__/unit/utils/responses.test.mjs", "src/utils/responses.mjs"),
         ("src/__tests__/unit/utils/tryCatch.test.mjs", "src/utils/tryCatch.mjs"),
         # __tests__/unit/queries/ -> src/db/queries/ (basename match)
-        ("src/__tests__/unit/queries/getCampaign.test.mjs", "src/db/queries/getCampaign.mjs"),
+        (
+            "src/__tests__/unit/queries/getCampaign.test.mjs",
+            "src/db/queries/getCampaign.mjs",
+        ),
         # __tests__/integration/ category stripped
         ("src/__tests__/integration/utils/time.test.mjs", "src/utils/time.mjs"),
         # Direct __tests__/ without category
@@ -110,7 +113,9 @@ PROD_FILES = {
 )
 def test_map_test_to_source(test_path, expected):
     result = map_test_to_source(test_path, PROD_FILES)
-    assert result == expected, f"map_test_to_source({test_path!r}) = {result!r}, expected {expected!r}"
+    assert result == expected, (
+        f"map_test_to_source({test_path!r}) = {result!r}, expected {expected!r}"
+    )
 
 
 def test_map_test_to_source_basename_cross_extension():

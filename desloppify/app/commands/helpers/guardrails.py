@@ -43,7 +43,9 @@ def triage_guardrail_status(
     try:
         resolved_plan = plan if isinstance(plan, dict) else load_plan()
     except PLAN_LOAD_EXCEPTIONS as exc:
-        logger.debug("Triage guardrail status skipped: plan could not be loaded.", exc_info=exc)
+        logger.debug(
+            "Triage guardrail status skipped: plan could not be loaded.", exc_info=exc
+        )
         return TriageGuardrailResult()
 
     resolved_state = state or {}
@@ -94,7 +96,9 @@ def triage_guardrail_messages(
             )
 
     if result._plan is not None:
-        banner = triage_phase_banner(result._plan, resolved_state, snapshot=result._snapshot)
+        banner = triage_phase_banner(
+            result._plan, resolved_state, snapshot=result._snapshot
+        )
         if banner:
             messages.append(banner)
 
@@ -127,10 +131,12 @@ def require_triage_current_or_exit(
         return
 
     if bypass and attest and len(attest.strip()) >= 30:
-        print(colorize(
-            "  Triage guardrail bypassed with attestation.",
-            "yellow",
-        ))
+        print(
+            colorize(
+                "  Triage guardrail bypassed with attestation.",
+                "yellow",
+            )
+        )
         return
 
     if result.pending_behind_objective_backlog and patterns:
@@ -173,7 +179,9 @@ def require_triage_current_or_exit(
     lines.append("")
     lines.append("  View new execution items:  desloppify plan queue --sort recent")
     lines.append("  View broader backlog:      desloppify backlog")
-    lines.append('  To bypass: --force-resolve --attest "I understand the plan may be stale..."')
+    lines.append(
+        '  To bypass: --force-resolve --attest "I understand the plan may be stale..."'
+    )
     raise CommandError("\n".join(lines))
 
 

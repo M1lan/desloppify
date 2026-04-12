@@ -17,7 +17,9 @@ from desloppify.languages._framework.generic_support.core import make_tool_phase
 from desloppify.languages._framework.generic_parts import tool_runner as tool_runner_mod
 
 
-def test_parse_next_lint_aggregates_per_file_and_relativizes_paths(monkeypatch, tmp_path):
+def test_parse_next_lint_aggregates_per_file_and_relativizes_paths(
+    monkeypatch, tmp_path
+):
     monkeypatch.chdir(tmp_path)
     scan_path = tmp_path / "apps" / "web"
     scan_path.mkdir(parents=True, exist_ok=True)
@@ -66,6 +68,7 @@ def test_parse_next_lint_aggregates_per_file_and_relativizes_paths(monkeypatch, 
     assert second["id"] == "lint"
     assert second["message"].startswith("next lint: Line defaults to 1")
     assert second["detail"]["count"] == 1
+
 
 def test_parse_next_lint_raises_on_missing_json_array(tmp_path):
     with pytest.raises(ToolParserError):
@@ -138,7 +141,9 @@ def test_next_lint_tool_phase_reports_potential_when_clean(monkeypatch, tmp_path
     assert signals == {"next_lint": 1}
 
 
-def test_next_lint_tool_phase_records_coverage_warning_on_tool_missing(monkeypatch, tmp_path):
+def test_next_lint_tool_phase_records_coverage_warning_on_tool_missing(
+    monkeypatch, tmp_path
+):
     monkeypatch.chdir(tmp_path)
 
     def fake_run(*_args, **_kwargs):
@@ -159,10 +164,14 @@ def test_next_lint_tool_phase_records_coverage_warning_on_tool_missing(monkeypat
     assert issues == []
     assert signals == {}
     assert lang.detector_coverage["next_lint"]["reason"] == "tool_not_found"
-    assert lang.coverage_warnings and lang.coverage_warnings[0]["detector"] == "next_lint"
+    assert (
+        lang.coverage_warnings and lang.coverage_warnings[0]["detector"] == "next_lint"
+    )
 
 
-def test_next_lint_tool_phase_records_coverage_warning_on_parser_error(monkeypatch, tmp_path):
+def test_next_lint_tool_phase_records_coverage_warning_on_parser_error(
+    monkeypatch, tmp_path
+):
     monkeypatch.chdir(tmp_path)
 
     def fake_run(argv, *, shell, cwd, capture_output, text, timeout):
@@ -183,4 +192,6 @@ def test_next_lint_tool_phase_records_coverage_warning_on_parser_error(monkeypat
     assert issues == []
     assert signals == {}
     assert lang.detector_coverage["next_lint"]["reason"] == "parser_error"
-    assert lang.coverage_warnings and lang.coverage_warnings[0]["detector"] == "next_lint"
+    assert (
+        lang.coverage_warnings and lang.coverage_warnings[0]["detector"] == "next_lint"
+    )

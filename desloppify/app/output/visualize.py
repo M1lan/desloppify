@@ -111,6 +111,7 @@ def generate_visualization(
 @dataclass
 class TreeTextOptions:
     """Text tree rendering options."""
+
     max_depth: int = 2
     focus: str | None = None
     min_loc: int = 0

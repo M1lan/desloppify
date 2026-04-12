@@ -29,16 +29,23 @@ def _init_graph(files: list[str]) -> dict[str, dict[str, Any]]:
 
 def _production_file_index(files: list[str]) -> dict[str, str]:
     return {
-        os.path.normcase(_normalize_graph_path(filepath)): _normalize_graph_path(filepath)
+        os.path.normcase(_normalize_graph_path(filepath)): _normalize_graph_path(
+            filepath
+        )
         for filepath in files
     }
 
 
 def _coerce_source_files(path: Path) -> list[str]:
-    return [_normalize_graph_path(resolve_path(filepath)) for filepath in find_cxx_files(path)]
+    return [
+        _normalize_graph_path(resolve_path(filepath))
+        for filepath in find_cxx_files(path)
+    ]
 
 
-def _match_production_file(candidate: Path | str, file_index: dict[str, str]) -> str | None:
+def _match_production_file(
+    candidate: Path | str, file_index: dict[str, str]
+) -> str | None:
     normalized = os.path.normcase(_normalize_graph_path(candidate))
     return file_index.get(normalized)
 
@@ -116,7 +123,9 @@ def _resolve_with_compile_commands(
     return _match_production_file(fallback, file_index)
 
 
-def _resolve_compile_command_source(entry: dict[str, Any], scan_root: Path) -> str | None:
+def _resolve_compile_command_source(
+    entry: dict[str, Any], scan_root: Path
+) -> str | None:
     file_value = entry.get("file")
     if not isinstance(file_value, str) or not file_value.strip():
         return None
@@ -178,7 +187,9 @@ def _build_from_compile_commands(
     return finalize_graph(graph)
 
 
-def _build_from_local_includes(path: Path, files: list[str]) -> dict[str, dict[str, Any]]:
+def _build_from_local_includes(
+    path: Path, files: list[str]
+) -> dict[str, dict[str, Any]]:
     graph = _init_graph(files)
     file_index = _production_file_index(files)
     scan_root = _normalize_graph_path(path)

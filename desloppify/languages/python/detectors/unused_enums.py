@@ -57,11 +57,13 @@ def detect_unused_enums(path: Path) -> tuple[list[dict], int]:
                 if isinstance(child, ast.Assign)
                 and any(isinstance(t, ast.Name) for t in child.targets)
             )
-            file_enums.append({
-                "name": node.name,
-                "line": node.lineno,
-                "member_count": member_count,
-            })
+            file_enums.append(
+                {
+                    "name": node.name,
+                    "line": node.lineno,
+                    "member_count": member_count,
+                }
+            )
 
         if file_enums:
             enum_defs[filepath] = file_enums
@@ -98,12 +100,14 @@ def detect_unused_enums(path: Path) -> tuple[list[dict], int]:
         rpath = rel(filepath)
         for d in defs:
             if d["name"] not in externally_imported:
-                entries.append({
-                    "file": rpath,
-                    "name": d["name"],
-                    "line": d["line"],
-                    "member_count": d["member_count"],
-                })
+                entries.append(
+                    {
+                        "file": rpath,
+                        "name": d["name"],
+                        "line": d["line"],
+                        "member_count": d["member_count"],
+                    }
+                )
 
     return entries, len(files)
 

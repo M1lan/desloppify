@@ -81,7 +81,9 @@ def load_subjective_dimension_metadata_for_lang(
 
 
 def get_dimension_metadata(
-    dimension_name: str, *, lang_name: str | None = None,
+    dimension_name: str,
+    *,
+    lang_name: str | None = None,
 ) -> dict[str, object]:
     _refresh_provider_wiring()
     return _get_dimension_metadata(dimension_name, lang_name=lang_name)
@@ -112,7 +114,9 @@ def default_dimension_keys_for_lang(lang_name: str | None) -> tuple[str, ...]:
     return _default_dimension_keys_for_lang(lang_name)
 
 
-load_subjective_dimension_metadata.cache_clear = _load_subjective_dimension_metadata.cache_clear
+load_subjective_dimension_metadata.cache_clear = (
+    _load_subjective_dimension_metadata.cache_clear
+)
 load_subjective_dimension_metadata_for_lang.cache_clear = (
     _load_subjective_dimension_metadata_for_lang.cache_clear
 )

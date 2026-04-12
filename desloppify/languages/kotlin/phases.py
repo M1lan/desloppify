@@ -56,7 +56,9 @@ KOTLIN_COMPLEXITY_SIGNALS = [
 ]
 
 
-def phase_structural(path: Path, lang: LangRuntimeContract) -> tuple[list[Issue], dict[str, int]]:
+def phase_structural(
+    path: Path, lang: LangRuntimeContract
+) -> tuple[list[Issue], dict[str, int]]:
     """Run structural detectors (large/complexity/flat directories)."""
     return run_structural_phase(
         path,

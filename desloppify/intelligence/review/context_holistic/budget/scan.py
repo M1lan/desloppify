@@ -198,7 +198,9 @@ def _derive_post_scan_results(col: _AbstractionsCollector) -> dict:
     typed_dict_violation_files = {v["file"] for v in typed_dict_violations}
 
     all_td_names = set(col.typed_dict_defs.keys())
-    dict_any_annotations = _find_dict_any_annotations(col.parsed_trees, all_td_names)[:30]
+    dict_any_annotations = _find_dict_any_annotations(col.parsed_trees, all_td_names)[
+        :30
+    ]
 
     enum_defs = _collect_enum_defs(col.parsed_trees)
     enum_bypass_patterns = _find_enum_bypass(col.parsed_trees, enum_defs)[:30]
@@ -280,4 +282,10 @@ def _abstractions_context(file_contents: dict[str, str]) -> dict:
     )
 
 
-__all__ = ["_AbstractionsCollector", "_abstractions_context", "_derive_post_scan_results", "_scan_file", "_sort_and_trim"]
+__all__ = [
+    "_AbstractionsCollector",
+    "_abstractions_context",
+    "_derive_post_scan_results",
+    "_scan_file",
+    "_sort_and_trim",
+]

@@ -398,7 +398,9 @@ class TestCreateParser:
         assert args.prepare is True
 
     def test_review_allow_partial_flag(self, parser):
-        args = parser.parse_args(["review", "--import", "issues.json", "--allow-partial"])
+        args = parser.parse_args(
+            ["review", "--import", "issues.json", "--allow-partial"]
+        )
         assert args.import_file == "issues.json"
         assert args.allow_partial is True
 
@@ -599,13 +601,24 @@ class TestStatePath:
         """state_path auto-detects language and returns lang-specific path."""
         args = SimpleNamespace()
         # When auto_detect_lang finds a language, state_path returns lang-specific path
-        with patch("desloppify.app.commands.helpers.state.auto_detect_lang_name", return_value="python"):
+        with patch(
+            "desloppify.app.commands.helpers.state.auto_detect_lang_name",
+            return_value="python",
+        ):
             result = state_path(args)
             assert result is not None
             assert "state-python.json" in str(result)
         # When auto_detect_lang finds nothing, state_path returns None
-        with patch("desloppify.app.commands.helpers.state.auto_detect_lang_name", return_value=None), \
-             patch("desloppify.app.commands.helpers.state._sole_existing_lang_state_file", return_value=None):
+        with (
+            patch(
+                "desloppify.app.commands.helpers.state.auto_detect_lang_name",
+                return_value=None,
+            ),
+            patch(
+                "desloppify.app.commands.helpers.state._sole_existing_lang_state_file",
+                return_value=None,
+            ),
+        ):
             result = state_path(args)
             assert result is None
 
@@ -872,15 +885,21 @@ class TestResolveLang:
         class DummyCfg:
             detect_markers = ["deno.json", "custom.lock"]
 
-        monkeypatch.setattr("desloppify.languages.framework.available_langs", lambda: ["dummy"])
-        monkeypatch.setattr("desloppify.languages.framework.get_lang", lambda _name: DummyCfg())
+        monkeypatch.setattr(
+            "desloppify.languages.framework.available_langs", lambda: ["dummy"]
+        )
+        monkeypatch.setattr(
+            "desloppify.languages.framework.get_lang", lambda _name: DummyCfg()
+        )
 
         markers = lang_helpers_mod._lang_config_markers()
         assert "deno.json" in markers
         assert "custom.lock" in markers
 
     def test_lang_config_markers_skips_broken_plugin(self, monkeypatch):
-        monkeypatch.setattr("desloppify.languages.framework.available_langs", lambda: ["dummy"])
+        monkeypatch.setattr(
+            "desloppify.languages.framework.available_langs", lambda: ["dummy"]
+        )
         monkeypatch.setattr(
             "desloppify.languages.framework.get_lang",
             lambda _name: (_ for _ in ()).throw(ImportError("broken plugin")),
@@ -899,7 +918,9 @@ class TestResolveLang:
 
         current_cfg = FirstCfg
 
-        monkeypatch.setattr("desloppify.languages.framework.available_langs", lambda: ["dummy"])
+        monkeypatch.setattr(
+            "desloppify.languages.framework.available_langs", lambda: ["dummy"]
+        )
         monkeypatch.setattr(
             "desloppify.languages.framework.get_lang",
             lambda _name: current_cfg(),

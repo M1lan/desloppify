@@ -63,4 +63,3 @@ def test_ignores_protocol_backed_contract(tmp_path):
     )
     entries, _ = detect_implicit_mixin_contracts(tmp_path)
     assert entries == []
-

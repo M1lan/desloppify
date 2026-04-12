@@ -11,6 +11,7 @@ import urllib.request as _urlreq
 from desloppify.base.config import load_config
 from desloppify.base.output.user_message import print_user_message
 from desloppify.engine._plan.refresh_lifecycle import user_facing_mode
+
 logger = logging.getLogger(__name__)
 
 # Phases that are NOT postflight — everything else counts as postflight.
@@ -39,8 +40,7 @@ def _hermes_port() -> int:
 def _hermes_get(path: str) -> dict:
     """GET a Hermes control API endpoint. Stdlib-only, no deps."""
     url = f"http://127.0.0.1:{_hermes_port()}{path}"
-    req = _urlreq.Request(url, method="GET",
-                          headers={"X-Hermes-Control": "1"})
+    req = _urlreq.Request(url, method="GET", headers={"X-Hermes-Control": "1"})
     try:
         with _urlreq.urlopen(req, timeout=5) as resp:
             return _json.loads(resp.read())
@@ -54,9 +54,12 @@ def _hermes_send_message(text: str, mode: str = "queue") -> dict:
     """Send a message/command to the running Hermes agent. Stdlib-only, no deps."""
     url = f"http://127.0.0.1:{_hermes_port()}/sessions/_any/message"
     data = _json.dumps({"text": text, "mode": mode}).encode()
-    req = _urlreq.Request(url, data=data, method="POST",
-                          headers={"Content-Type": "application/json",
-                                   "X-Hermes-Control": "1"})
+    req = _urlreq.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={"Content-Type": "application/json", "X-Hermes-Control": "1"},
+    )
     try:
         with _urlreq.urlopen(req, timeout=5) as resp:
             return _json.loads(resp.read())

@@ -55,7 +55,9 @@ from desloppify.intelligence.review.prepare import (
     prepare_holistic_review,
     prepare_review,
 )
-from desloppify.intelligence.review.prepare_batches_builders import build_investigation_batches
+from desloppify.intelligence.review.prepare_batches_builders import (
+    build_investigation_batches,
+)
 from desloppify.intelligence.review.remediation import generate_remediation_plan
 from desloppify.intelligence.review.selection import (
     LOW_VALUE_NAMES,
@@ -107,6 +109,7 @@ def import_holistic_issues(
         project_root=project_root,
         utc_now_fn=utc_now_fn,
     )
+
 
 __all__ = [
     # dimensions

@@ -121,7 +121,8 @@ def make_cmd_deps(
                 row["file"],
                 str(row["import_count"]),
                 str(row["importer_count"]),
-                ", ".join(row["imports"][:3]) + (" ..." if len(row["imports"]) > 3 else ""),
+                ", ".join(row["imports"][:3])
+                + (" ..." if len(row["imports"]) > 3 else ""),
             ]
             for row in rows[:top]
         ]
@@ -204,7 +205,11 @@ def make_cmd_orphaned(
             return
 
         total_loc = sum(entry["loc"] for entry in entries)
-        print(colorize(f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold"))
+        print(
+            colorize(
+                f"\nOrphaned files: {len(entries)} files, {total_loc} LOC\n", "bold"
+            )
+        )
         top = getattr(args, "top", 20)
         rows = [[rel(entry["file"]), str(entry["loc"])] for entry in entries[:top]]
         print_table(["File", "LOC"], rows, [85, 6])

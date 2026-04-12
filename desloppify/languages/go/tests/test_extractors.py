@@ -162,12 +162,15 @@ package pkg
 func Beta() {}
 """,
     )
-    with patch(
-        "desloppify.languages.go.extractors.find_source_files",
-        return_value=[str(tmp_path / "a.go"), str(tmp_path / "b.go")],
-    ), patch(
-        "desloppify.languages.go.extractors.resolve_path",
-        side_effect=lambda p: p,
+    with (
+        patch(
+            "desloppify.languages.go.extractors.find_source_files",
+            return_value=[str(tmp_path / "a.go"), str(tmp_path / "b.go")],
+        ),
+        patch(
+            "desloppify.languages.go.extractors.resolve_path",
+            side_effect=lambda p: p,
+        ),
     ):
         funcs = extract_functions(tmp_path)
     assert len(funcs) == 2

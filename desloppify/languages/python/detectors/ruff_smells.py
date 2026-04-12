@@ -32,7 +32,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from desloppify.base.discovery.source import collect_exclude_dirs as _collect_exclude_dirs
+from desloppify.base.discovery.source import (
+    collect_exclude_dirs as _collect_exclude_dirs,
+)
 from desloppify.base.discovery.source import get_exclusions as _get_exclusions
 from desloppify.base.discovery.file_paths import matches_exclusion as _matches_exclusion
 from desloppify.base.discovery.paths import get_project_root
@@ -41,20 +43,48 @@ logger = logging.getLogger(__name__)
 
 # Maps ruff code → (smell_id, label, severity)
 _RULE_MAP: dict[str, tuple[str, str, str]] = {
-    "B006": ("mutable_default", "Mutable default argument (list/dict/set literal)", "high"),
+    "B006": (
+        "mutable_default",
+        "Mutable default argument (list/dict/set literal)",
+        "high",
+    ),
     "B007": ("unused_loop_var", "Unused loop control variable", "medium"),
     "B023": ("func_in_loop", "Function definition doesn't bind loop variable", "high"),
     "B026": ("star_after_keyword", "Star-arg unpacking after keyword argument", "high"),
     "B904": ("raise_without_from", "Raise inside except without `from err`", "medium"),
-    "BLE001": ("broad_except", "Broad except — check library exceptions before narrowing", "medium"),
-    "E711": ("none_comparison", "Comparison to None with == / !=  (use `is`)", "medium"),
-    "E712": ("bool_comparison", "Comparison to True/False with == / != (use `is`)", "low"),
-    "E722": ("bare_except", "Bare except clause (catches everything including SystemExit)", "high"),
+    "BLE001": (
+        "broad_except",
+        "Broad except — check library exceptions before narrowing",
+        "medium",
+    ),
+    "E711": (
+        "none_comparison",
+        "Comparison to None with == / !=  (use `is`)",
+        "medium",
+    ),
+    "E712": (
+        "bool_comparison",
+        "Comparison to True/False with == / != (use `is`)",
+        "low",
+    ),
+    "E722": (
+        "bare_except",
+        "Bare except clause (catches everything including SystemExit)",
+        "high",
+    ),
     "F403": ("star_import", "Star import (from X import *)", "medium"),
     "PGH003": ("type_ignore", "type: ignore comment", "medium"),
     "PLW0603": ("global_keyword", "Global keyword usage", "medium"),
-    "RUF012": ("mutable_class_var", "Class-level mutable default (shared across instances)", "high"),
-    "W605": ("invalid_escape", "Invalid escape sequence (use raw string or \\\\)", "medium"),
+    "RUF012": (
+        "mutable_class_var",
+        "Class-level mutable default (shared across instances)",
+        "high",
+    ),
+    "W605": (
+        "invalid_escape",
+        "Invalid escape sequence (use raw string or \\\\)",
+        "medium",
+    ),
 }
 
 _SELECT = ",".join(_RULE_MAP)
@@ -96,7 +126,9 @@ def detect_with_ruff_smells(path: Path) -> list[dict] | None:
             timeout=60,
         )  # nosec B603
     except FileNotFoundError:
-        logger.debug("ruff smells: ruff not found — skipping supplemental smell detection")
+        logger.debug(
+            "ruff smells: ruff not found — skipping supplemental smell detection"
+        )
         return None
     except OSError as exc:
         logger.debug("ruff smells: OS error running ruff: %s", exc)

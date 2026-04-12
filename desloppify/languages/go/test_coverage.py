@@ -68,7 +68,8 @@ def resolve_import_spec(
             candidates.append(f"{parent}/{leaf}.go")
 
     normalized_production = {
-        file_path.replace("\\", "/").strip("/"): file_path for file_path in production_files
+        file_path.replace("\\", "/").strip("/"): file_path
+        for file_path in production_files
     }
     for candidate in candidates:
         normalized_candidate = candidate.replace("\\", "/").strip("/")
@@ -137,7 +138,7 @@ def strip_comments(content: str) -> str:
             i += 1
             continue
 
-        if ch in ('"', '`'):
+        if ch in ('"', "`"):
             in_string = ch
             out.append(ch)
             i += 1

@@ -61,7 +61,6 @@ class TestIsDictStrAny:
 
 
 class TestGuessAlternative:
-
     def test_exact_match(self):
         assert _guess_alternative("config", {"Config"}) == "Config"
 
@@ -79,7 +78,6 @@ class TestGuessAlternative:
 
 
 class TestFindDictAnyAnnotations:
-
     def test_param_annotation_detected(self):
         content = (
             "from typing import Any\n"
@@ -94,9 +92,7 @@ class TestFindDictAnyAnnotations:
 
     def test_return_annotation_detected(self):
         content = (
-            "from typing import Any\n"
-            "def build() -> dict[str, Any]:\n"
-            "    return {}\n"
+            "from typing import Any\ndef build() -> dict[str, Any]:\n    return {}\n"
         )
         trees = {"/fake/mod.py": _parse(content)}
         results = _find_dict_any_annotations(trees, set())
@@ -171,7 +167,6 @@ class TestFindDictAnyAnnotations:
 
 
 class TestCollectEnumDefs:
-
     def test_str_enum_collected(self):
         content = (
             "from enum import StrEnum\n"
@@ -199,11 +194,7 @@ class TestCollectEnumDefs:
         assert defs[key]["members"]["LOW"] == 1
 
     def test_plain_enum_collected(self):
-        content = (
-            "from enum import Enum\n"
-            "class Color(Enum):\n"
-            '    RED = "red"\n'
-        )
+        content = 'from enum import Enum\nclass Color(Enum):\n    RED = "red"\n'
         trees = {"/fake/enums.py": _parse(content)}
         defs = _collect_enum_defs(trees)
         assert any(k[1] == "Color" for k in defs)
@@ -215,25 +206,15 @@ class TestCollectEnumDefs:
         assert defs == {}
 
     def test_enum_without_constant_members_ignored(self):
-        content = (
-            "from enum import StrEnum\n"
-            "class Empty(StrEnum):\n"
-            "    pass\n"
-        )
+        content = "from enum import StrEnum\nclass Empty(StrEnum):\n    pass\n"
         trees = {"/fake/mod.py": _parse(content)}
         defs = _collect_enum_defs(trees)
         assert defs == {}
 
     def test_same_name_enums_from_different_files_preserved(self):
-        content_a = (
-            "from enum import StrEnum\n"
-            "class Status(StrEnum):\n"
-            '    ON = "on"\n'
-        )
+        content_a = 'from enum import StrEnum\nclass Status(StrEnum):\n    ON = "on"\n'
         content_b = (
-            "from enum import StrEnum\n"
-            "class Status(StrEnum):\n"
-            '    READY = "ready"\n'
+            'from enum import StrEnum\nclass Status(StrEnum):\n    READY = "ready"\n'
         )
         trees = {
             "/fake/a.py": _parse(content_a),
@@ -248,12 +229,9 @@ class TestCollectEnumDefs:
 
 
 class TestFindEnumBypass:
-
     def test_string_comparison_matching_enum_value_detected(self):
         enum_content = (
-            "from enum import StrEnum\n"
-            "class Status(StrEnum):\n"
-            '    ACTIVE = "active"\n'
+            'from enum import StrEnum\nclass Status(StrEnum):\n    ACTIVE = "active"\n'
         )
         usage_content = 'if x == "active":\n    pass\n'
         trees = {
@@ -271,9 +249,7 @@ class TestFindEnumBypass:
 
     def test_int_comparison_matching_enum_value_detected(self):
         enum_content = (
-            "from enum import IntEnum\n"
-            "class Priority(IntEnum):\n"
-            "    HIGH = 200\n"
+            "from enum import IntEnum\nclass Priority(IntEnum):\n    HIGH = 200\n"
         )
         usage_content = "if priority == 200:\n    pass\n"
         trees = {
@@ -288,9 +264,7 @@ class TestFindEnumBypass:
 
     def test_non_matching_constant_ignored(self):
         enum_content = (
-            "from enum import StrEnum\n"
-            "class Status(StrEnum):\n"
-            '    ACTIVE = "active"\n'
+            'from enum import StrEnum\nclass Status(StrEnum):\n    ACTIVE = "active"\n'
         )
         usage_content = 'if x == "unknown":\n    pass\n'
         trees = {
@@ -309,9 +283,7 @@ class TestFindEnumBypass:
 
     def test_comparator_on_right_side_detected(self):
         enum_content = (
-            "from enum import StrEnum\n"
-            "class Mode(StrEnum):\n"
-            '    FAST = "fast"\n'
+            'from enum import StrEnum\nclass Mode(StrEnum):\n    FAST = "fast"\n'
         )
         usage_content = 'if "fast" == mode:\n    pass\n'
         trees = {
@@ -326,9 +298,7 @@ class TestFindEnumBypass:
     def test_gt_operator_not_flagged(self):
         """Only == and != should be flagged, not >, <, >=, <=."""
         enum_content = (
-            "from enum import StrEnum\n"
-            "class Status(StrEnum):\n"
-            '    ACTIVE = "active"\n'
+            'from enum import StrEnum\nclass Status(StrEnum):\n    ACTIVE = "active"\n'
         )
         usage_content = 'if x > "active":\n    pass\n'
         trees = {
@@ -346,8 +316,8 @@ class TestFindEnumBypass:
             "from enum import StrEnum\n"
             "class Status(StrEnum):\n"
             '    ACTIVE = "active"\n'
-            '\n'
-            'def check(x):\n'
+            "\n"
+            "def check(x):\n"
             '    return x == "active"\n'
         )
         trees = {"/fake/enums.py": _parse(content)}
@@ -358,9 +328,7 @@ class TestFindEnumBypass:
     def test_generic_int_value_not_flagged(self):
         """IntEnum member with value 1 should not flag x == 1."""
         enum_content = (
-            "from enum import IntEnum\n"
-            "class Priority(IntEnum):\n"
-            "    HIGH = 1\n"
+            "from enum import IntEnum\nclass Priority(IntEnum):\n    HIGH = 1\n"
         )
         usage_content = "if x == 1:\n    pass\n"
         trees = {
@@ -377,7 +345,6 @@ class TestFindEnumBypass:
 
 
 class TestCensusTypeStrategies:
-
     def test_typed_dict_classified(self):
         content = (
             "from typing import TypedDict\n"

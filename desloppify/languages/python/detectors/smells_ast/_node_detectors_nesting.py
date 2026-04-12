@@ -9,7 +9,9 @@ _BLOCK_ATTRS = ("body", "handlers", "orelse", "finalbody")
 
 
 def _walk_inner_defs(
-    body: list[ast.AST], depth: int, inner_defs: list[ast.AST],
+    body: list[ast.AST],
+    depth: int,
+    inner_defs: list[ast.AST],
 ) -> int:
     """Recursively collect inner function/lambda defs and return max depth."""
     max_depth = 0
@@ -34,13 +36,16 @@ def _walk_inner_defs(
                 sub_body = getattr(child, attr, None)
                 if isinstance(sub_body, list):
                     max_depth = max(
-                        max_depth, _walk_inner_defs(sub_body, depth, inner_defs),
+                        max_depth,
+                        _walk_inner_defs(sub_body, depth, inner_defs),
                     )
     return max_depth
 
 
 def _collect_nested_lambdas(
-    parent: ast.Lambda, depth: int, inner_defs: list[ast.AST],
+    parent: ast.Lambda,
+    depth: int,
+    inner_defs: list[ast.AST],
 ) -> int:
     """Walk a lambda expression body for nested lambdas."""
     max_depth = depth
@@ -105,7 +110,8 @@ def _collect_single_list_assignments(body: list[ast.AST]) -> dict[str, int]:
 
 
 def _find_subscript_zero_refs(
-    node: ast.AST, candidate_names: set[str],
+    node: ast.AST,
+    candidate_names: set[str],
 ) -> set[str]:
     """Find candidate names accessed as ``x[0]`` inside nested functions."""
     used: set[str] = set()
