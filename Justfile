@@ -43,11 +43,10 @@ list:
 install:
     {{ uv }} sync --all-extras --dev
 
-# Install standalone single-file executable to ~/bin/
+# Install standalone executable via uv tool (into ~/.local/bin/)
 install-standalone:
-    @mkdir -p ~/bin
-    {{ uv }} run --with shiv --with pip shiv ".[full]" --console-script desloppify -o ~/bin/desloppify
-    @echo "Installed standalone desloppify to ~/bin/desloppify"
+    {{ uv }} tool install --force --editable ".[full]"
+    @echo "Installed: $(desloppify --version)"
 
 # Update uv.lock to latest compatible versions
 deps-update:
