@@ -50,3 +50,4 @@ dev/website/
 dev/release/release-notes-drafts/
 .dev*/
 plan*/
+.omc/
