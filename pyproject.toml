@@ -51,6 +51,11 @@ full = [
   "PyYAML>=6.0",
 ]
 
+[dependency-groups]
+dev = [
+  "import-linter>=2.0",
+]
+
 [project.scripts]
 desloppify = "desloppify.cli:main"
 

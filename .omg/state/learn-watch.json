@@ -1,0 +1,12 @@
+{
+  "last_session_id": "9aaed6cf-3543-4562-a2c1-efd4876626ae",
+  "last_event_key": "9aaed6cf-3543-4562-a2c1-efd4876626ae:transcript:ca4d4594da3f3eca9e316a709ccc9132060326d5457dc33852855b266323490e",
+  "last_prompted_session_id": "",
+  "last_prompted_at": "",
+  "last_reason": "short-session",
+  "last_user_message_count": 1,
+  "last_actionable_message_count": 1,
+  "deep_interview_lock_active": false,
+  "deep_interview_lock_source": "/Users/milan.santosi/mysrc/desloppify/.omg/state/deep-interview.json",
+  "updated_at": "2026-04-17T19:38:39.962Z"
+}

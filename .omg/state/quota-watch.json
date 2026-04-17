@@ -1,0 +1,19 @@
+{
+  "turn_count": 1,
+  "last_session_id": "9aaed6cf-3543-4562-a2c1-efd4876626ae",
+  "last_event_key": "9aaed6cf-3543-4562-a2c1-efd4876626ae:transcript:ca4d4594da3f3eca9e316a709ccc9132060326d5457dc33852855b266323490e",
+  "last_transcript_hash": "ca4d4594da3f3eca9e316a709ccc9132060326d5457dc33852855b266323490e",
+  "last_model": "gemini-3-flash-preview",
+  "last_provider": "gemini",
+  "last_turn_total_tokens": 28836,
+  "last_session_total_tokens": 189157,
+  "session_totals_by_model": {
+    "gemini-3-flash-preview": 189157
+  },
+  "session_totals_by_provider": {
+    "gemini": 189157
+  },
+  "cwd_mode": "parent-leaf",
+  "last_cwd_label": "mysrc/desloppify",
+  "updated_at": "2026-04-17T19:38:39.977Z"
+}
