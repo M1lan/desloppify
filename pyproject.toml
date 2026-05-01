@@ -51,13 +51,20 @@ full = [
   "PyYAML>=6.0",
 ]
 
+[project.scripts]
+desloppify = "desloppify.cli:main"
+
 [dependency-groups]
 dev = [
   "import-linter>=2.0",
+  "pytest>=8.0.0",
+  "mypy>=1.10.0",
+  "ruff>=0.4.0",
+  "build>=1.0.0",
+  "twine>=4.0.0",
+  "pyyaml>=6.0",
+  "pytest-asyncio>=0.23.0",
 ]
-
-[project.scripts]
-desloppify = "desloppify.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["desloppify*"]
