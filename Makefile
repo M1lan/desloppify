@@ -15,7 +15,7 @@
 	install-full-tools
 
 PIP := python3 -m pip
-pyLINT_IMPORTS := $(shell python3 -c "import pathlib,sys; print(pathlib.Path(sys.executable).with_name('lint-imports'))")
+LINT_IMPORTS := $(shell python3 -c "import pathlib,sys; print(pathlib.Path(sys.executable).with_name('lint-imports'))")
 IMPORTLINTER_CONFIG ?= .github/importlinter.ini
 PYTEST_XML ?=
 PYTEST_XML_FLAG := $(if $(PYTEST_XML),--junitxml=$(PYTEST_XML),)
@@ -73,17 +73,9 @@ package-smoke: install-ci-tools
 	. .pkg-smoke/bin/activate && \
 		python3 -m pip install --upgrade pip && \
 		WHEEL=$$(ls -t dist/desloppify-*.whl | head -n 1) && \
-<<<<<<< HEAD
-		python -m pip install "$$WHEEL[full]" && \
-		python -c "from importlib.resources import files; from pathlib import Path; docs=Path('docs'); bundled=files('desloppify.data.global'); names=sorted(p.name for p in docs.glob('*.md')); assert names; missing=[name for name in names if not bundled.joinpath(name).is_file()]; assert not missing, f'missing bundled docs: {missing}'; mismatched=[name for name in names if bundled.joinpath(name).read_text(encoding='utf-8') != (docs / name).read_text(encoding='utf-8')]; assert not mismatched, f'mismatched bundled docs: {mismatched}'" && \
-		python -c "import importlib.metadata as m,sys; extras=set(m.metadata('desloppify').get_all('Provides-Extra') or []); required={'full','treesitter','python-security','scorecard'}; missing=required-extras; print('missing extras metadata:', sorted(missing)) if missing else None; sys.exit(1 if missing else 0)" && \
-||||||| parent of 34d7af50 (chore: fix Makefile to use python3)
-		python -m pip install "$$WHEEL[full]" && \
-		python -c "import importlib.metadata as m,sys; extras=set(m.metadata('desloppify').get_all('Provides-Extra') or []); required={'full','treesitter','python-security','scorecard'}; missing=required-extras; print('missing extras metadata:', sorted(missing)) if missing else None; sys.exit(1 if missing else 0)" && \
-=======
 		python3 -m pip install "$$WHEEL[full]" && \
+		python3 -c "from importlib.resources import files; from pathlib import Path; docs=Path('docs'); bundled=files('desloppify.data.global'); names=sorted(p.name for p in docs.glob('*.md')); assert names; missing=[name for name in names if not bundled.joinpath(name).is_file()]; assert not missing, f'missing bundled docs: {missing}'; mismatched=[name for name in names if bundled.joinpath(name).read_text(encoding='utf-8') != (docs / name).read_text(encoding='utf-8')]; assert not mismatched, f'mismatched bundled docs: {mismatched}'" && \
 		python3 -c "import importlib.metadata as m,sys; extras=set(m.metadata('desloppify').get_all('Provides-Extra') or []); required={'full','treesitter','python-security','scorecard'}; missing=required-extras; print('missing extras metadata:', sorted(missing)) if missing else None; sys.exit(1 if missing else 0)" && \
->>>>>>> 34d7af50 (chore: fix Makefile to use python3)
 		desloppify --help > /dev/null
 	rm -rf .pkg-smoke
 

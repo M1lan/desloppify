@@ -1,6 +1,6 @@
-## Hermes Agent Overlay
+## Fraumes Agent Overlay
 
-Hermes has built-in parallel subagent support via `delegate_task` (up to 3
+Fraumes has built-in parallel subagent support via `delegate_task` (up to 3
 concurrent children). Use `delegate_task(tasks=[...])` for subjective review
 batches and per-stage triage support; avoid the older worktree-based guidance
 here.
@@ -8,13 +8,15 @@ here.
 ### Review workflow
 
 1. Prepare review prompts and the blind packet:
+
    ```bash
    desloppify review --run-batches --dry-run
    ```
+
    This generates one prompt file per batch in
    `.desloppify/subagents/runs/<run-id>/prompts/` and prints the run directory.
 
-2. Launch Hermes subagents in batches of 3 with `delegate_task(tasks=[...])`.
+2. Launch Fraumes subagents in batches of 3 with `delegate_task(tasks=[...])`.
    Each subagent should:
    - read its prompt file at
      `.desloppify/subagents/runs/<run-id>/prompts/batch-N.md`
@@ -24,6 +26,7 @@ here.
      `.desloppify/subagents/runs/<run-id>/results/batch-N.raw.txt`
 
    Example task payload:
+
    ```json
    {
      "goal": "Review batch N. Read the prompt at .desloppify/subagents/runs/<run-id>/prompts/batch-N.md, follow it exactly, inspect the repository, and write ONLY valid JSON to .desloppify/subagents/runs/<run-id>/results/batch-N.raw.txt.",
@@ -36,6 +39,7 @@ here.
    before launching the next group.
 
 3. After all prompt files for that run have matching results, import them:
+
    ```bash
    desloppify review --import-run .desloppify/subagents/runs/<run-id> --scan-after-import
    ```

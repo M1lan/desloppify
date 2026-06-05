@@ -12,13 +12,13 @@ That score generates a scorecard badge for your GitHub profile or README:
 
 <img src="assets/scorecard.png" width="100%">
 
-Currently supports 29 languages — full plugin depth for TypeScript, Python, C#, C++, Dart, GDScript, Go, and Rust; generic linter + tree-sitter support for Ruby, Java, Kotlin, and 18 more. For C++ projects, `compile_commands.json` is the primary analysis path and `Makefile` repositories fall back to best-effort local include scanning.
+Currently supports 29 languages — full plugin depth for TypeScript, Python, C#, C++, Dart, GDScript, Go, Kotlin, and Rust; generic linter + tree-sitter support for Ruby, Java, and 18 more. For C++ projects, `compile_commands.json` is the primary analysis path and `Makefile` repositories fall back to best-effort local include scanning.
 
-## For your agent's consideration...
+## For your agent's consideration
 
 Paste this prompt into your agent:
 
-```
+```text
 I want you to improve the quality of this codebase. To do this, install and run desloppify.
 Run ALL of the following (requires Python 3.11+):
 
@@ -104,7 +104,7 @@ For monorepos, run one job or matrix entry per project path instead of scanning 
 
 ## How it works
 
-```
+```text
 scan ──→ score ──→ review ──→ triage ──→ execute ──→ rescan
   │         │         │          │          │           │
   │     dimensions    │     prioritize    fix it     verify

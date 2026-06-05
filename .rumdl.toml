@@ -1,0 +1,149 @@
+# .rumdl.toml
+
+# AI-Targeted Markdown Linting -- optimized for AGENTS.md, CLAUDE.md,
+# SKILL.md, system prompts, knowledge bases, and context files.
+# Created: 2026-04-17  |  rumdl v0.1.69
+# Backup of previous config: ~/.rumdl.toml.bak-2026-04-17
+
+respect-gitignore = true
+
+[global]
+exclude = [
+    ".git",
+    ".github",
+    "node_modules",
+    "vendor",
+    "dist",
+    "build",
+    "target",
+    "CHANGELOG.md",
+    "LICENSE.md",
+]
+disable = [
+    "MD013",  # line-length: hard wrapping is counterproductive for AI
+    "MD014",  # commands-show-output: not relevant for AI instruction docs
+    "MD033",  # no-inline-html: XML tags (<system_information> etc.) are valid AI patterns
+    "MD041",  # first-line-h1: frontmatter or XML preamble may precede H1
+    "MD044",  # proper-names: too opinionated
+    "MD072",  # frontmatter-keys-sorted: semantic ordering > alphabetical
+    "MD073",  # toc-match-headings: AI context files rarely have TOC
+    "MD074",  # mkdocs-nav: not relevant
+]
+
+# ======================================================================
+# STRICT RULES -- enforced as errors
+# ======================================================================
+
+# -- Heading structure --
+
+[MD001]  # heading-increment: no skipping levels
+
+[MD003]  # heading-style: ATX only
+style = "atx"
+
+[MD018]  # no-missing-space-atx: "#Heading" is broken
+[MD019]  # no-multiple-spaces-atx: "#  Heading" is noisy
+[MD022]  # blanks-around-headings
+[MD023]  # heading-start-left: no indented headings
+
+[MD024]  # no-duplicate-heading: allow same text in different sections
+siblings_only = true
+
+[MD025]  # single-h1: one topic per document
+
+[MD026]  # no-trailing-punctuation: clean headings
+
+# -- List formatting --
+
+[MD004]  # ul-style: dash only
+style = "dash"
+
+[MD005]  # list-indent: consistent indentation
+
+[MD007]  # ul-indent: 2 spaces
+indent = 2
+
+[MD029]  # ol-prefix: sequential numbering
+style = "ordered"
+
+[MD030]  # list-marker-space
+[MD032]  # blanks-around-lists
+[MD076]  # list-item-spacing: consistent
+
+# -- Whitespace & token hygiene --
+
+[MD009]  # no-trailing-spaces
+[MD010]  # no-hard-tabs
+
+[MD012]  # no-multiple-blanks
+maximum = 1
+
+[MD047]  # single-trailing-newline
+[MD064]  # no-multiple-consecutive-spaces: token waste
+
+# -- Code blocks --
+
+[MD031]  # blanks-around-fences
+
+[MD046]  # code-block-style: fenced only
+style = "fenced"
+
+[MD048]  # code-fence-style: backtick only
+style = "backtick"
+
+# -- Emphasis & inline formatting --
+
+[MD037]  # no-space-in-emphasis
+[MD038]  # no-space-in-code
+
+[MD049]  # emphasis-style: asterisk
+style = "asterisk"
+
+[MD050]  # strong-style: asterisk
+style = "asterisk"
+
+# -- Links --
+
+[MD039]  # no-space-in-links
+[MD042]  # no-empty-links
+[MD051]  # link-fragments: valid heading refs
+
+# -- Tables --
+
+[MD055]  # table-pipe-style
+style = "consistent"
+
+[MD056]  # table-column-count
+[MD058]  # blanks-around-tables
+[MD075]  # orphaned-table-rows
+
+# -- Horizontal rules --
+
+[MD035]  # hr-style
+style = "consistent"
+
+# -- Frontmatter --
+
+[MD071]  # blank-line-after-frontmatter
+
+# ======================================================================
+# WARNING RULES -- advisory, non-blocking
+# ======================================================================
+
+[MD034]  # no-bare-urls: sometimes acceptable in reference sections
+severity = "warning"
+
+[MD036]  # no-emphasis-as-heading: sometimes intentional in compact formats
+severity = "warning"
+
+[MD040]  # fenced-code-language: strongly recommended but not always possible
+severity = "warning"
+
+[MD045]  # images-alt-text
+severity = "warning"
+
+[MD059]  # link-text-descriptive
+severity = "warning"
+
+[MD063]  # heading-capitalization
+severity = "warning"
