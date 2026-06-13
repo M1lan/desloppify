@@ -65,5 +65,5 @@ Run triage stages sequentially. For each stage:
 4. Confirm with `desloppify plan triage --confirm <stage> --attestation "..."`.
 5. Finish with `desloppify plan triage --complete --strategy "..." --attestation "..."`.
 
-<!-- desloppify-overlay: hermes -->
+<!-- desloppify-overlay: fraumes -->
 <!-- desloppify-end -->

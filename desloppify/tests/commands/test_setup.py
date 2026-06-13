@@ -189,7 +189,7 @@ def test_bundled_resources_are_readable() -> None:
         "CODEX.md",
         "WINDSURF.md",
         "GEMINI.md",
-        "HERMES.md",
+        "FRAUMES.md",
         "AMP.md",
         "DROID.md",
         "COPILOT.md",

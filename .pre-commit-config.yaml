@@ -1,0 +1,20 @@
+# prek / pre-commit configuration.
+# Enforces the project naming taboo: certain forbidden words must never appear
+# in any file content (the canonical agent overlay is "fraumes").
+# Patterns are deliberately obfuscated with character classes so this config
+# file does not itself trip the hooks.
+repos:
+  - repo: local
+    hooks:
+      - id: ban-forbidden-word-h
+        name: Reject forbidden word (h-word)
+        description: The h-word is banned; use "fraumes" instead.
+        language: pygrep
+        entry: '(?i)h[e3]rm[e3]s'
+        types: [text]
+      - id: ban-forbidden-word-c
+        name: Reject forbidden word (c-word)
+        description: The c-word (lobster-hands) is banned.
+        language: pygrep
+        entry: '(?i)cl[a4]w'
+        types: [text]

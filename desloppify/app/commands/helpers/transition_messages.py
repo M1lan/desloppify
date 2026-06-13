@@ -16,31 +16,31 @@ logger = logging.getLogger(__name__)
 # Phases that are NOT postflight — everything else counts as postflight.
 _NON_POSTFLIGHT = frozenset({"execute", "scan"})
 
-_HERMES_PORT_FILE = _os.path.expanduser("~/.hermes/control_api.port")
+_FRAUMES_PORT_FILE = _os.path.expanduser("~/.fraumes/control_api.port")
 
 
-def _hermes_available() -> bool:
-    """Check if Hermes integration is enabled in config."""
+def _fraumes_available() -> bool:
+    """Check if Fraumes integration is enabled in config."""
     try:
         config = load_config()
     except (OSError, ValueError):
         return False
-    return bool(config.get("hermes_enabled", False))
+    return bool(config.get("fraumes_enabled", False))
 
 
-def _hermes_port() -> int:
+def _fraumes_port() -> int:
     try:
-        with open(_HERMES_PORT_FILE) as f:
+        with open(_FRAUMES_PORT_FILE) as f:
             return int(f.read().strip())
     except (OSError, ValueError):
         return 47823
 
 
-def _hermes_get(path: str) -> dict:
-    """GET a Hermes control API endpoint. Stdlib-only, no deps."""
-    url = f"http://127.0.0.1:{_hermes_port()}{path}"
+def _fraumes_get(path: str) -> dict:
+    """GET a Fraumes control API endpoint. Stdlib-only, no deps."""
+    url = f"http://127.0.0.1:{_fraumes_port()}{path}"
     req = _urlreq.Request(url, method="GET",
-                          headers={"X-Hermes-Control": "1"})
+                          headers={"X-Fraumes-Control": "1"})
     try:
         with _urlreq.urlopen(req, timeout=5) as resp:
             return _json.loads(resp.read())
@@ -50,13 +50,13 @@ def _hermes_get(path: str) -> dict:
         return {"error": str(e)}
 
 
-def _hermes_send_message(text: str, mode: str = "queue") -> dict:
-    """Send a message/command to the running Hermes agent. Stdlib-only, no deps."""
-    url = f"http://127.0.0.1:{_hermes_port()}/sessions/_any/message"
+def _fraumes_send_message(text: str, mode: str = "queue") -> dict:
+    """Send a message/command to the running Fraumes agent. Stdlib-only, no deps."""
+    url = f"http://127.0.0.1:{_fraumes_port()}/sessions/_any/message"
     data = _json.dumps({"text": text, "mode": mode}).encode()
     req = _urlreq.Request(url, data=data, method="POST",
                           headers={"Content-Type": "application/json",
-                                   "X-Hermes-Control": "1"})
+                                   "X-Fraumes-Control": "1"})
     try:
         with _urlreq.urlopen(req, timeout=5) as resp:
             return _json.loads(resp.read())
@@ -66,25 +66,25 @@ def _hermes_send_message(text: str, mode: str = "queue") -> dict:
         return {"error": str(e)}
 
 
-def _resolve_hermes_model(phase: str, hermes_models: dict) -> str | None:
-    """Resolve a phase to a 'provider:model' string from hermes_models config.
+def _resolve_fraumes_model(phase: str, fraumes_models: dict) -> str | None:
+    """Resolve a phase to a 'provider:model' string from fraumes_models config.
 
     Lookup: exact phase → 'review' (fallback for non-execute).
     Returns None if no model is configured for this phase.
     """
-    spec = hermes_models.get(phase)
+    spec = fraumes_models.get(phase)
     if not spec and phase not in _NON_POSTFLIGHT:
-        spec = hermes_models.get("review")
+        spec = fraumes_models.get("review")
     return spec or None
 
 
-def _switch_hermes_model(phase: str) -> bool:
-    """Switch the running Hermes agent's model based on the phase.
+def _switch_fraumes_model(phase: str) -> bool:
+    """Switch the running Fraumes agent's model based on the phase.
 
-    Reads model mapping from hermes_models in config.json.
+    Reads model mapping from fraumes_models in config.json.
     Returns True if switch was triggered.
     """
-    if not _hermes_available():
+    if not _fraumes_available():
         return False
 
     try:
@@ -92,25 +92,25 @@ def _switch_hermes_model(phase: str) -> bool:
     except (OSError, ValueError):
         return False
 
-    hermes_models = config.get("hermes_models", {})
-    if not hermes_models:
+    fraumes_models = config.get("fraumes_models", {})
+    if not fraumes_models:
         return False
 
-    spec = _resolve_hermes_model(phase, hermes_models)
+    spec = _resolve_fraumes_model(phase, fraumes_models)
     if not spec:
         return False
 
     try:
-        result = _hermes_send_message(f"/model {spec}", mode="interrupt")
+        result = _fraumes_send_message(f"/model {spec}", mode="interrupt")
         if result.get("success"):
-            _hermes_send_message("continue", mode="queue")
-            print(f"🔄 Hermes model → {spec} (mode: {user_facing_mode(phase)})")
+            _fraumes_send_message("continue", mode="queue")
+            print(f"🔄 Fraumes model → {spec} (mode: {user_facing_mode(phase)})")
             return True
         else:
-            logger.debug("Hermes model switch failed: %s", result.get("error", ""))
+            logger.debug("Fraumes model switch failed: %s", result.get("error", ""))
             return False
     except Exception as exc:
-        logger.debug("Hermes model switch skipped: %s", exc)
+        logger.debug("Fraumes model switch skipped: %s", exc)
         return False
 
 
@@ -121,26 +121,26 @@ _AUTOREPLY_PROMPT = (
 )
 
 
-def _ensure_hermes_autoreply() -> None:
-    """Enable autoreply on the Hermes session if not already active.
+def _ensure_fraumes_autoreply() -> None:
+    """Enable autoreply on the Fraumes session if not already active.
 
     Checks the session state via GET /sessions/_any. If autoreply is
     already enabled, does nothing — so it's safe to call on every
     phase transition without clobbering an existing config.
     """
-    if not _hermes_available():
+    if not _fraumes_available():
         return
     try:
-        info = _hermes_get("/sessions/_any")
+        info = _fraumes_get("/sessions/_any")
         if info.get("autoreply", {}).get("enabled"):
             return
-        _hermes_send_message(
+        _fraumes_send_message(
             f"/autoreply {_AUTOREPLY_PROMPT}",
             mode="queue",
         )
-        logger.debug("Hermes autoreply enabled for desloppify session")
+        logger.debug("Fraumes autoreply enabled for desloppify session")
     except Exception as exc:
-        logger.debug("Hermes autoreply check skipped: %s", exc)
+        logger.debug("Fraumes autoreply check skipped: %s", exc)
 
 
 def emit_transition_message(new_phase: str) -> bool:
@@ -149,15 +149,15 @@ def emit_transition_message(new_phase: str) -> bool:
     Lookup order: exact phase → coarse phase → ``postflight`` (if the
     phase is not execute/scan).
 
-    Also triggers a Hermes model switch if the control API is available.
+    Also triggers a Fraumes model switch if the control API is available.
 
     Returns True if a message was emitted.
     """
     # Ensure autoreply is enabled so the agent keeps working autonomously
-    _ensure_hermes_autoreply()
+    _ensure_fraumes_autoreply()
 
-    # Switch Hermes model for this phase (best-effort, non-blocking)
-    _switch_hermes_model(new_phase)
+    # Switch Fraumes model for this phase (best-effort, non-blocking)
+    _switch_fraumes_model(new_phase)
 
     try:
         config = load_config()

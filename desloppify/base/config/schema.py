@@ -105,18 +105,18 @@ CONFIG_SCHEMA: dict[str, ConfigKey] = {
         {},
         "Messages shown to agents at lifecycle phase transitions {phase: message}",
     ),
-    "hermes_enabled": ConfigKey(
+    "fraumes_enabled": ConfigKey(
         bool,
         False,
-        "Enable Hermes agent integration (model switching, autoreply, task handoff)",
+        "Enable Fraumes agent integration (model switching, autoreply, task handoff)",
     ),
-    "hermes_models": ConfigKey(
+    "fraumes_models": ConfigKey(
         dict,
         {
             "execute": "openrouter:x-ai/grok-4.20-beta",
             "review": "openrouter:google/gemini-3.1-pro-preview",
         },
-        "Phase → provider:model mapping for Hermes model switching",
+        "Phase → provider:model mapping for Fraumes model switching",
     ),
 }
 

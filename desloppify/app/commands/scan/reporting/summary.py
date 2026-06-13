@@ -201,7 +201,7 @@ def _print_subjective_integrity_warning(
         print(
             colorize(
                 "    Review with `.desloppify/review_packet_blind.json` to avoid score anchoring."
-                " See docs/CLAUDE.md or docs/HERMES.md for the workflow.",
+                " See docs/CLAUDE.md or docs/FRAUMES.md for the workflow.",
                 "dim",
             )
         )

@@ -47,7 +47,7 @@ SKILL_TARGETS: dict[str, tuple[str, str, bool]] = {
     "rovodev": (".rovodev/skills/desloppify/SKILL.md", "ROVODEV", True),
     "windsurf": ("AGENTS.md", "WINDSURF", False),
     "gemini": ("AGENTS.md", "GEMINI", False),
-    "hermes": ("AGENTS.md", "HERMES", False),
+    "fraumes": ("AGENTS.md", "FRAUMES", False),
 }
 
 # Global (user-level) skill install targets.

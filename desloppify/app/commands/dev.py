@@ -23,8 +23,8 @@ def cmd_dev(args: argparse.Namespace) -> None:
         except ValueError as ex:
             raise CommandError(str(ex)) from ex
         return
-    if action == "test-hermes":
-        _cmd_test_hermes()
+    if action == "test-fraumes":
+        _cmd_test_fraumes()
         return
     raise CommandError("Unknown dev action. Use `desloppify dev scaffold-lang`.")
 
@@ -170,25 +170,25 @@ def _cmd_scaffold_lang(args: object) -> None:
     )
 
 
-def _cmd_test_hermes() -> None:
-    """Test Hermes model switching — switch to a random model and back."""
+def _cmd_test_fraumes() -> None:
+    """Test Fraumes model switching — switch to a random model and back."""
     import random
     import time
 
     from desloppify.app.commands.helpers.transition_messages import (
-        _hermes_available,
-        _hermes_get,
-        _hermes_send_message,
+        _fraumes_available,
+        _fraumes_get,
+        _fraumes_send_message,
     )
 
-    if not _hermes_available():
-        print(colorize('Hermes not enabled. Set "hermes_enabled": true in config.json', "yellow"))
+    if not _fraumes_available():
+        print(colorize('Fraumes not enabled. Set "fraumes_enabled": true in config.json', "yellow"))
         return
 
     # Get current model
-    info = _hermes_get("/sessions/_any")
+    info = _fraumes_get("/sessions/_any")
     if "error" in info:
-        print(colorize(f"Cannot reach Hermes: {info['error']}", "red"))
+        print(colorize(f"Cannot reach Fraumes: {info['error']}", "red"))
         return
 
     original_model = info.get("model", "unknown")
@@ -205,7 +205,7 @@ def _cmd_test_hermes() -> None:
 
     # Switch to test model
     print(f"  Switching to: {test_provider}:{test_model}")
-    result = _hermes_send_message(f"/model {test_provider}:{test_model}", mode="queue")
+    result = _fraumes_send_message(f"/model {test_provider}:{test_model}", mode="queue")
     if not result.get("success"):
         print(colorize(f"  Switch failed: {result.get('error', '?')}", "red"))
         return
@@ -214,7 +214,7 @@ def _cmd_test_hermes() -> None:
     # Wait a moment, then switch back
     time.sleep(2)
     print(f"  Switching back to: {original_provider}:{original_model}")
-    result = _hermes_send_message(f"/model {original_provider}:{original_model}", mode="queue")
+    result = _fraumes_send_message(f"/model {original_provider}:{original_model}", mode="queue")
     if not result.get("success"):
         print(colorize(f"  Switch-back failed: {result.get('error', '?')}", "red"))
         return

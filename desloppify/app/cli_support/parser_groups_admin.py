@@ -179,7 +179,7 @@ def _add_dev_parser(sub) -> None:
     )
     d_scaffold.set_defaults(wire_pyproject=True)
 
-    dev_sub.add_parser("test-hermes", help="Test Hermes model switching (switch and switch back)")
+    dev_sub.add_parser("test-fraumes", help="Test Fraumes model switching (switch and switch back)")
 
 
 def _add_langs_parser(sub) -> None:
@@ -195,7 +195,7 @@ def _add_update_skill_parser(sub) -> None:
         "interface",
         nargs="?",
         default=None,
-        help="Agent interface (amp, claude, codex, cursor, copilot, windsurf, gemini, hermes, droid, opencode, qwen, rovodev). "
+        help="Agent interface (amp, claude, codex, cursor, copilot, windsurf, gemini, fraumes, droid, opencode, qwen, rovodev). "
         "Auto-detected on updates if omitted.",
     )
 

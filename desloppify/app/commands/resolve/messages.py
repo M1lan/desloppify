@@ -25,22 +25,22 @@ _NEXT_TASK_INSTRUCTIONS = (
 )
 
 
-def _hermes_reset_and_instruct(
+def _fraumes_reset_and_instruct(
     *,
     cluster_name: str | None = None,
     cluster_remaining: int = 0,
 ) -> None:
-    """Reset Hermes context and inject next-task instructions via control API."""
+    """Reset Fraumes context and inject next-task instructions via control API."""
     from desloppify.app.commands.helpers.transition_messages import (
-        _hermes_available,
-        _hermes_send_message,
+        _fraumes_available,
+        _fraumes_send_message,
     )
 
-    if not _hermes_available():
+    if not _fraumes_available():
         return
     try:
         # Reset conversation to clear stale context from the previous task
-        result = _hermes_send_message("/reset", mode="interrupt")
+        result = _fraumes_send_message("/reset", mode="interrupt")
         if not result.get("success"):
             return
 
@@ -61,9 +61,9 @@ def _hermes_reset_and_instruct(
         else:
             instructions = _NEXT_TASK_INSTRUCTIONS
 
-        _hermes_send_message(instructions, mode="queue")
+        _fraumes_send_message(instructions, mode="queue")
     except Exception as exc:
-        logger.debug("Hermes next-task injection skipped: %s", exc)
+        logger.debug("Fraumes next-task injection skipped: %s", exc)
 
 
 def print_no_match_warning(args: argparse.Namespace) -> None:
@@ -105,8 +105,8 @@ def print_fixed_next_user_message(
             " to commit and push. Otherwise just keep going."
         )
 
-    # Also inject via Hermes control API for a clean context switch
-    _hermes_reset_and_instruct(
+    # Also inject via Fraumes control API for a clean context switch
+    _fraumes_reset_and_instruct(
         cluster_name=cluster_ctx.cluster_name if mid_cluster else None,
         cluster_remaining=cluster_ctx.cluster_remaining if mid_cluster else 0,
     )

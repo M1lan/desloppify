@@ -294,7 +294,7 @@ def _penalized_integrity_notice_lines(
         ),
         (
             "dim",
-            "See docs/CLAUDE.md or docs/HERMES.md for the full blind-review workflow.",
+            "See docs/CLAUDE.md or docs/FRAUMES.md for the full blind-review workflow.",
         ),
         ("dim", f"Rerun now: {command}"),
     ]

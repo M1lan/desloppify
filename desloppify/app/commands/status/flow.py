@@ -52,10 +52,10 @@ _logger = logging.getLogger(__name__)
 
 
 def _print_status_warnings(config: dict) -> None:
-    if config.get("hermes_enabled"):
+    if config.get("fraumes_enabled"):
         print(colorize(
-            '  ⚕ Hermes agent mode — model switching, autoreply, task handoff active'
-            '\n    To disable: set "hermes_enabled": false in config.json',
+            '  ⚕ Fraumes agent mode — model switching, autoreply, task handoff active'
+            '\n    To disable: set "fraumes_enabled": false in config.json',
             "cyan",
         ))
     skill_warning = check_skill_version()
