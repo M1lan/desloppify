@@ -1,7 +1,7 @@
 # Justfile for desloppify -- Multi-language codebase health scanner
 # https://github.com/peteromallet/desloppify
 #
-# Python 3.11+ project managed with uv. Supports 29 languages.
+# Python 3.11+ project managed with uv. Supports 30 languages.
 # Run `just` (no args) to list all recipes.
 
 # ===========================================================================

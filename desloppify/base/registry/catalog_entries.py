@@ -506,7 +506,7 @@ DETECTORS: dict[str, DetectorMeta] = {
         "manual_fix",
         "add error handling or logging to empty catch blocks",
         tier=2,
-        subjective_dimensions=("error_handling_consistency",),
+        subjective_dimensions=("error_consistency",),
     ),
     "detekt_violation": DetectorMeta(
         "detekt_violation",
