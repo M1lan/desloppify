@@ -61,7 +61,7 @@ Sub-agents each see one item. You see all of them. Now handle the things they ca
     ```
     If there are no duplicates, ordering constraints, or interactions, write `{"duplicate_groups": [], "ordering": [], "interactions": []}`.
 
-13. Run validation: `python review/validate.py --stage 2`
+13. Run validation: `uv run python review/validate.py --stage 2`
     Fix any errors before proceeding to Stage 3.
 
 14. Do NOT post comments — Stage 3 handles all GitHub communication.

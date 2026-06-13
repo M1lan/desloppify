@@ -10,12 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
           python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install anthropic tweepy requests
 
       - name: Generate image and post tweet
         env:
@@ -28,4 +26,4 @@ jobs:
           TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
-        run: python .github/workflows/scripts/tweet_release.py
+        run: uv run --no-project --with anthropic --with tweepy --with requests python .github/workflows/scripts/tweet_release.py

@@ -264,8 +264,8 @@ git checkout -b fix/<short-description>
 Make your changes, then run the test suite and verify the fix against the original project:
 
 ```bash
-python -m pytest desloppify/tests/ -q
-python -m desloppify scan --path <project-root>   # the project you were scanning
+uv run pytest desloppify/tests/ -q
+uv run desloppify scan --path <project-root>   # the project you were scanning
 ```
 
 Once it looks good, push and open a PR:

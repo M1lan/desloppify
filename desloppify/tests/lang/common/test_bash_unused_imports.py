@@ -4,6 +4,17 @@ from __future__ import annotations
 
 import textwrap
 
+import pytest
+
+from desloppify.languages._framework.treesitter import is_available
+
+# Bash detection needs the tree-sitter runtime (optional 'treesitter'/'full'
+# extra). Skip in the no-optional-deps core job; the full-extras job runs these.
+pytestmark = pytest.mark.skipif(
+    not is_available(),
+    reason="requires tree-sitter-language-pack (optional 'treesitter'/'full' extra)",
+)
+
 
 def _detect(tmp_path, contents: str):
     from desloppify.languages._framework.treesitter.analysis.unused_imports import (

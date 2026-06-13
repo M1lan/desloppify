@@ -4,7 +4,7 @@ You are orchestrating Stage 1 (assessment) of a review pipeline for the desloppi
 
 - You must be on the release branch (not main). Check: `git branch --show-current`
 - Working tree must be clean: `git status`
-- Tests must pass: `python -m pytest desloppify/tests/ -q`
+- Tests must pass: `uv run pytest desloppify/tests/ -q`
 
 ## Steps
 
@@ -30,7 +30,7 @@ You are orchestrating Stage 1 (assessment) of a review pipeline for the desloppi
 
 7. After all sub-agents complete, verify that a `review/results/{type}-{number}.json` file exists for each item. If any are missing, check the agent output and retry.
 
-8. Run validation: `python review/validate.py --stage 1`
+8. Run validation: `uv run python review/validate.py --stage 1`
    Fix any errors before proceeding to Stage 2.
 
 9. Do NOT post comments on PRs/issues — Stage 3 handles all GitHub communication.
